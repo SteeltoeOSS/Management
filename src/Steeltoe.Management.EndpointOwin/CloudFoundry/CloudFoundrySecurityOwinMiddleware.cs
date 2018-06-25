@@ -12,36 +12,34 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Primitives;
+using Microsoft.Owin;
 using Steeltoe.Common;
+using Steeltoe.Management.Endpoint;
+using Steeltoe.Management.Endpoint.CloudFoundry;
 using System;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Management.Endpoint.CloudFoundry
+namespace Steeltoe.Management.EndpointOwin.CloudFoundry
 {
-    public class CloudFoundrySecurityMiddleware
+    public class CloudFoundrySecurityOwinMiddleware : OwinMiddleware
     {
-        private RequestDelegate _next;
-        private ILogger<CloudFoundrySecurityMiddleware> _logger;
+        private ILogger<CloudFoundrySecurityOwinMiddleware> _logger;
         private ICloudFoundryOptions _options;
         private SecurityBase _base;
 
-        public CloudFoundrySecurityMiddleware(RequestDelegate next, ICloudFoundryOptions options, ILogger<CloudFoundrySecurityMiddleware> logger)
+        public CloudFoundrySecurityOwinMiddleware(OwinMiddleware next, ICloudFoundryOptions options, ILogger<CloudFoundrySecurityOwinMiddleware> logger)
+            : base(next)
         {
-            _next = next;
-            _logger = logger;
             _options = options;
+            _logger = logger;
             _base = new SecurityBase(options, logger);
         }
 
-        public async Task Invoke(HttpContext context)
+        public override async Task Invoke(IOwinContext context)
         {
-            _logger.LogDebug("Invoke({0})", context.Request.Path.Value);
-
-            if (Platform.IsCloudFoundry && _options.IsEnabled && _base.IsCloudFoundryRequest(context.Request.Path))
+            if (Platform.IsCloudFoundry && _options.IsEnabled && _base.IsCloudFoundryRequest(context.Request.Path.ToString()))
             {
                 if (string.IsNullOrEmpty(_options.ApplicationId))
                 {
@@ -77,12 +75,18 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
                 }
             }
 
-            await _next(context);
+            await Next.Invoke(context);
         }
 
-        internal string GetAccessToken(HttpRequest request)
+        internal async Task<SecurityResult> GetPermissions(IOwinContext context)
         {
-            if (request.Headers.TryGetValue(_base.AUTHORIZATION_HEADER, out StringValues headerVal))
+            string token = GetAccessToken(context.Request);
+            return await _base.GetPermissionsAsync(token);
+        }
+
+        internal string GetAccessToken(IOwinRequest request)
+        {
+            if (request.Headers.TryGetValue(_base.AUTHORIZATION_HEADER, out string[] headerVal))
             {
                 string header = headerVal.ToString();
                 if (header.StartsWith(_base.BEARER, StringComparison.OrdinalIgnoreCase))
@@ -92,12 +96,6 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             }
 
             return null;
-        }
-
-        internal async Task<SecurityResult> GetPermissions(HttpContext context)
-        {
-            string token = GetAccessToken(context.Request);
-            return await _base.GetPermissionsAsync(token);
         }
 
         private IEndpointOptions FindTargetEndpoint(PathString path)
@@ -115,22 +113,22 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             return null;
         }
 
-        private async Task ReturnError(HttpContext context, SecurityResult error)
+        private async Task ReturnError(IOwinContext context, SecurityResult error)
         {
             LogError(context, error);
-            context.Response.Headers.Add("Content-Type", "application/json;charset=UTF-8");
+            context.Response.Headers.Add("Content-Type", new string[] { "application/json;charset=UTF-8" });
             context.Response.StatusCode = (int)error.Code;
             await context.Response.WriteAsync(_base.Serialize(error));
         }
 
-        private void LogError(HttpContext context, SecurityResult error)
+        private void LogError(IOwinContext context, SecurityResult error)
         {
-            _logger.LogError("Actuator Security Error: {0} - {1}", error.Code, error.Message);
+            _logger.LogError("Actuator Security Error: {ErrorCode} - {ErrorMessage}", error.Code, error.Message);
             if (_logger.IsEnabled(LogLevel.Trace))
             {
                 foreach (var header in context.Request.Headers)
                 {
-                    _logger.LogTrace("Header: {0} - {1}", header.Key, header.Value);
+                    _logger.LogTrace("Header: {HeaderKey} - {HeaderValue}", header.Key, header.Value);
                 }
             }
         }

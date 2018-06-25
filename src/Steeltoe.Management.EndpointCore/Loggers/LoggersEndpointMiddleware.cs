@@ -88,6 +88,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
             await context.Response.WriteAsync(serialInfo);
         }
 
+        // TODO: dedupe this method
         protected internal bool IsLoggerRequest(HttpContext context)
         {
             if (!context.Request.Method.Equals("GET") && !context.Request.Method.Equals("POST"))
@@ -99,6 +100,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
             return context.Request.Path.StartsWithSegments(path);
         }
 
+        // TODO: dedupe this method
         private Dictionary<string, string> Deserialize(Stream stream)
         {
             try

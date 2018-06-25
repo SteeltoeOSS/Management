@@ -86,14 +86,16 @@ namespace Steeltoe.Management.Endpoint.Refresh.Test
         [Fact]
         public async void RefreshActuator_ReturnsExpectedData()
         {
+            var anc_env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", null);
             var builder = new WebHostBuilder()
-            .UseStartup<Startup>()
-            .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appsettings))
-            .ConfigureLogging((webhostContext, loggingBuilder) =>
-            {
-                loggingBuilder.AddConfiguration(webhostContext.Configuration);
-                loggingBuilder.AddDynamicConsole();
-            });
+                .UseStartup<Startup>()
+                .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appsettings))
+                .ConfigureLogging((webhostContext, loggingBuilder) =>
+                {
+                    loggingBuilder.AddConfiguration(webhostContext.Configuration);
+                    loggingBuilder.AddDynamicConsole();
+                });
             using (var server = new TestServer(builder))
             {
                 var client = server.CreateClient();
@@ -103,6 +105,8 @@ namespace Steeltoe.Management.Endpoint.Refresh.Test
                 var expected = "[\"urls\",\"management\",\"management:endpoints\",\"management:endpoints:sensitive\",\"management:endpoints:path\",\"management:endpoints:enabled\",\"Logging\",\"Logging:LogLevel\",\"Logging:LogLevel:Steeltoe\",\"Logging:LogLevel:Pivotal\",\"Logging:LogLevel:Default\",\"Logging:IncludeScopes\",\"environment\",\"applicationName\"]";
                 Assert.Equal(expected, json);
             }
+
+            Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", anc_env);
         }
 
         private HttpContext CreateRequest(string method, string path)

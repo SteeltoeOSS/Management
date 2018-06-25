@@ -12,6 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Collections.Generic;
+using System.Net.Http;
+
 namespace Steeltoe.Management.Endpoint
 {
     public interface IEndpoint
@@ -25,6 +28,8 @@ namespace Steeltoe.Management.Endpoint
         IEndpointOptions Options { get; }
 
         string Path { get; }
+
+        IEnumerable<HttpMethod> AllowedMethods { get; }
     }
 
     public interface IEndpoint<TResult> : IEndpoint

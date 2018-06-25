@@ -17,6 +17,7 @@ using Steeltoe.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 
 namespace Steeltoe.Management.Endpoint.Loggers
 {
@@ -37,7 +38,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
         private IDynamicLoggerProvider _cloudFoundryLoggerProvider;
 
         public LoggersEndpoint(ILoggersOptions options, ILoggerProvider cloudFoundryLoggerProvider, ILogger<LoggersEndpoint> logger = null)
-            : base(options)
+            : base(options, new List<HttpMethod> { HttpMethod.Get, HttpMethod.Post })
         {
             _cloudFoundryLoggerProvider = cloudFoundryLoggerProvider as DynamicLoggerProvider;
             _logger = logger;

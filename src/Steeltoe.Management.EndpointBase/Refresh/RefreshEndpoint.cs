@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -24,7 +23,6 @@ namespace Steeltoe.Management.Endpoint.Refresh
     {
         private ILogger<RefreshEndpoint> _logger;
         private IConfiguration _configuration;
-        private IHostingEnvironment _env;
 
         public RefreshEndpoint(IRefreshOptions options, IConfiguration configuration, ILogger<RefreshEndpoint> logger = null)
             : base(options)
@@ -48,8 +46,7 @@ namespace Steeltoe.Management.Endpoint.Refresh
 
         public IList<string> DoInvoke(IConfiguration configuration)
         {
-            IConfigurationRoot root = configuration as IConfigurationRoot;
-            if (root != null)
+            if (configuration is IConfigurationRoot root)
             {
                 root.Reload();
             }

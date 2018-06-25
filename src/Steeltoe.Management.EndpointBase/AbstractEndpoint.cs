@@ -13,6 +13,8 @@
 // limitations under the License.
 
 using System;
+using System.Collections.Generic;
+using System.Net.Http;
 
 namespace Steeltoe.Management.Endpoint
 {
@@ -20,9 +22,10 @@ namespace Steeltoe.Management.Endpoint
     {
         protected IEndpointOptions options;
 
-        public AbstractEndpoint(IEndpointOptions options)
+        public AbstractEndpoint(IEndpointOptions options, IEnumerable<HttpMethod> allowedMethods)
         {
             this.options = options ?? throw new ArgumentNullException(nameof(options));
+            this.AllowedMethods = allowedMethods ?? new List<HttpMethod> { HttpMethod.Get };
         }
 
         public virtual string Id => options.Id;
@@ -34,13 +37,15 @@ namespace Steeltoe.Management.Endpoint
         public virtual IEndpointOptions Options => options;
 
         public string Path => options.Path;
+
+        public IEnumerable<HttpMethod> AllowedMethods { get; }
     }
 
 #pragma warning disable SA1402 // File may only contain a single class
     public abstract class AbstractEndpoint<TResult> : AbstractEndpoint, IEndpoint<TResult>
     {
-        public AbstractEndpoint(IEndpointOptions options)
-            : base(options)
+        public AbstractEndpoint(IEndpointOptions options, IEnumerable<HttpMethod> allowedMethods = null)
+            : base(options, allowedMethods)
         {
         }
 
@@ -52,8 +57,8 @@ namespace Steeltoe.Management.Endpoint
 
     public abstract class AbstractEndpoint<TResult, TRequest> : AbstractEndpoint, IEndpoint<TResult, TRequest>
     {
-        public AbstractEndpoint(IEndpointOptions options)
-            : base(options)
+        public AbstractEndpoint(IEndpointOptions options, IEnumerable<HttpMethod> allowedMethods = null)
+            : base(options, allowedMethods)
         {
         }
 

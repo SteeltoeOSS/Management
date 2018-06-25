@@ -54,15 +54,10 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         {
             var opts = new CloudFoundryOptions();
             var middle = new CloudFoundrySecurityMiddleware(null, opts, null);
+            var securityBase = new SecurityBase(opts, null);
 
-            var context = CreateRequest("GET", "/");
-            Assert.True(middle.IsCloudFoundryRequest(context));
-
-            var context2 = CreateRequest("PUT", "/");
-            Assert.True(middle.IsCloudFoundryRequest(context2));
-
-            var context3 = CreateRequest("GET", "/badpath");
-            Assert.True(middle.IsCloudFoundryRequest(context3));
+            Assert.True(securityBase.IsCloudFoundryRequest("/"));
+            Assert.True(securityBase.IsCloudFoundryRequest("/badpath"));
         }
 
         [Fact]
