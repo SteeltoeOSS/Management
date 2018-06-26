@@ -39,8 +39,9 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
 
         public override async Task Invoke(IOwinContext context)
         {
-            if (Platform.IsCloudFoundry && _options.IsEnabled && _base.IsCloudFoundryRequest(context.Request.Path.ToString()))
+            if (/*Platform.IsCloudFoundry && */_options.IsEnabled && _base.IsCloudFoundryRequest(context.Request.Path.ToString()))
             {
+                _logger?.LogTrace("Beginning Cloud Foundry Security Processing");
                 if (string.IsNullOrEmpty(_options.ApplicationId))
                 {
                     await ReturnError(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, _base.APPLICATION_ID_MISSING_MESSAGE));
@@ -60,6 +61,7 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
                     return;
                 }
 
+                _logger?.LogTrace("Getting User Permissions");
                 var sr = await GetPermissions(context);
                 if (sr.Code != HttpStatusCode.OK)
                 {
@@ -67,12 +69,15 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
                     return;
                 }
 
+                _logger?.LogTrace("Confirming access is allowed");
                 var permissions = sr.Permissions;
                 if (!target.IsAccessAllowed(permissions))
                 {
                     await ReturnError(context, new SecurityResult(HttpStatusCode.Forbidden, _base.ACCESS_DENIED_MESSAGE));
                     return;
                 }
+
+                _logger?.LogTrace("Access granted!");
             }
 
             await Next.Invoke(context);
@@ -88,7 +93,7 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
         {
             if (request.Headers.TryGetValue(_base.AUTHORIZATION_HEADER, out string[] headerVal))
             {
-                string header = headerVal.ToString();
+                string header = headerVal[0];
                 if (header.StartsWith(_base.BEARER, StringComparison.OrdinalIgnoreCase))
                 {
                     return header.Substring(_base.BEARER.Length + 1);
@@ -116,7 +121,7 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
         private async Task ReturnError(IOwinContext context, SecurityResult error)
         {
             LogError(context, error);
-            context.Response.Headers.Add("Content-Type", new string[] { "application/json;charset=UTF-8" });
+            context.Response.Headers.SetValues("Content-Type", new string[] { "application/json;charset=UTF-8" });
             context.Response.StatusCode = (int)error.Code;
             await context.Response.WriteAsync(_base.Serialize(error));
         }
