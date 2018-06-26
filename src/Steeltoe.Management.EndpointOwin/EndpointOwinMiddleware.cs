@@ -85,4 +85,33 @@ namespace Steeltoe.Management.EndpointOwin
             return requestPath.Equals(new PathString(_endpoint.Path)) && _endpoint.AllowedMethods.Any(m => m.Method.Equals(httpMethod));
         }
     }
+
+#pragma warning disable SA1402 // File may only contain a single class
+    public class EndpointOwinMiddleware<TEndpoint, TResult, TRequest> : EndpointOwinMiddleware<TEndpoint, TResult>
+    {
+        protected new IEndpoint<TResult, TRequest> _endpoint;
+
+        public EndpointOwinMiddleware(OwinMiddleware next, IEndpoint<TResult, TRequest> endpoint, ILogger logger)
+            : base(next, logger)
+        {
+            this._endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
+        }
+
+        public virtual string HandleRequest(TRequest arg)
+        {
+            var result = _endpoint.Invoke(arg);
+            return Serialize(result);
+        }
+
+        protected override bool PathAndMethodMatch(PathString requestPath, string httpMethod)
+        {
+            return requestPath.Equals(new PathString(_endpoint.Path)) && _endpoint.AllowedMethods.Any(m => m.Method.Equals(httpMethod));
+        }
+
+        protected bool PathStartsWithAndMethodMatches(PathString requestPath, string httpMethod)
+        {
+            return requestPath.StartsWithSegments(new PathString(_endpoint.Path)) && _endpoint.AllowedMethods.Any(m => m.Method.Equals(httpMethod));
+        }
+    }
+#pragma warning restore SA1402 // File may only contain a single class
 }

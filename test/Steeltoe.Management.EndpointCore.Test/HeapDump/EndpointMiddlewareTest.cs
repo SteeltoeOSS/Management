@@ -72,7 +72,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
                 var logger2 = loggerFactory.CreateLogger<HeapDumpEndpoint>();
                 var logger3 = loggerFactory.CreateLogger<HeapDumpEndpointMiddleware>();
 
-                HeapDumper obs = new HeapDumper(opts, logger1);
+                HeapDumper obs = new HeapDumper(opts, logger: logger1);
                 var ep = new HeapDumpEndpoint(opts, obs, logger2);
                 var middle = new HeapDumpEndpointMiddleware(null, ep, logger3);
                 var context = CreateRequest("GET", "/heapdump");

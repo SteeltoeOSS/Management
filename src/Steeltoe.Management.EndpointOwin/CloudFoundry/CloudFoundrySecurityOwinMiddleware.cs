@@ -39,7 +39,7 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
 
         public override async Task Invoke(IOwinContext context)
         {
-            if (/*Platform.IsCloudFoundry && */_options.IsEnabled && _base.IsCloudFoundryRequest(context.Request.Path.ToString()))
+            if (Platform.IsCloudFoundry && _options.IsEnabled && _base.IsCloudFoundryRequest(context.Request.Path.ToString()))
             {
                 _logger?.LogTrace("Beginning Cloud Foundry Security Processing");
                 if (string.IsNullOrEmpty(_options.ApplicationId))
@@ -94,7 +94,7 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
             if (request.Headers.TryGetValue(_base.AUTHORIZATION_HEADER, out string[] headerVal))
             {
                 string header = headerVal[0];
-                if (header.StartsWith(_base.BEARER, StringComparison.OrdinalIgnoreCase))
+                if (header?.StartsWith(_base.BEARER, StringComparison.OrdinalIgnoreCase) == true)
                 {
                     return header.Substring(_base.BEARER.Length + 1);
                 }

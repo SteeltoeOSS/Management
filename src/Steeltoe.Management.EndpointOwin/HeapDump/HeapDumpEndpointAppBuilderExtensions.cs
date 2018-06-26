@@ -29,9 +29,10 @@ namespace Steeltoe.Management.EndpointOwin.HeapDump
         /// </summary>
         /// <param name="builder">Your <see cref="IAppBuilder"/></param>
         /// <param name="config"><see cref="IConfiguration"/> for configuring the endpoint</param>
+        /// <param name="applicationPathOnDisk">Provide the path to the app directory if heap dumps are failing due to access restrictions</param>
         /// <param name="loggerFactory"><see cref="ILoggerFactory"/> for logging inside the middleware and its components</param>
         /// <returns>Your <see cref="IAppBuilder"/> with Heap Dump middleware attached</returns>
-        public static IAppBuilder UseHeapDumpEndpointMiddleware(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null)
+        public static IAppBuilder UseHeapDumpEndpointMiddleware(this IAppBuilder builder, IConfiguration config, string applicationPathOnDisk = null, ILoggerFactory loggerFactory = null)
         {
             if (config == null)
             {
@@ -39,7 +40,7 @@ namespace Steeltoe.Management.EndpointOwin.HeapDump
             }
 
             var options = new HeapDumpOptions(config);
-            var heapDumper = new HeapDumper(options, loggerFactory?.CreateLogger<HeapDumper>());
+            var heapDumper = new HeapDumper(options, applicationPathOnDisk, loggerFactory?.CreateLogger<HeapDumper>());
             return builder.UseHeapDumpEndpointMiddleware(options, heapDumper, loggerFactory);
         }
 
@@ -64,7 +65,8 @@ namespace Steeltoe.Management.EndpointOwin.HeapDump
             }
 
             var endpoint = new HeapDumpEndpoint(options, heapDumper, loggerFactory?.CreateLogger<HeapDumpEndpoint>());
-            return builder.Use<EndpointOwinMiddleware<HeapDumpEndpoint, string>>(endpoint, loggerFactory?.CreateLogger<EndpointOwinMiddleware<HeapDumpEndpoint, string>>());
+            var logger = loggerFactory?.CreateLogger<HeapDumpEndpointOwinMiddleware>();
+            return builder.Use<HeapDumpEndpointOwinMiddleware>(endpoint, logger);
         }
     }
 }

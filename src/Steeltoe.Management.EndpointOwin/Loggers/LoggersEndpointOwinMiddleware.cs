@@ -19,25 +19,24 @@ using Steeltoe.Management.Endpoint.Loggers;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Management.EndpointOwin.Loggers
 {
-    public class LoggersEndpointOwinMiddleware : EndpointOwinMiddleware<Dictionary<string, object>, LoggersChangeRequest>
+    public class LoggersEndpointOwinMiddleware : EndpointOwinMiddleware<LoggersEndpoint, Dictionary<string, object>, LoggersChangeRequest>
     {
         protected new LoggersEndpoint _endpoint;
 
         public LoggersEndpointOwinMiddleware(OwinMiddleware next, LoggersEndpoint endpoint, ILogger logger)
-            : base(next, logger)
+            : base(next, endpoint, logger)
         {
             _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
         }
 
         public override async Task Invoke(IOwinContext context)
         {
-            if (!PathAndMethodMatch(context.Request.Path, context.Request.Method))
+            if (!PathStartsWithAndMethodMatches(context.Request.Path, context.Request.Method))
             {
                 await Next.Invoke(context);
             }
@@ -82,12 +81,6 @@ namespace Steeltoe.Management.EndpointOwin.Loggers
                     return;
                 }
             }
-        }
-
-        // TODO: rely on this method in base class... _endpoint is null there though?
-        protected override bool PathAndMethodMatch(PathString requestPath, string httpMethod)
-        {
-            return requestPath.Equals(new PathString(_endpoint.Path)) && _endpoint.AllowedMethods.Any(m => m.Method.Equals(httpMethod));
         }
 
         // TODO: dedupe this method

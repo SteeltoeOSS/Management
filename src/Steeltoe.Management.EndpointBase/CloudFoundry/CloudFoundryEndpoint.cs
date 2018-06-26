@@ -57,7 +57,10 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
                 }
                 else
                 {
-                    links._links.Add(opt.Id, new Link(baseUrl + "/" + opt.Id));
+                    if (!string.IsNullOrEmpty(opt.Id))
+                    {
+                        links._links.Add(opt.Id, new Link(baseUrl + "/" + opt.Id));
+                    }
                 }
             }
 

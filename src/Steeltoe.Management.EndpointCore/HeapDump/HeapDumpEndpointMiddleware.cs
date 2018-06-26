@@ -15,9 +15,8 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Middleware;
-using System;
+using Steeltoe.Management.EndpointBase;
 using System.IO;
-using System.IO.Compression;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.HeapDump
@@ -57,7 +56,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump
             }
 
             string gzFilename = filename + ".gz";
-            var result = await CompresssAsync(filename, gzFilename);
+            var result = await Utils.CompresssAsync(filename, gzFilename);
 
             if (result != null)
             {
@@ -75,35 +74,6 @@ namespace Steeltoe.Management.Endpoint.HeapDump
             {
                 context.Response.StatusCode = StatusCodes.Status404NotFound;
             }
-        }
-
-        protected internal async Task<Stream> CompresssAsync(string filename, string gzFilename)
-        {
-            try
-            {
-                using (var input = new FileStream(filename, FileMode.Open))
-                {
-                    using (var output = new FileStream(gzFilename, FileMode.CreateNew))
-                    {
-                        using (var gzipStream = new GZipStream(output, CompressionLevel.Fastest))
-                        {
-                            await input.CopyToAsync(gzipStream);
-                        }
-                    }
-                }
-
-                return new FileStream(gzFilename, FileMode.Open);
-            }
-            catch (Exception e)
-            {
-                logger?.LogError(e, "Unable to compress dump");
-            }
-            finally
-            {
-                File.Delete(filename);
-            }
-
-            return null;
         }
 
         protected internal bool IsHeapDumpRequest(HttpContext context)
