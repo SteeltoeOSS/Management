@@ -26,12 +26,12 @@ namespace Steeltoe.Management.Endpoint.Middleware
         protected IEndpoint<TResult> endpoint;
         protected ILogger logger;
 
-        public EndpointMiddleware(ILogger logger)
+        public EndpointMiddleware(ILogger logger = null)
         {
             this.logger = logger;
         }
 
-        public EndpointMiddleware(IEndpoint<TResult> endpoint, ILogger logger)
+        public EndpointMiddleware(IEndpoint<TResult> endpoint, ILogger logger = null)
             : this(logger)
         {
             this.endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
@@ -83,7 +83,7 @@ namespace Steeltoe.Management.Endpoint.Middleware
     {
         protected new IEndpoint<TResult, TRequest> endpoint;
 
-        public EndpointMiddleware(IEndpoint<TResult, TRequest> endpoint, ILogger logger)
+        public EndpointMiddleware(IEndpoint<TResult, TRequest> endpoint, ILogger logger = null)
             : base(logger)
         {
             this.endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));

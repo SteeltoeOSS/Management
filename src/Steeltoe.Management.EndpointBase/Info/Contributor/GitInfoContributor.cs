@@ -30,13 +30,13 @@ namespace Steeltoe.Management.Endpoint.Info.Contributor
         private string _propFile;
         private ILogger _logger;
 
-        public GitInfoContributor(ILogger logger = null)
+        public GitInfoContributor(ILogger<GitInfoContributor> logger = null)
             : this(Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + GITPROPERTIES_FILE)
         {
             _logger = logger;
         }
 
-        public GitInfoContributor(string propFile, ILogger logger = null)
+        public GitInfoContributor(string propFile, ILogger<GitInfoContributor> logger = null)
             : base()
         {
             _propFile = propFile;

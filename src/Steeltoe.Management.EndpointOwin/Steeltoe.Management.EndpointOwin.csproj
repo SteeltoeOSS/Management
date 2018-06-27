@@ -15,7 +15,6 @@
     <PackageLicenseUrl>https://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Microsoft.Owin" Version="$(OwinVersion)" />
     <PackageReference Include="Microsoft.Owin.Cors" Version="$(OwinVersion)" />
     <PackageReference Include="Steeltoe.Common.Http" Version="$(SteeltoeCommonVersion)" />

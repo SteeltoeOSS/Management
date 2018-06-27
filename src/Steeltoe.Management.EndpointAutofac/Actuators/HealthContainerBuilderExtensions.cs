@@ -17,6 +17,7 @@ using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Health;
+using Steeltoe.Management.Endpoint.Health.Contributor;
 using Steeltoe.Management.EndpointOwin;
 using System;
 
@@ -24,6 +25,26 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
 {
     public static class HealthContainerBuilderExtensions
     {
+        /// <summary>
+        /// Register the Health endpoint, middleware and options
+        /// </summary>
+        /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
+        /// <param name="config">Your application's <see cref="IConfiguration"/></param>
+        public static void RegisterHealthActuator(this ContainerBuilder container, IConfiguration config)
+        {
+            if (container == null)
+            {
+                throw new ArgumentNullException(nameof(container));
+            }
+
+            if (config == null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
+
+            container.RegisterHealthActuator(config, new DefaultHealthAggregator(), new Type[] { typeof(DiskSpaceContributor) });
+        }
+
         /// <summary>
         /// Register the Health endpoint, middleware and options
         /// </summary>

@@ -29,15 +29,17 @@ namespace Steeltoe.Management.EndpointAutofac
         {
             container.RegisterCloudFoundrySecurity(config);
             container.RegisterCloudFoundryActuator(config);
-            container.RegisterEnvActuator(config);
+            container.RegisterEnvActuator(config); // not used by Cloud Foundry
             container.RegisterHealthActuator(config);
             container.RegisterHeapDumpActuator(config);
             container.RegisterInfoActuator(config);
             container.RegisterLoggersActuator(config);
+
+            // container.RegisterMappingsActuator(config); // not implemented
             container.RegisterMetricsActuator(config);
-            container.RegisterRefreshActuator(config);
+            container.RegisterRefreshActuator(config); // not used by Cloud Foundry
             container.RegisterThreadDumpActuator(config);
-            container.RegisterTraceActuator(config);
+            container.RegisterTraceActuator(config); // not actually implemented
         }
     }
 }

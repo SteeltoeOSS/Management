@@ -18,6 +18,7 @@ using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.HeapDump;
 using Steeltoe.Management.EndpointOwin;
 using System;
+using System.IO;
 
 namespace Steeltoe.Management.EndpointAutofac.Actuators
 {
@@ -41,8 +42,17 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
             }
 
             container.RegisterInstance(new HeapDumpOptions(config)).As<IHeapDumpOptions>();
+
+            // REVIEW: is this necessary? Running under IIS Express, the path comes up wrong
+            container.RegisterType<HeapDumper>().As<IHeapDumper>().WithParameter("basePathOverride", GetContentRoot());
             container.RegisterType<HeapDumpEndpoint>().As<IEndpoint<string>>();
             container.RegisterType<EndpointOwinMiddleware<HeapDumpEndpoint, string>>();
+        }
+
+        public static string GetContentRoot()
+        {
+            var basePath = (string)AppDomain.CurrentDomain.GetData("APP_CONTEXT_BASE_DIRECTORY") ?? AppDomain.CurrentDomain.BaseDirectory;
+            return Path.GetFullPath(basePath);
         }
     }
 }

@@ -18,7 +18,6 @@ using Steeltoe.Management.Endpoint.Middleware;
 using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.Metrics
@@ -48,12 +47,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
         public override string HandleRequest(MetricsRequest arg)
         {
             var result = endpoint.Invoke(arg);
-            if (result == null)
-            {
-                return null;
-            }
-
-            return Serialize(result);
+            return result == null ? null : Serialize(result);
         }
 
         protected internal async Task HandleMetricsRequestAsync(HttpContext context)
@@ -73,8 +67,8 @@ namespace Steeltoe.Management.Endpoint.Metrics
 
                 if (serialInfo != null)
                 {
-                    await context.Response.WriteAsync(serialInfo);
                     response.StatusCode = (int)HttpStatusCode.OK;
+                    await context.Response.WriteAsync(serialInfo);
                 }
                 else
                 {
@@ -87,8 +81,8 @@ namespace Steeltoe.Management.Endpoint.Metrics
                 var serialInfo = this.HandleRequest(null);
                 logger?.LogDebug("Returning: {0}", serialInfo);
                 response.Headers.Add("Content-Type", "application/vnd.spring-boot.actuator.v1+json");
-                await context.Response.WriteAsync(serialInfo);
                 response.StatusCode = (int)HttpStatusCode.OK;
+                await context.Response.WriteAsync(serialInfo);
             }
         }
 

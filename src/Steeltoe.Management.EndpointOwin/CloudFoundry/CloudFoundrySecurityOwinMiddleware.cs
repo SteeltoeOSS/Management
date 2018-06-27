@@ -29,7 +29,7 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
         private ICloudFoundryOptions _options;
         private SecurityBase _base;
 
-        public CloudFoundrySecurityOwinMiddleware(OwinMiddleware next, ICloudFoundryOptions options, ILogger<CloudFoundrySecurityOwinMiddleware> logger)
+        public CloudFoundrySecurityOwinMiddleware(OwinMiddleware next, ICloudFoundryOptions options, ILogger<CloudFoundrySecurityOwinMiddleware> logger = null)
             : base(next)
         {
             _options = options;

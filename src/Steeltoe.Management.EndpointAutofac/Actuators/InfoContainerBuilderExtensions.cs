@@ -16,6 +16,7 @@ using Autofac;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Info;
+using Steeltoe.Management.Endpoint.Info.Contributor;
 using Steeltoe.Management.EndpointOwin;
 using System;
 using System.Collections.Generic;
@@ -40,6 +41,32 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
             if (config == null)
             {
                 throw new ArgumentNullException(nameof(config));
+            }
+
+            container.RegisterInfoActuator(config, new GitInfoContributor(AppDomain.CurrentDomain.BaseDirectory + "git.properties"), new AppSettingsInfoContributor(config));
+        }
+
+        /// <summary>
+        /// Register the Info endpoint, middleware and options
+        /// </summary>
+        /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
+        /// <param name="config">Your application's <see cref="IConfiguration"/></param>
+        /// <param name="contributors">Contributors to application information</param>
+        public static void RegisterInfoActuator(this ContainerBuilder container, IConfiguration config, params IInfoContributor[] contributors)
+        {
+            if (container == null)
+            {
+                throw new ArgumentNullException(nameof(container));
+            }
+
+            if (config == null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
+
+            foreach (var c in contributors)
+            {
+                container.RegisterInstance(c).As<IInfoContributor>();
             }
 
             container.RegisterInstance(new InfoOptions(config)).As<IInfoOptions>();

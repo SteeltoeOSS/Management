@@ -14,7 +14,13 @@
 
 using Autofac;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
+using Steeltoe.Common.Diagnostics;
+using Steeltoe.Management.Census.Stats;
+using Steeltoe.Management.Census.Tags;
+using Steeltoe.Management.Endpoint.Diagnostics;
 using Steeltoe.Management.Endpoint.Metrics;
+using Steeltoe.Management.Endpoint.Metrics.Observer;
 using Steeltoe.Management.EndpointOwin.Metrics;
 using System;
 
@@ -39,7 +45,19 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
                 throw new ArgumentNullException(nameof(config));
             }
 
-            container.RegisterInstance(new MetricsOptions(config)).As<IMetricsOptions>();
+            container.RegisterType<DiagnosticsManager>().As<IDiagnosticsManager>().SingleInstance();
+            container.RegisterType<DiagnosticServices>().As<IHostedService>().SingleInstance();
+            container.RegisterType<CLRRuntimeSource>().As<IPolledDiagnosticSource>();
+
+            container.RegisterInstance(new MetricsOptions(config)).As<IMetricsOptions>().SingleInstance();
+
+            // TODO: container.RegisterType<AspNetCoreHostingObserver>().As<IDiagnosticObserver>(); <-- in EndpointCore
+            container.RegisterType<CLRRuntimeObserver>().As<IDiagnosticObserver>();
+
+            container.RegisterType<OpenCensusStats>().As<IStats>().SingleInstance();
+            container.RegisterType<OpenCensusTags>().As<ITags>().SingleInstance();
+
+            container.RegisterType<MetricsEndpoint>().SingleInstance();
             container.RegisterType<MetricsEndpointOwinMiddleware>();
         }
     }

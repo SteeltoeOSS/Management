@@ -22,12 +22,10 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Management.EndpointOwin.CloudFoundry
 {
-    public class CloudFoundryEndpointOwinMiddleware : EndpointOwinMiddleware<Links, string>
+    public class CloudFoundryEndpointOwinMiddleware : EndpointOwinMiddleware<CloudFoundryEndpoint, Links, string>
     {
-        protected new CloudFoundryEndpoint _endpoint;
-
-        public CloudFoundryEndpointOwinMiddleware(OwinMiddleware next, CloudFoundryEndpoint endpoint, ILogger logger)
-            : base(next, logger)
+        public CloudFoundryEndpointOwinMiddleware(OwinMiddleware next, CloudFoundryEndpoint endpoint, ILogger<CloudFoundryEndpoint> logger = null)
+            : base(next, endpoint, logger)
         {
             _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
         }

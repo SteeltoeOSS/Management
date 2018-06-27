@@ -40,6 +40,7 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
             }
 
             container.RegisterInstance(new CloudFoundryOptions(config)).As<ICloudFoundryOptions>();
+            container.RegisterType<CloudFoundryEndpoint>();
             container.RegisterType<CloudFoundryEndpointOwinMiddleware>();
         }
 
@@ -59,6 +60,8 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
             {
                 throw new ArgumentNullException(nameof(config));
             }
+
+            /*TODO: configure CORS here?*/
 
             container.RegisterType<CloudFoundrySecurityOwinMiddleware>();
         }

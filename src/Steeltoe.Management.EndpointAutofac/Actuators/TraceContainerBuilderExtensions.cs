@@ -14,7 +14,10 @@
 
 using Autofac;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
+using Steeltoe.Common.Diagnostics;
 using Steeltoe.Management.Endpoint;
+using Steeltoe.Management.Endpoint.Diagnostics;
 using Steeltoe.Management.Endpoint.Trace;
 using Steeltoe.Management.EndpointOwin;
 using System;
@@ -40,6 +43,14 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
             {
                 throw new ArgumentNullException(nameof(config));
             }
+
+            container.RegisterType<DiagnosticsManager>().As<IDiagnosticsManager>().SingleInstance();
+            container.RegisterType<DiagnosticServices>().As<IHostedService>().SingleInstance();
+
+            container.RegisterType<TraceDiagnosticObserver>().As<IDiagnosticObserver>().SingleInstance();
+
+            // services.TryAddSingleton<ITraceRepository>((p) => (ITraceRepository)p.GetServices<IDiagnosticObserver>().OfType<TraceDiagnosticObserver>().Single());
+            container.Register((ctx) => (ITraceRepository)ctx.Resolve<IDiagnosticObserver>()).As<ITraceRepository>().SingleInstance();
 
             container.RegisterInstance(new TraceOptions(config)).As<ITraceOptions>();
             container.RegisterType<TraceEndpoint>().As<IEndpoint<List<Trace>>>();

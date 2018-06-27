@@ -27,7 +27,7 @@ namespace Steeltoe.Management.EndpointOwin.HeapDump
     {
         protected new HeapDumpEndpoint _endpoint;
 
-        public HeapDumpEndpointOwinMiddleware(OwinMiddleware next, HeapDumpEndpoint endpoint, ILogger logger)
+        public HeapDumpEndpointOwinMiddleware(OwinMiddleware next, HeapDumpEndpoint endpoint, ILogger<HeapDumpEndpoint> logger = null)
             : base(next, endpoint, logger)
         {
             _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));

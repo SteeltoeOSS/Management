@@ -28,7 +28,7 @@ namespace Steeltoe.Management.EndpointOwin.Loggers
     {
         protected new LoggersEndpoint _endpoint;
 
-        public LoggersEndpointOwinMiddleware(OwinMiddleware next, LoggersEndpoint endpoint, ILogger logger)
+        public LoggersEndpointOwinMiddleware(OwinMiddleware next, LoggersEndpoint endpoint, ILogger<LoggersEndpoint> logger = null)
             : base(next, endpoint, logger)
         {
             _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));

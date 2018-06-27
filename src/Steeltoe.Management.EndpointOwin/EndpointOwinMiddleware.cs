@@ -27,15 +27,15 @@ namespace Steeltoe.Management.EndpointOwin
     public class EndpointOwinMiddleware<TEndpoint, TResult> : OwinMiddleware
     {
         protected IEndpoint<TResult> _endpoint;
-        protected ILogger _logger;
+        protected ILogger<TEndpoint> _logger;
 
-        public EndpointOwinMiddleware(OwinMiddleware next, ILogger logger)
+        public EndpointOwinMiddleware(OwinMiddleware next, ILogger<TEndpoint> logger = null)
             : base(next)
         {
             _logger = logger;
         }
 
-        public EndpointOwinMiddleware(OwinMiddleware next, IEndpoint<TResult> endpoint, ILogger logger = null)
+        public EndpointOwinMiddleware(OwinMiddleware next, IEndpoint<TResult> endpoint, ILogger<TEndpoint> logger = null)
             : base(next)
         {
             _endpoint = endpoint;
@@ -53,9 +53,8 @@ namespace Steeltoe.Management.EndpointOwin
             {
                 _logger?.LogTrace("Processing {SteeltoeEndpoint} request", typeof(TEndpoint));
                 var result = _endpoint.Invoke();
-                await context.Response.WriteAsync(Serialize(result));
                 context.Response.Headers.SetValues("Content-Type", new string[] { "application/vnd.spring-boot.actuator.v1+json" });
-                return;
+                await context.Response.WriteAsync(Serialize(result));
             }
         }
 
@@ -84,6 +83,11 @@ namespace Steeltoe.Management.EndpointOwin
         {
             return requestPath.Equals(new PathString(_endpoint.Path)) && _endpoint.AllowedMethods.Any(m => m.Method.Equals(httpMethod));
         }
+
+        protected virtual bool PathStartsWithAndMethodMatches(PathString requestPath, string httpMethod)
+        {
+            return requestPath.StartsWithSegments(new PathString(_endpoint.Path)) && _endpoint.AllowedMethods.Any(m => m.Method.Equals(httpMethod));
+        }
     }
 
 #pragma warning disable SA1402 // File may only contain a single class
@@ -91,7 +95,7 @@ namespace Steeltoe.Management.EndpointOwin
     {
         protected new IEndpoint<TResult, TRequest> _endpoint;
 
-        public EndpointOwinMiddleware(OwinMiddleware next, IEndpoint<TResult, TRequest> endpoint, ILogger logger)
+        public EndpointOwinMiddleware(OwinMiddleware next, IEndpoint<TResult, TRequest> endpoint, ILogger<TEndpoint> logger)
             : base(next, logger)
         {
             this._endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
@@ -108,7 +112,7 @@ namespace Steeltoe.Management.EndpointOwin
             return requestPath.Equals(new PathString(_endpoint.Path)) && _endpoint.AllowedMethods.Any(m => m.Method.Equals(httpMethod));
         }
 
-        protected bool PathStartsWithAndMethodMatches(PathString requestPath, string httpMethod)
+        protected override bool PathStartsWithAndMethodMatches(PathString requestPath, string httpMethod)
         {
             return requestPath.StartsWithSegments(new PathString(_endpoint.Path)) && _endpoint.AllowedMethods.Any(m => m.Method.Equals(httpMethod));
         }

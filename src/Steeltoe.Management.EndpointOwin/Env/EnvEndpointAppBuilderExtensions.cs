@@ -15,7 +15,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Hosting.Internal;
 using Microsoft.Extensions.Logging;
 using Owin;
 using Steeltoe.Management.Endpoint.Env;
@@ -32,17 +31,16 @@ namespace Steeltoe.Management.EndpointOwin.Env
         /// <param name="config"><see cref="IConfiguration"/> of application for configuring env endpoint and inclusion in response</param>
         /// <param name="loggerFactory">For logging within the middleware</param>
         /// <returns>OWIN <see cref="IAppBuilder" /> with Env Endpoint added</returns>
-        public static IAppBuilder UseEnvEndpointMiddleware(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null)
+        public static IAppBuilder UseEnvEndpointOwinMiddleware(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null)
         {
-            // TODO: probably not this
-            var hostingEnvironment = new HostingEnvironment()
+            var hostingEnvironment = new FrameworkHostingEnvironment()
             {
                 ApplicationName = config[HostDefaults.ApplicationKey],
                 EnvironmentName = config[HostDefaults.EnvironmentKey] ?? EnvironmentName.Production,
                 ContentRootPath = AppContext.BaseDirectory
             };
             hostingEnvironment.ContentRootFileProvider = new PhysicalFileProvider(hostingEnvironment.ContentRootPath);
-            return builder.UseEnvEndpointMiddleware(config, hostingEnvironment, loggerFactory);
+            return builder.UseEnvEndpointOwinMiddleware(config, hostingEnvironment, loggerFactory);
         }
 
         /// <summary>
@@ -53,7 +51,7 @@ namespace Steeltoe.Management.EndpointOwin.Env
         /// <param name="hostingEnvironment"><see cref="IHostingEnvironment"/> of the application</param>
         /// <param name="loggerFactory">For logging within the middleware</param>
         /// <returns>OWIN <see cref="IAppBuilder" /> with Env Endpoint added</returns>
-        public static IAppBuilder UseEnvEndpointMiddleware(this IAppBuilder builder, IConfiguration config, IHostingEnvironment hostingEnvironment, ILoggerFactory loggerFactory = null)
+        public static IAppBuilder UseEnvEndpointOwinMiddleware(this IAppBuilder builder, IConfiguration config, IHostingEnvironment hostingEnvironment, ILoggerFactory loggerFactory = null)
         {
             var endpoint = new EnvEndpoint(new EnvOptions(config), config, hostingEnvironment, loggerFactory?.CreateLogger<EnvEndpoint>());
             var logger = loggerFactory?.CreateLogger<EndpointOwinMiddleware<EnvEndpoint, EnvironmentDescriptor>>();

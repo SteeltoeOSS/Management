@@ -17,26 +17,24 @@ using Microsoft.Owin;
 using Steeltoe.Management.Endpoint.Metrics;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Management.EndpointOwin.Metrics
 {
-    public class MetricsEndpointOwinMiddleware : EndpointOwinMiddleware<IMetricsResponse, MetricsRequest>
+    public class MetricsEndpointOwinMiddleware : EndpointOwinMiddleware<MetricsEndpoint, IMetricsResponse, MetricsRequest>
     {
         protected new MetricsEndpoint _endpoint;
 
-        public MetricsEndpointOwinMiddleware(OwinMiddleware next, MetricsEndpoint endpoint, ILogger logger)
-            : base(next, logger)
+        public MetricsEndpointOwinMiddleware(OwinMiddleware next, MetricsEndpoint endpoint, ILogger<MetricsEndpoint> logger = null)
+            : base(next, endpoint, logger)
         {
             _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
         }
 
         public override async Task Invoke(IOwinContext context)
         {
-            if (!IsMetricsRequest(context))
+            if (!PathAndMethodMatch(context.Request.Path, context.Request.Method))
             {
                 await Next.Invoke(context);
             }
@@ -46,7 +44,7 @@ namespace Steeltoe.Management.EndpointOwin.Metrics
             }
         }
 
-        public string HandleRequest(MetricsRequest arg)
+        public override string HandleRequest(MetricsRequest arg)
         {
             var result = _endpoint.Invoke(arg);
             return result == null ? null : Serialize(result);
@@ -69,8 +67,8 @@ namespace Steeltoe.Management.EndpointOwin.Metrics
 
                 if (serialInfo != null)
                 {
-                    await context.Response.WriteAsync(serialInfo);
                     response.StatusCode = (int)HttpStatusCode.OK;
+                    await context.Response.WriteAsync(serialInfo);
                 }
                 else
                 {
@@ -83,8 +81,8 @@ namespace Steeltoe.Management.EndpointOwin.Metrics
                 var serialInfo = this.HandleRequest(null);
                 _logger?.LogDebug("Returning: {0}", serialInfo);
                 response.Headers.SetValues("Content-Type", new string[] { "application/vnd.spring-boot.actuator.v1+json" });
-                await context.Response.WriteAsync(serialInfo);
                 response.StatusCode = (int)HttpStatusCode.OK;
+                await context.Response.WriteAsync(serialInfo);
             }
         }
 
@@ -102,6 +100,11 @@ namespace Steeltoe.Management.EndpointOwin.Metrics
             return null;
         }
 
+        /// <summary>
+        /// Turn a querystring into a dictionary
+        /// </summary>
+        /// <param name="query">Request querystring</param>
+        /// <returns>List of key-value pairs</returns>
         protected internal List<KeyValuePair<string, string>> ParseTags(IReadableStringCollection query)
         {
             List<KeyValuePair<string, string>> results = new List<KeyValuePair<string, string>>();
@@ -131,6 +134,11 @@ namespace Steeltoe.Management.EndpointOwin.Metrics
             return results;
         }
 
+        /// <summary>
+        /// Split a key-value pair out from a single string
+        /// </summary>
+        /// <param name="kvp">Colon-delimited key-value pair</param>
+        /// <returns>A pair of strings</returns>
         protected internal KeyValuePair<string, string>? ParseTag(string kvp)
         {
             var str = kvp.Split(new char[] { ':' }, 2);
@@ -140,17 +148,6 @@ namespace Steeltoe.Management.EndpointOwin.Metrics
             }
 
             return null;
-        }
-
-        protected internal bool IsMetricsRequest(IOwinContext context)
-        {
-            if (!context.Request.Method.Equals("GET"))
-            {
-                return false;
-            }
-
-            PathString path = new PathString(_endpoint.Path);
-            return context.Request.Path.StartsWithSegments(path);
         }
     }
 }
