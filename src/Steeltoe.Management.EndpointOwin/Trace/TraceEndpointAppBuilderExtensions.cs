@@ -35,8 +35,8 @@ namespace Steeltoe.Management.EndpointOwin.Trace
             var endpoint = new TraceEndpoint(options, traceRepository, loggerFactory?.CreateLogger<TraceEndpoint>());
 
             // TODO: address class/namespace collision!
-            var logger = loggerFactory?.CreateLogger<EndpointOwinMiddleware<TraceEndpoint, List<Steeltoe.Management.Endpoint.Trace.Trace>>>();
-            return builder.Use<EndpointOwinMiddleware<TraceEndpoint, List<Steeltoe.Management.Endpoint.Trace.Trace>>>(endpoint, logger);
+            var logger = loggerFactory?.CreateLogger<EndpointOwinMiddleware<TraceEndpoint, List<TraceResult>>>();
+            return builder.Use<EndpointOwinMiddleware<TraceEndpoint, List<TraceResult>>>(endpoint, logger);
         }
     }
 }

@@ -26,7 +26,7 @@ namespace Steeltoe.Management.Endpoint.Trace
 {
     public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
     {
-        internal ConcurrentQueue<Trace> _queue = new ConcurrentQueue<Trace>();
+        internal ConcurrentQueue<TraceResult> _queue = new ConcurrentQueue<TraceResult>();
 
         // REVIEW: this is obviously very wrong
         private const string DIAGNOSTIC_NAME = "Microsoft.AspNetCore";
@@ -44,10 +44,10 @@ namespace Steeltoe.Management.Endpoint.Trace
             _logger = logger;
         }
 
-        public List<Trace> GetTraces()
+        public List<TraceResult> GetTraces()
         {
-            Trace[] traces = _queue.ToArray();
-            return new List<Trace>(traces);
+            TraceResult[] traces = _queue.ToArray();
+            return new List<TraceResult>(traces);
         }
 
         public override void ProcessEvent(string key, object value)
@@ -72,12 +72,12 @@ namespace Steeltoe.Management.Endpoint.Trace
 
             if (context != null)
             {
-                Trace trace = MakeTrace(context, current.Duration);
+                TraceResult trace = MakeTrace(context, current.Duration);
                 _queue.Enqueue(trace);
 
                 if (_queue.Count > _options.Capacity)
                 {
-                    if (!_queue.TryDequeue(out Trace discard))
+                    if (!_queue.TryDequeue(out TraceResult discard))
                     {
                         _logger?.LogDebug("Stop - Dequeue failed");
                     }
@@ -85,7 +85,7 @@ namespace Steeltoe.Management.Endpoint.Trace
             }
         }
 
-        protected internal Trace MakeTrace(IOwinContext context, TimeSpan duration)
+        protected internal TraceResult MakeTrace(IOwinContext context, TimeSpan duration)
         {
             var request = context.Request;
             var response = context.Response;
@@ -149,7 +149,7 @@ namespace Steeltoe.Management.Endpoint.Trace
                 details.Add("timeTaken", GetTimeTaken(duration));
             }
 
-            return new Trace(GetJavaTime(DateTime.Now.Ticks), details);
+            return new TraceResult(GetJavaTime(DateTime.Now.Ticks), details);
         }
 
         protected internal long GetJavaTime(long ticks)

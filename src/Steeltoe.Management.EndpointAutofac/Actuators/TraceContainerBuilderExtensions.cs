@@ -53,8 +53,8 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
             container.Register((ctx) => (ITraceRepository)ctx.Resolve<IDiagnosticObserver>()).As<ITraceRepository>().SingleInstance();
 
             container.RegisterInstance(new TraceOptions(config)).As<ITraceOptions>();
-            container.RegisterType<TraceEndpoint>().As<IEndpoint<List<Trace>>>();
-            container.RegisterType<EndpointOwinMiddleware<TraceEndpoint, List<Trace>>>();
+            container.RegisterType<TraceEndpoint>().As<IEndpoint<List<TraceResult>>>();
+            container.RegisterType<EndpointOwinMiddleware<TraceEndpoint, List<TraceResult>>>();
         }
     }
 }

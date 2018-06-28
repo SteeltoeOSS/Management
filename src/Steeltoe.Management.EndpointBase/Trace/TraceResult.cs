@@ -18,17 +18,12 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint.Trace
 {
-    public class Trace
+    public class TraceResult
     {
-        public Trace(long timestamp, Dictionary<string, object> info)
+        public TraceResult(long timestamp, Dictionary<string, object> info)
         {
-            if (info == null)
-            {
-                throw new ArgumentNullException(nameof(info));
-            }
-
             TimeStamp = timestamp;
-            Info = info;
+            Info = info ?? throw new ArgumentNullException(nameof(info));
         }
 
         [JsonProperty("timestamp")]

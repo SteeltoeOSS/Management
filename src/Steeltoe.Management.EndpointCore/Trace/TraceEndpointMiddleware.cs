@@ -20,7 +20,7 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.Trace
 {
-    public class TraceEndpointMiddleware : EndpointMiddleware<List<Trace>>
+    public class TraceEndpointMiddleware : EndpointMiddleware<List<TraceResult>>
     {
         private RequestDelegate _next;
 
