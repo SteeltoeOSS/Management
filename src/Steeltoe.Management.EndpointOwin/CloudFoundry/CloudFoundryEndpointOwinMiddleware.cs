@@ -32,12 +32,6 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
 
         public override async Task Invoke(IOwinContext context)
         {
-            if (context.Request.Method == "OPTIONS")
-            {
-                context.Response.StatusCode = (int)HttpStatusCode.NoContent;
-                return;
-            }
-
             if (!IsCloudFoundryRequest(context))
             {
                 await Next.Invoke(context);

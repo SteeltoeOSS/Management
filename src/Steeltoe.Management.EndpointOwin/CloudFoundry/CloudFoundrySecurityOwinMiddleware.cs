@@ -18,6 +18,8 @@ using Steeltoe.Common;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -39,21 +41,46 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
 
         public override async Task Invoke(IOwinContext context)
         {
+            // if running on Cloud Foundry, security is enabled, the path starts with /cloudfoundryapplication...
             if (Platform.IsCloudFoundry && _options.IsEnabled && _base.IsCloudFoundryRequest(context.Request.Path.ToString()))
             {
+                // REVIEW: MSFT's CORS helper operates on OWIN IAppBuilder.. this is a bit more manual (and specific) of an alternative
+                context.Response.Headers.Set("Access-Control-Allow-Credentials", "true");
+                context.Response.Headers.Set("Access-Control-Allow-Origin", context.Request.Headers.Get("origin"));
+                var headerToAllow = context.Request.Headers.Get("Access-Control-Allow-Headers");
+                if (headerToAllow != null)
+                {
+                    var allowedHeaders = new List<string> { "authorization", "X-Cf-App-Instance", "Content-Type" };
+                    if (allowedHeaders.Any(h => h.Equals(headerToAllow, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        context.Response.Headers.Set("Access-Control-Allow-Headers", headerToAllow);
+                    }
+                } // END REVIEW
+
+                // don't run security for a CORS request, do return 204
+                if (context.Request.Method == "OPTIONS")
+                {
+                    context.Response.StatusCode = (int)HttpStatusCode.NoContent;
+                    return;
+                }
+
                 _logger?.LogTrace("Beginning Cloud Foundry Security Processing");
+
+                // identify the application so we can confirm the user making the request has permission
                 if (string.IsNullOrEmpty(_options.ApplicationId))
                 {
                     await ReturnError(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, _base.APPLICATION_ID_MISSING_MESSAGE));
                     return;
                 }
 
+                // make sure we know where to get user permissions
                 if (string.IsNullOrEmpty(_options.CloudFoundryApi))
                 {
                     await ReturnError(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, _base.CLOUDFOUNDRY_API_MISSING_MESSAGE));
                     return;
                 }
 
+                _logger?.LogTrace("Identifying which endpoint the request at {EndpointRequestPath} is for", context.Request.Path);
                 IEndpointOptions target = FindTargetEndpoint(context.Request.Path);
                 if (target == null)
                 {
@@ -61,7 +88,7 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
                     return;
                 }
 
-                _logger?.LogTrace("Getting User Permissions");
+                _logger?.LogTrace("Getting user permissions");
                 var sr = await GetPermissions(context);
                 if (sr.Code != HttpStatusCode.OK)
                 {
@@ -69,7 +96,7 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
                     return;
                 }
 
-                _logger?.LogTrace("Confirming access is allowed");
+                _logger?.LogTrace("Applying user permissions to request");
                 var permissions = sr.Permissions;
                 if (!target.IsAccessAllowed(permissions))
                 {

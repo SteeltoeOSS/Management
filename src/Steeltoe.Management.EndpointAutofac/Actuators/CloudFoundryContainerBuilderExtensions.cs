@@ -61,8 +61,6 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
                 throw new ArgumentNullException(nameof(config));
             }
 
-            /*TODO: configure CORS here?*/
-
             container.RegisterType<CloudFoundrySecurityOwinMiddleware>();
         }
     }
