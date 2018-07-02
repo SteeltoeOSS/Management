@@ -19,18 +19,20 @@ using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Health.Contributor;
 using Steeltoe.Management.EndpointOwin;
+using Steeltoe.Management.EndpointSysWeb;
 using System;
+using System.Web;
 
 namespace Steeltoe.Management.EndpointAutofac.Actuators
 {
     public static class HealthContainerBuilderExtensions
     {
         /// <summary>
-        /// Register the Health endpoint, middleware and options
+        /// Register the Health endpoint, OWIN middleware and options
         /// </summary>
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        public static void RegisterHealthActuator(this ContainerBuilder container, IConfiguration config)
+        public static void RegisterHealthMiddleware(this ContainerBuilder container, IConfiguration config)
         {
             if (container == null)
             {
@@ -42,16 +44,16 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
                 throw new ArgumentNullException(nameof(config));
             }
 
-            container.RegisterHealthActuator(config, new DefaultHealthAggregator(), new Type[] { typeof(DiskSpaceContributor) });
+            container.RegisterHealthMiddleware(config, new DefaultHealthAggregator(), new Type[] { typeof(DiskSpaceContributor) });
         }
 
         /// <summary>
-        /// Register the Health endpoint, middleware and options
+        /// Register the Health endpoint, OWIN middleware and options
         /// </summary>
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
         /// <param name="contributors">Types that implement <see cref="IHealthContributor"/></param>
-        public static void RegisterHealthActuator(this ContainerBuilder container, IConfiguration config, params Type[] contributors)
+        public static void RegisterHealthMiddleware(this ContainerBuilder container, IConfiguration config, params Type[] contributors)
         {
             if (container == null)
             {
@@ -63,17 +65,17 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
                 throw new ArgumentNullException(nameof(config));
             }
 
-            container.RegisterHealthActuator(config, new DefaultHealthAggregator(), contributors);
+            container.RegisterHealthMiddleware(config, new DefaultHealthAggregator(), contributors);
         }
 
         /// <summary>
-        /// Register the Health endpoint, middleware and options
+        /// Register the Health endpoint, OWIN middleware and options
         /// </summary>
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
         /// <param name="aggregator">Your <see cref="IHealthAggregator"/></param>
         /// <param name="contributors">Types that implement <see cref="IHealthContributor"/></param>
-        public static void RegisterHealthActuator(this ContainerBuilder container, IConfiguration config, IHealthAggregator aggregator, params Type[] contributors)
+        public static void RegisterHealthMiddleware(this ContainerBuilder container, IConfiguration config, IHealthAggregator aggregator, params Type[] contributors)
         {
             if (container == null)
             {
@@ -99,6 +101,82 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
 
             container.RegisterType<HealthEndpoint>().As<IEndpoint<HealthCheckResult>>();
             container.RegisterType<EndpointOwinMiddleware<HealthEndpoint, HealthCheckResult>>();
+        }
+
+        /// <summary>
+        /// Register the Health endpoint, IHttpModule and options
+        /// </summary>
+        /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
+        /// <param name="config">Your application's <see cref="IConfiguration"/></param>
+        public static void RegisterHealthModule(this ContainerBuilder container, IConfiguration config)
+        {
+            if (container == null)
+            {
+                throw new ArgumentNullException(nameof(container));
+            }
+
+            if (config == null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
+
+            container.RegisterHealthModule(config, new DefaultHealthAggregator(), new Type[] { typeof(DiskSpaceContributor) });
+        }
+
+        /// <summary>
+        /// Register the Health endpoint, IHttpModule and options
+        /// </summary>
+        /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
+        /// <param name="config">Your application's <see cref="IConfiguration"/></param>
+        /// <param name="contributors">Types that implement <see cref="IHealthContributor"/></param>
+        public static void RegisterHealthModule(this ContainerBuilder container, IConfiguration config, params Type[] contributors)
+        {
+            if (container == null)
+            {
+                throw new ArgumentNullException(nameof(container));
+            }
+
+            if (config == null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
+
+            container.RegisterHealthModule(config, new DefaultHealthAggregator(), contributors);
+        }
+
+        /// <summary>
+        /// Register the Health endpoint, IHttpModule and options
+        /// </summary>
+        /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
+        /// <param name="config">Your application's <see cref="IConfiguration"/></param>
+        /// <param name="aggregator">Your <see cref="IHealthAggregator"/></param>
+        /// <param name="contributors">Types that implement <see cref="IHealthContributor"/></param>
+        public static void RegisterHealthModule(this ContainerBuilder container, IConfiguration config, IHealthAggregator aggregator, params Type[] contributors)
+        {
+            if (container == null)
+            {
+                throw new ArgumentNullException(nameof(container));
+            }
+
+            if (config == null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
+
+            if (aggregator == null)
+            {
+                aggregator = new DefaultHealthAggregator();
+            }
+
+            container.RegisterInstance(new HealthOptions(config)).As<IHealthOptions>();
+            container.RegisterInstance(aggregator).As<IHealthAggregator>();
+            foreach (var c in contributors)
+            {
+                container.RegisterType(c).As<IHealthContributor>();
+            }
+
+            container.RegisterType<HealthEndpoint>().As<IEndpoint<HealthCheckResult>>();
+            container.RegisterType<HealthModule>().As<IHttpModule>();
         }
     }
 }

@@ -27,11 +27,11 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
     public static class InfoContainerBuilderExtensions
     {
         /// <summary>
-        /// Register the Info endpoint, middleware and options
+        /// Register the Info endpoint, OWIN middleware and options
         /// </summary>
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        public static void RegisterInfoActuator(this ContainerBuilder container, IConfiguration config)
+        public static void RegisterInfoMiddleware(this ContainerBuilder container, IConfiguration config)
         {
             if (container == null)
             {
@@ -43,16 +43,16 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
                 throw new ArgumentNullException(nameof(config));
             }
 
-            container.RegisterInfoActuator(config, new GitInfoContributor(AppDomain.CurrentDomain.BaseDirectory + "git.properties"), new AppSettingsInfoContributor(config));
+            container.RegisterInfoMiddleware(config, new GitInfoContributor(AppDomain.CurrentDomain.BaseDirectory + "git.properties"), new AppSettingsInfoContributor(config));
         }
 
         /// <summary>
-        /// Register the Info endpoint, middleware and options
+        /// Register the Info endpoint, OWIN middleware and options
         /// </summary>
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
         /// <param name="contributors">Contributors to application information</param>
-        public static void RegisterInfoActuator(this ContainerBuilder container, IConfiguration config, params IInfoContributor[] contributors)
+        public static void RegisterInfoMiddleware(this ContainerBuilder container, IConfiguration config, params IInfoContributor[] contributors)
         {
             if (container == null)
             {

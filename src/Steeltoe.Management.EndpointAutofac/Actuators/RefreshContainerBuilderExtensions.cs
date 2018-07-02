@@ -25,11 +25,11 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
     public static class RefreshContainerBuilderExtensions
     {
         /// <summary>
-        /// Register the Refresh endpoint, middleware and options
+        /// Register the Refresh endpoint, OWIN middleware and options
         /// </summary>
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        public static void RegisterRefreshActuator(this ContainerBuilder container, IConfiguration config)
+        public static void RegisterRefreshMiddleware(this ContainerBuilder container, IConfiguration config)
         {
             if (container == null)
             {

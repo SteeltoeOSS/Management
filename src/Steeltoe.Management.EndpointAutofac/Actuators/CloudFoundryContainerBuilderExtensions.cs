@@ -23,11 +23,11 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
     public static class CloudFoundryContainerBuilderExtensions
     {
         /// <summary>
-        /// Register the Cloud Foundry endpoint, middleware and options
+        /// Register the Cloud Foundry endpoint, OWIN middleware and options
         /// </summary>
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        public static void RegisterCloudFoundryActuator(this ContainerBuilder container, IConfiguration config)
+        public static void RegisterCloudFoundryMiddleware(this ContainerBuilder container, IConfiguration config)
         {
             if (container == null)
             {
@@ -45,11 +45,11 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
         }
 
         /// <summary>
-        /// Add security checks on requests to actuator endpoints
+        /// Add security checks on requests to OWIN middlewares
         /// </summary>
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        public static void RegisterCloudFoundrySecurity(this ContainerBuilder container, IConfiguration config)
+        public static void RegisterCloudFoundrySecurityMiddleware(this ContainerBuilder container, IConfiguration config)
         {
             if (container == null)
             {

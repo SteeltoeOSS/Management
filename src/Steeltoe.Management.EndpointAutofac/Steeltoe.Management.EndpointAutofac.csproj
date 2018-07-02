@@ -44,5 +44,13 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </AdditionalFiles>
   </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\Steeltoe.Management.EndpointSysWeb\Steeltoe.Management.EndpointSysWeb.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Reference Include="System.Web" />
+  </ItemGroup>
 
 </Project>

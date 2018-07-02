@@ -27,7 +27,7 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
     public static class TraceContainerBuilderExtensions
     {
         /// <summary>
-        /// Register a request tracing middleware
+        /// Register a request tracing OWIN middleware
         /// </summary>
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
@@ -47,11 +47,11 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
         }
 
         /// <summary>
-        /// Register the Trace endpoint, middleware and options
+        /// Register the Trace endpoint, OWIN middleware and options
         /// </summary>
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        public static void RegisterTraceActuator(this ContainerBuilder container, IConfiguration config)
+        public static void RegisterTraceMiddleware(this ContainerBuilder container, IConfiguration config)
         {
             if (container == null)
             {

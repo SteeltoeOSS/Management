@@ -25,22 +25,45 @@ namespace Steeltoe.Management.EndpointAutofac
         /// </summary>
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        public static void UseCloudFoundryActuators(this ContainerBuilder container, IConfiguration config)
+        public static void UseCloudFoundryMiddlewares(this ContainerBuilder container, IConfiguration config)
         {
             container.RegisterTracingMiddleware(config);
-            container.RegisterCloudFoundrySecurity(config);
-            container.RegisterCloudFoundryActuator(config);
-            container.RegisterEnvActuator(config); // not used by Cloud Foundry
-            container.RegisterHealthActuator(config);
-            container.RegisterHeapDumpActuator(config);
-            container.RegisterInfoActuator(config);
-            container.RegisterLoggersActuator(config);
+            container.RegisterCloudFoundrySecurityMiddleware(config);
+            container.RegisterCloudFoundryMiddleware(config);
+            container.RegisterEnvMiddleware(config); // not used by Cloud Foundry
+            container.RegisterHealthMiddleware(config);
+            container.RegisterHeapDumpMiddleware(config);
+            container.RegisterInfoMiddleware(config);
+            container.RegisterLoggersMiddleware(config);
 
             // container.RegisterMappingsActuator(config); // not implemented
-            container.RegisterMetricsActuator(config);
-            container.RegisterRefreshActuator(config); // not used by Cloud Foundry
-            container.RegisterThreadDumpActuator(config);
-            container.RegisterTraceActuator(config);
+            container.RegisterMetricsMiddleware(config);
+            container.RegisterRefreshMiddleware(config); // not used by Cloud Foundry
+            container.RegisterThreadDumpMiddleware(config);
+            container.RegisterTraceMiddleware(config);
+        }
+
+        /// <summary>
+        /// Add all Actuators, configure CORS and Cloud Foundry request security
+        /// </summary>
+        /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
+        /// <param name="config">Your application's <see cref="IConfiguration"/></param>
+        public static void UseCloudFoundryModules(this ContainerBuilder container, IConfiguration config)
+        {
+            //container.RegisterTracingModule(config);
+            //container.RegisterCloudFoundrySecurityModule(config);
+            //container.RegisterCloudFoundryModule(config);
+            //container.RegisterEnvModule(config); // not used by Cloud Foundry
+            container.RegisterHealthModule(config);
+            //container.RegisterHeapDumpModule(config);
+            //container.RegisterInfoModule(config);
+            container.RegisterLoggersModule(config);
+
+            // container.RegisterMappingsModule(config); // not implemented
+            //container.RegisterMetricsModule(config);
+            //container.RegisterRefreshModule(config); // not used by Cloud Foundry
+            //container.RegisterThreadDumpModule(config);
+            //container.RegisterTraceModule(config);
         }
     }
 }

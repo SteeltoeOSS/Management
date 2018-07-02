@@ -25,11 +25,11 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
     public static class HeapDumpContainerBuilderExtensions
     {
         /// <summary>
-        /// Register the HeapDump endpoint, middlware and options
+        /// Register the HeapDump endpoint, OWIN middleware and options
         /// </summary>
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        public static void RegisterHeapDumpActuator(this ContainerBuilder container, IConfiguration config)
+        public static void RegisterHeapDumpMiddleware(this ContainerBuilder container, IConfiguration config)
         {
             if (container == null)
             {

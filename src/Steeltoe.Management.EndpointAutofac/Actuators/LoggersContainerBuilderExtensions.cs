@@ -19,6 +19,7 @@ using Microsoft.Extensions.Logging.Console;
 using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Loggers;
 using Steeltoe.Management.EndpointOwin.Loggers;
+using Steeltoe.Management.EndpointSysWeb;
 using System;
 using System.Collections.Generic;
 
@@ -33,7 +34,7 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
         /// <param name="loggerProvider">Your pre-existing <see cref="DynamicLoggerProvider"/> will be created if not provided</param>
         /// <param name="loggerFactory">Your pre-existing <see cref="ILoggerFactory"/>. A new <see cref="LoggerFactory"/> will be added if not provided</param>
-        public static void RegisterLoggersActuator(this ContainerBuilder container, IConfiguration config, DynamicLoggerProvider loggerProvider = null, ILoggerFactory loggerFactory = null)
+        public static void RegisterLoggersMiddleware(this ContainerBuilder container, IConfiguration config, DynamicLoggerProvider loggerProvider = null, ILoggerFactory loggerFactory = null)
         {
             if (container == null)
             {
@@ -65,6 +66,47 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
             container.RegisterInstance(new LoggersOptions(config)).As<ILoggersOptions>();
             container.RegisterType<LoggersEndpoint>();
             container.RegisterType<LoggersEndpointOwinMiddleware>();
+        }
+
+        /// <summary>
+        /// Register the Loggers endpoint, middleware and options<para />Steeltoe's <see cref="DynamicConsoleLogger"/> will be configured and included in the DI container
+        /// </summary>
+        /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
+        /// <param name="config">Your application's <see cref="IConfiguration"/></param>
+        /// <param name="loggerProvider">Your pre-existing <see cref="DynamicLoggerProvider"/> will be created if not provided</param>
+        /// <param name="loggerFactory">Your pre-existing <see cref="ILoggerFactory"/>. A new <see cref="LoggerFactory"/> will be added if not provided</param>
+        public static void RegisterLoggersModule(this ContainerBuilder container, IConfiguration config, DynamicLoggerProvider loggerProvider = null, ILoggerFactory loggerFactory = null)
+        {
+            if (container == null)
+            {
+                throw new ArgumentNullException(nameof(container));
+            }
+
+            if (config == null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
+
+            if (loggerProvider == null)
+            {
+                loggerProvider = new DynamicLoggerProvider(new ConsoleLoggerSettings().FromConfiguration(config));
+            }
+
+            if (loggerFactory == null)
+            {
+                loggerFactory = new LoggerFactory(new List<ILoggerProvider> { loggerProvider });
+            }
+
+            /* REVIEW: if logging not already added to container ?? */
+            container.RegisterInstance(loggerProvider).As<ILoggerProvider>();
+            container.RegisterInstance(loggerFactory).As<ILoggerFactory>().SingleInstance();
+            container.RegisterInstance(loggerFactory.CreateLogger("generic")).As(typeof(ILogger));
+            container.RegisterGeneric(typeof(Logger<>)).As(typeof(ILogger<>)).SingleInstance();
+            /* END REVIEW */
+
+            container.RegisterInstance(new LoggersOptions(config)).As<ILoggersOptions>();
+            container.RegisterType<LoggersEndpoint>();
+            container.RegisterType<LoggersModule>();
         }
     }
 }
