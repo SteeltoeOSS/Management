@@ -13,32 +13,26 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Primitives;
 using Microsoft.Owin;
-using Steeltoe.Common.Diagnostics;
+using Steeltoe.Management.Endpoint.Trace;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Management.Endpoint.Trace
+namespace Steeltoe.Management.EndpointOwin.Trace
 {
-    public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
+    /// <summary>
+    /// Used to record and report recent HTTP request traces
+    /// </summary>
+    public class TraceRepository : ITraceRepository
     {
         internal ConcurrentQueue<TraceResult> _queue = new ConcurrentQueue<TraceResult>();
-
-        // REVIEW: this is obviously very wrong
-        private const string DIAGNOSTIC_NAME = "Microsoft.AspNetCore";
-        private const string OBSERVER_NAME = "TraceDiagnosticObserver";
-        private const string STOP_EVENT = "Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop";
-
         private static DateTime baseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        private ILogger<TraceDiagnosticObserver> _logger;
+        private ILogger<TraceRepository> _logger;
         private ITraceOptions _options;
 
-        public TraceDiagnosticObserver(ITraceOptions options, ILogger<TraceDiagnosticObserver> logger = null)
-            : base(OBSERVER_NAME, DIAGNOSTIC_NAME, logger)
+        public TraceRepository(ITraceOptions options, ILogger<TraceRepository> logger = null)
         {
             _options = options ?? throw new ArgumentNullException(nameof(options));
             _logger = logger;
@@ -50,37 +44,21 @@ namespace Steeltoe.Management.Endpoint.Trace
             return new List<TraceResult>(traces);
         }
 
-        public override void ProcessEvent(string key, object value)
+        public void RecordTrace(IOwinContext context, TimeSpan duration)
         {
-            if (!STOP_EVENT.Equals(key))
+            if (context == null)
             {
                 return;
             }
 
-            Activity current = Activity.Current;
-            if (current == null)
+            TraceResult trace = MakeTrace(context, duration);
+            _queue.Enqueue(trace);
+
+            if (_queue.Count > _options.Capacity)
             {
-                return;
-            }
-
-            if (value == null)
-            {
-                return;
-            }
-
-            GetProperty(value, out IOwinContext context);
-
-            if (context != null)
-            {
-                TraceResult trace = MakeTrace(context, current.Duration);
-                _queue.Enqueue(trace);
-
-                if (_queue.Count > _options.Capacity)
+                if (!_queue.TryDequeue(out TraceResult discard))
                 {
-                    if (!_queue.TryDequeue(out TraceResult discard))
-                    {
-                        _logger?.LogDebug("Stop - Dequeue failed");
-                    }
+                    _logger?.LogDebug("Stop - Dequeue failed");
                 }
             }
         }
@@ -101,12 +79,12 @@ namespace Steeltoe.Management.Endpoint.Trace
 
             if (_options.AddRequestHeaders)
             {
-                headers.Add("request", GetHeaders(request.Headers));
+                headers.Add("request", GetRequestHeaders(request.Headers));
             }
 
             if (_options.AddResponseHeaders)
             {
-                headers.Add("response", GetHeaders(response.StatusCode, response.Headers));
+                headers.Add("response", GetResponseHeaders(response.StatusCode, response.Headers));
             }
 
             if (_options.AddPathInfo)
@@ -152,29 +130,56 @@ namespace Steeltoe.Management.Endpoint.Trace
             return new TraceResult(GetJavaTime(DateTime.Now.Ticks), details);
         }
 
-        protected internal long GetJavaTime(long ticks)
+        protected internal string GetPathInfo(IOwinRequest request)
         {
-            long javaTicks = ticks - baseTime.Ticks;
-            return javaTicks / 10000;
+            return request.Path.Value;
         }
 
-        protected internal string GetSessionId(IOwinContext context)
+        protected internal Dictionary<string, object> GetRequestHeaders(IHeaderDictionary headers)
         {
-            // REVIEW: accessing session in OWIN is... not this easy
-            //var sessionFeature = context.Features.Get<ISessionFeature>();
-            //return sessionFeature == null ? null : context.Session.Id;
-            return "Not Implemented";
+            Dictionary<string, object> result = new Dictionary<string, object>();
+            foreach (var h in headers)
+            {
+                // Add filtering
+                result.Add(h.Key.ToLowerInvariant(), GetHeaderValue(h.Value));
+            }
+
+            return result;
         }
 
-        protected internal string GetTimeTaken(TimeSpan duration)
+        protected internal Dictionary<string, object> GetResponseHeaders(int status, IHeaderDictionary headers)
         {
-            long timeInMilli = (long)duration.TotalMilliseconds;
-            return timeInMilli.ToString();
+            var result = GetRequestHeaders(headers);
+            result.Add("status", status.ToString());
+            return result;
         }
 
-        protected internal string GetAuthType(IOwinRequest request)
+        protected internal object GetHeaderValue(string[] values)
         {
-            return string.Empty;
+            List<string> result = new List<string>();
+            foreach (var v in values)
+            {
+                result.Add(v);
+            }
+
+            // if there's one result, return it
+            if (result.Count == 1)
+            {
+                return result[0];
+            }
+
+            // return an empty string if we couldn't get a value out
+            if (result.Count == 0)
+            {
+                return string.Empty;
+            }
+
+            return result;
+        }
+
+        protected internal string GetUserPrincipal(IOwinContext context)
+        {
+            return context?.Request?.User?.Identity?.Name;
         }
 
         protected internal async Task<Dictionary<string, string[]>> GetRequestParameters(IOwinRequest request)
@@ -198,19 +203,9 @@ namespace Steeltoe.Management.Endpoint.Trace
             return parameters;
         }
 
-        protected internal string GetRequestUri(IOwinRequest request)
+        protected internal string GetAuthType(IOwinRequest request)
         {
-            return request.Scheme + "://" + request.Host.Value + request.Path.Value;
-        }
-
-        protected internal string GetPathInfo(IOwinRequest request)
-        {
-            return request.Path.Value;
-        }
-
-        protected internal string GetUserPrincipal(IOwinContext context)
-        {
-            return context?.Request?.User?.Identity?.Name;
+            return string.Empty;
         }
 
         protected internal string GetRemoteAddress(IOwinContext context)
@@ -218,49 +213,24 @@ namespace Steeltoe.Management.Endpoint.Trace
             return context?.Request?.RemoteIpAddress?.ToString();
         }
 
-        protected internal Dictionary<string, object> GetHeaders(int status, IHeaderDictionary headers)
+        protected internal string GetSessionId(IOwinContext context)
         {
-            var result = GetHeaders(headers);
-            result.Add("status", status.ToString());
-            return result;
+            // REVIEW: accessing session in OWIN is... not this easy
+            // var sessionFeature = context.Features.Get<ISessionFeature>();
+            // return sessionFeature == null ? null : context.Session.Id;
+            return "Not Implemented";
         }
 
-        protected internal Dictionary<string, object> GetHeaders(IHeaderDictionary headers)
+        protected internal string GetTimeTaken(TimeSpan duration)
         {
-            Dictionary<string, object> result = new Dictionary<string, object>();
-            foreach (var h in headers)
-            {
-                // Add filtering
-                result.Add(h.Key.ToLowerInvariant(), GetHeaderValue(h.Value));
-            }
-
-            return result;
+            long timeInMilli = (long)duration.TotalMilliseconds;
+            return timeInMilli.ToString();
         }
 
-        protected internal object GetHeaderValue(StringValues values)
+        protected internal long GetJavaTime(long ticks)
         {
-            List<string> result = new List<string>();
-            foreach (var v in values)
-            {
-                result.Add(v);
-            }
-
-            if (result.Count == 1)
-            {
-                return result[0];
-            }
-
-            if (result.Count == 0)
-            {
-                return string.Empty;
-            }
-
-            return result;
-        }
-
-        protected internal void GetProperty(object obj, out IOwinContext context)
-        {
-            context = DiagnosticHelpers.GetProperty<IOwinContext>(obj, "HttpContext");
+            long javaTicks = ticks - baseTime.Ticks;
+            return javaTicks / 10000;
         }
 
         private bool HasFormContentType(IOwinRequest request)

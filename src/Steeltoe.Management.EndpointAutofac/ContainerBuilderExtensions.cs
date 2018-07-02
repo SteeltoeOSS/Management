@@ -27,6 +27,7 @@ namespace Steeltoe.Management.EndpointAutofac
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
         public static void UseCloudFoundryActuators(this ContainerBuilder container, IConfiguration config)
         {
+            container.RegisterTracingMiddleware(config);
             container.RegisterCloudFoundrySecurity(config);
             container.RegisterCloudFoundryActuator(config);
             container.RegisterEnvActuator(config); // not used by Cloud Foundry
@@ -39,7 +40,7 @@ namespace Steeltoe.Management.EndpointAutofac
             container.RegisterMetricsActuator(config);
             container.RegisterRefreshActuator(config); // not used by Cloud Foundry
             container.RegisterThreadDumpActuator(config);
-            container.RegisterTraceActuator(config); // not actually implemented
+            container.RegisterTraceActuator(config);
         }
     }
 }

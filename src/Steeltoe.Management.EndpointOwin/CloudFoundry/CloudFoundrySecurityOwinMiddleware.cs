@@ -44,18 +44,9 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
             // if running on Cloud Foundry, security is enabled, the path starts with /cloudfoundryapplication...
             if (Platform.IsCloudFoundry && _options.IsEnabled && _base.IsCloudFoundryRequest(context.Request.Path.ToString()))
             {
-                // REVIEW: MSFT's CORS helper operates on OWIN IAppBuilder.. this is a bit more manual (and specific) of an alternative
                 context.Response.Headers.Set("Access-Control-Allow-Credentials", "true");
                 context.Response.Headers.Set("Access-Control-Allow-Origin", context.Request.Headers.Get("origin"));
-                var headerToAllow = context.Request.Headers.Get("Access-Control-Allow-Headers");
-                if (headerToAllow != null)
-                {
-                    var allowedHeaders = new List<string> { "authorization", "X-Cf-App-Instance", "Content-Type" };
-                    if (allowedHeaders.Any(h => h.Equals(headerToAllow, StringComparison.OrdinalIgnoreCase)))
-                    {
-                        context.Response.Headers.Set("Access-Control-Allow-Headers", headerToAllow);
-                    }
-                } // END REVIEW
+                context.Response.Headers.Set("Access-Control-Allow-Headers", "Authorization,X-Cf-App-Instance,Content-Type");
 
                 // don't run security for a CORS request, do return 204
                 if (context.Request.Method == "OPTIONS")

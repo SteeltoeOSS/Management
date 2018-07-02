@@ -16,25 +16,21 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Owin;
 using Steeltoe.Management.Endpoint.Trace;
-using System;
 using System.Collections.Generic;
 
 namespace Steeltoe.Management.EndpointOwin.Trace
 {
     public static class TraceEndpointAppBuilderExtensions
     {
-        public static IAppBuilder UseTraceEndpointMiddleware(this IAppBuilder builder, IConfiguration config, ITraceRepository traceRepository, ILoggerFactory loggerFactory = null)
+        public static IAppBuilder UseTraceEndpointMiddleware(this IAppBuilder builder, IConfiguration config, ITraceRepository traceRepository = null, ILoggerFactory loggerFactory = null)
         {
-            var setupLogger = loggerFactory?.CreateLogger("TraceEndpointAppBuilderExtensions");
             var options = new TraceOptions(config);
             if (traceRepository == null)
             {
-                traceRepository = new TraceDiagnosticObserver(options);
+                traceRepository = new TraceRepository(options, loggerFactory?.CreateLogger<TraceRepository>());
             }
 
             var endpoint = new TraceEndpoint(options, traceRepository, loggerFactory?.CreateLogger<TraceEndpoint>());
-
-            // TODO: address class/namespace collision!
             var logger = loggerFactory?.CreateLogger<EndpointOwinMiddleware<TraceEndpoint, List<TraceResult>>>();
             return builder.Use<EndpointOwinMiddleware<TraceEndpoint, List<TraceResult>>>(endpoint, logger);
         }

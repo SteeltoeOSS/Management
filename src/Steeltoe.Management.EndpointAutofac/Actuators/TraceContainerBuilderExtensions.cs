@@ -14,12 +14,11 @@
 
 using Autofac;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
 using Steeltoe.Common.Diagnostics;
 using Steeltoe.Management.Endpoint;
-using Steeltoe.Management.Endpoint.Diagnostics;
 using Steeltoe.Management.Endpoint.Trace;
 using Steeltoe.Management.EndpointOwin;
+using Steeltoe.Management.EndpointOwin.Trace;
 using System;
 using System.Collections.Generic;
 
@@ -27,6 +26,26 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
 {
     public static class TraceContainerBuilderExtensions
     {
+        /// <summary>
+        /// Register a request tracing middleware
+        /// </summary>
+        /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
+        /// <param name="config">Your application's <see cref="IConfiguration"/></param>
+        public static void RegisterTracingMiddleware(this ContainerBuilder container, IConfiguration config)
+        {
+            if (container == null)
+            {
+                throw new ArgumentNullException(nameof(container));
+            }
+
+            if (config == null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
+
+            container.RegisterType<RequestTracingOwinMiddleware>();
+        }
+
         /// <summary>
         /// Register the Trace endpoint, middleware and options
         /// </summary>
@@ -45,15 +64,9 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
             }
 
             container.RegisterType<DiagnosticsManager>().As<IDiagnosticsManager>().SingleInstance();
-            container.RegisterType<DiagnosticServices>().As<IHostedService>().SingleInstance();
-
-            container.RegisterType<TraceDiagnosticObserver>().As<IDiagnosticObserver>().SingleInstance();
-
-            // services.TryAddSingleton<ITraceRepository>((p) => (ITraceRepository)p.GetServices<IDiagnosticObserver>().OfType<TraceDiagnosticObserver>().Single());
-            container.Register((ctx) => (ITraceRepository)ctx.Resolve<IDiagnosticObserver>()).As<ITraceRepository>().SingleInstance();
-
-            container.RegisterInstance(new TraceOptions(config)).As<ITraceOptions>();
-            container.RegisterType<TraceEndpoint>().As<IEndpoint<List<TraceResult>>>();
+            container.RegisterInstance(new TraceOptions(config)).As<ITraceOptions>().SingleInstance();
+            container.RegisterType<TraceRepository>().As(typeof(ITraceRepository), typeof(TraceRepository)).SingleInstance();
+            container.RegisterType<TraceEndpoint>().As<IEndpoint<List<TraceResult>>>().SingleInstance();
             container.RegisterType<EndpointOwinMiddleware<TraceEndpoint, List<TraceResult>>>();
         }
     }
