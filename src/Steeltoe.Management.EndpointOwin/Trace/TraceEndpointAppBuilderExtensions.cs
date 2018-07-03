@@ -27,7 +27,7 @@ namespace Steeltoe.Management.EndpointOwin.Trace
             var options = new TraceOptions(config);
             if (traceRepository == null)
             {
-                traceRepository = new TraceRepository(options, loggerFactory?.CreateLogger<TraceRepository>());
+                traceRepository = new OwinTraceRepository(options, loggerFactory?.CreateLogger<OwinTraceRepository>());
             }
 
             var endpoint = new TraceEndpoint(options, traceRepository, loggerFactory?.CreateLogger<TraceEndpoint>());

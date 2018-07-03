@@ -19,8 +19,11 @@ using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Trace;
 using Steeltoe.Management.EndpointOwin;
 using Steeltoe.Management.EndpointOwin.Trace;
+using Steeltoe.Management.EndpointSysWeb;
+using Steeltoe.Management.EndpointSysWeb.Actuators;
 using System;
 using System.Collections.Generic;
+using System.Web;
 
 namespace Steeltoe.Management.EndpointAutofac.Actuators
 {
@@ -67,9 +70,54 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
             container.RegisterInstance(new TraceOptions(config)).As<ITraceOptions>().SingleInstance();
 
             // container.RegisterType<HttpEventListener>().As(typeof(ITraceRepository)).SingleInstance();
-            container.RegisterType<TraceRepository>().As(typeof(ITraceRepository), typeof(TraceRepository)).SingleInstance();
+            container.RegisterType<OwinTraceRepository>().As(typeof(ITraceRepository), typeof(OwinTraceRepository)).SingleInstance();
             container.RegisterType<TraceEndpoint>().As<IEndpoint<List<TraceResult>>>().SingleInstance();
             container.RegisterType<EndpointOwinMiddleware<TraceEndpoint, List<TraceResult>>>();
+        }
+
+        /// <summary>
+        /// Register a request tracing OWIN middleware
+        /// </summary>
+        /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
+        /// <param name="config">Your application's <see cref="IConfiguration"/></param>
+        public static void RegisterRequestTracingModule(this ContainerBuilder container, IConfiguration config)
+        {
+            if (container == null)
+            {
+                throw new ArgumentNullException(nameof(container));
+            }
+
+            if (config == null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
+
+            container.RegisterType<RequestTracingModule>().As<IHttpModule>();
+        }
+
+        /// <summary>
+        /// Register the Trace endpoint, OWIN middleware and options
+        /// </summary>
+        /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
+        /// <param name="config">Your application's <see cref="IConfiguration"/></param>
+        public static void RegisterTraceModule(this ContainerBuilder container, IConfiguration config)
+        {
+            if (container == null)
+            {
+                throw new ArgumentNullException(nameof(container));
+            }
+
+            if (config == null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
+
+            container.RegisterType<DiagnosticsManager>().As<IDiagnosticsManager>().SingleInstance();
+            container.RegisterInstance(new TraceOptions(config)).As<ITraceOptions>().SingleInstance();
+
+            container.RegisterType<WebTraceRepository>().As(typeof(ITraceRepository), typeof(WebTraceRepository)).SingleInstance();
+            container.RegisterType<TraceEndpoint>().SingleInstance();
+            container.RegisterType<TraceModule>().As<IHttpModule>();
         }
     }
 }

@@ -25,14 +25,14 @@ namespace Steeltoe.Management.EndpointOwin.Trace
     /// <summary>
     /// Used to record and report recent HTTP request traces
     /// </summary>
-    public class TraceRepository : ITraceRepository
+    public class OwinTraceRepository : ITraceRepository
     {
         internal ConcurrentQueue<TraceResult> _queue = new ConcurrentQueue<TraceResult>();
         private static DateTime baseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        private ILogger<TraceRepository> _logger;
+        private ILogger<OwinTraceRepository> _logger;
         private ITraceOptions _options;
 
-        public TraceRepository(ITraceOptions options, ILogger<TraceRepository> logger = null)
+        public OwinTraceRepository(ITraceOptions options, ILogger<OwinTraceRepository> logger = null)
         {
             _options = options ?? throw new ArgumentNullException(nameof(options));
             _logger = logger;

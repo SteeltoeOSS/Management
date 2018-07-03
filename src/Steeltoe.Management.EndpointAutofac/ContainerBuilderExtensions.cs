@@ -51,7 +51,7 @@ namespace Steeltoe.Management.EndpointAutofac
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
         public static void RegisterCloudFoundryModules(this ContainerBuilder container, IConfiguration config)
         {
-            //container.RegisterTracingModule(config);
+            container.RegisterRequestTracingModule(config);
             //container.RegisterCloudFoundrySecurityModule(config);
             container.RegisterCloudFoundryModule(config);
             container.RegisterEnvModule(config); // not used by Cloud Foundry
@@ -64,7 +64,7 @@ namespace Steeltoe.Management.EndpointAutofac
             //container.RegisterMetricsModule(config);
             container.RegisterRefreshModule(config); // not used by Cloud Foundry
             container.RegisterThreadDumpModule(config);
-            //container.RegisterTraceModule(config);
+            container.RegisterTraceModule(config);
         }
     }
 }

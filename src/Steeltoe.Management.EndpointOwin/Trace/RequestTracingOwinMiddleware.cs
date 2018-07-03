@@ -23,9 +23,9 @@ namespace Steeltoe.Management.EndpointOwin.Trace
     public class RequestTracingOwinMiddleware : OwinMiddleware
     {
         private ILogger<RequestTracingOwinMiddleware> _logger;
-        private TraceRepository _traceRepository;
+        private OwinTraceRepository _traceRepository;
 
-        public RequestTracingOwinMiddleware(OwinMiddleware next, TraceRepository traceRepository, ILogger<RequestTracingOwinMiddleware> logger = null)
+        public RequestTracingOwinMiddleware(OwinMiddleware next, OwinTraceRepository traceRepository, ILogger<RequestTracingOwinMiddleware> logger = null)
             : base(next)
         {
             _traceRepository = traceRepository ?? throw new ArgumentNullException(nameof(traceRepository));
