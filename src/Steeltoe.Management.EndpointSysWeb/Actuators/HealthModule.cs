@@ -19,7 +19,7 @@ using Steeltoe.Management.Endpoint.Health;
 
 namespace Steeltoe.Management.EndpointSysWeb
 {
-    public class HealthModule : ActuatorModule<HealthModule, HealthEndpoint, HealthCheckResult>
+    public class HealthModule : ActuatorModule<HealthEndpoint, HealthCheckResult>
     {
         public HealthModule(IEndpoint<HealthCheckResult> endpoint, ILogger<HealthModule> logger = null)
         {

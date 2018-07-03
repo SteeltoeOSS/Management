@@ -23,10 +23,10 @@ using System.Web;
 
 namespace Steeltoe.Management.EndpointSysWeb
 {
-    public class ActuatorModule<TModule, TEndpoint, TResult> : IHttpModule
+    public class ActuatorModule<TEndpoint, TResult> : IHttpModule
     {
         protected IEndpoint<TResult> _endpoint;
-        protected ILogger<TModule> _logger;
+        protected ILogger _logger;
 
         public void Dispose()
         {
@@ -92,12 +92,12 @@ namespace Steeltoe.Management.EndpointSysWeb
     }
 
 #pragma warning disable SA1402 // File may only contain a single class
-    public class ActuatorModule<TModule, TEndpoint, TResult, TRequest> : ActuatorModule<TModule, TEndpoint, TResult>
+    public class ActuatorModule<TEndpoint, TResult, TRequest> : ActuatorModule<TEndpoint, TResult>
 #pragma warning restore SA1402 // File may only contain a single class
     {
         protected new IEndpoint<TResult, TRequest> _endpoint;
 
-        public ActuatorModule(IEndpoint<TResult, TRequest> endpoint, ILogger<TModule> logger)
+        public ActuatorModule(IEndpoint<TResult, TRequest> endpoint, ILogger logger)
             : base()
         {
             _endpoint = endpoint;

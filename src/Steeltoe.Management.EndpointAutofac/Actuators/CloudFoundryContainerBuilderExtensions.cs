@@ -16,7 +16,9 @@ using Autofac;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.EndpointOwin.CloudFoundry;
+using Steeltoe.Management.EndpointSysWeb;
 using System;
+using System.Web;
 
 namespace Steeltoe.Management.EndpointAutofac.Actuators
 {
@@ -62,6 +64,28 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
             }
 
             container.RegisterType<CloudFoundrySecurityOwinMiddleware>();
+        }
+
+        /// <summary>
+        /// Register the Cloud Foundry endpoint, HttpModule and options
+        /// </summary>
+        /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
+        /// <param name="config">Your application's <see cref="IConfiguration"/></param>
+        public static void RegisterCloudFoundryModule(this ContainerBuilder container, IConfiguration config)
+        {
+            if (container == null)
+            {
+                throw new ArgumentNullException(nameof(container));
+            }
+
+            if (config == null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
+
+            container.RegisterInstance(new CloudFoundryOptions(config)).As<ICloudFoundryOptions>();
+            container.RegisterType<CloudFoundryEndpoint>();
+            container.RegisterType<CloudFoundryModule>().As<IHttpModule>();
         }
     }
 }

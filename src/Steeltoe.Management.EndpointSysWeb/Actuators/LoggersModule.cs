@@ -20,7 +20,7 @@ using System.Web;
 
 namespace Steeltoe.Management.EndpointSysWeb
 {
-    public class LoggersModule : ActuatorModule<LoggersModule, LoggersEndpoint, Dictionary<string, object>, LoggersChangeRequest>
+    public class LoggersModule : ActuatorModule<LoggersEndpoint, Dictionary<string, object>, LoggersChangeRequest>
     {
         public LoggersModule(LoggersEndpoint endpoint, ILogger<LoggersModule> logger = null)
             : base(endpoint, logger)
