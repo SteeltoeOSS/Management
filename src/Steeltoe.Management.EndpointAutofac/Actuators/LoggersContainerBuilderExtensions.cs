@@ -22,6 +22,7 @@ using Steeltoe.Management.EndpointOwin.Loggers;
 using Steeltoe.Management.EndpointSysWeb;
 using System;
 using System.Collections.Generic;
+using System.Web;
 
 namespace Steeltoe.Management.EndpointAutofac.Actuators
 {
@@ -106,7 +107,7 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
 
             container.RegisterInstance(new LoggersOptions(config)).As<ILoggersOptions>();
             container.RegisterType<LoggersEndpoint>();
-            container.RegisterType<LoggersModule>();
+            container.RegisterType<LoggersModule>().As<IHttpModule>();
         }
     }
 }

@@ -28,11 +28,6 @@ namespace Steeltoe.Management.EndpointSysWeb
         protected IEndpoint<TResult> _endpoint;
         protected ILogger<TModule> _logger;
 
-        public static void Start()
-        {
-            HttpApplication.RegisterModule(typeof(TModule));
-        }
-
         public void Dispose()
         {
             throw new NotImplementedException();
@@ -106,11 +101,6 @@ namespace Steeltoe.Management.EndpointSysWeb
             : base()
         {
             _endpoint = endpoint;
-        }
-
-        public static new void Start()
-        {
-            HttpApplication.RegisterModule(typeof(TModule));
         }
 
         public virtual string HandleRequest(TRequest arg)

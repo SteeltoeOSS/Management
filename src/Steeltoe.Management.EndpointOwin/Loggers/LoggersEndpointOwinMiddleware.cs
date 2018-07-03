@@ -14,11 +14,9 @@
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Owin;
-using Newtonsoft.Json;
 using Steeltoe.Management.Endpoint.Loggers;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -26,8 +24,6 @@ namespace Steeltoe.Management.EndpointOwin.Loggers
 {
     public class LoggersEndpointOwinMiddleware : EndpointOwinMiddleware<LoggersEndpoint, Dictionary<string, object>, LoggersChangeRequest>
     {
-        protected new LoggersEndpoint _endpoint;
-
         public LoggersEndpointOwinMiddleware(OwinMiddleware next, LoggersEndpoint endpoint, ILogger<LoggersEndpoint> logger = null)
             : base(next, endpoint, logger)
         {
@@ -62,7 +58,7 @@ namespace Steeltoe.Management.EndpointOwin.Loggers
                         {
                             string loggerName = remaining.Value.TrimStart('/');
 
-                            var change = Deserialize(context.Request.Body);
+                            var change = ((LoggersEndpoint)_endpoint).DeserializeRequest(context.Request.Body);
 
                             change.TryGetValue("configuredLevel", out string level);
 
@@ -81,29 +77,6 @@ namespace Steeltoe.Management.EndpointOwin.Loggers
                     return;
                 }
             }
-        }
-
-        // TODO: dedupe this method
-        private Dictionary<string, string> Deserialize(Stream stream)
-        {
-            try
-            {
-                var serializer = new JsonSerializer();
-
-                using (var sr = new StreamReader(stream))
-                {
-                    using (var jsonTextReader = new JsonTextReader(sr))
-                    {
-                        return serializer.Deserialize<Dictionary<string, string>>(jsonTextReader);
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                _logger?.LogError("Exception deserializing LoggersEndpoint Response: {Exception}", e);
-            }
-
-            return new Dictionary<string, string>();
         }
     }
 }

@@ -12,19 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Extensions.Logging;
-using Steeltoe.Common.HealthChecks;
-using Steeltoe.Management.Endpoint;
-using Steeltoe.Management.Endpoint.Health;
+using System;
+using System.Collections.Generic;
+using System.Web;
 
 namespace Steeltoe.Management.EndpointSysWeb
 {
-    public class HealthModule : ActuatorModule<HealthModule, HealthEndpoint, HealthCheckResult>
+    public static class CloudFoundryModules
     {
-        public HealthModule(IEndpoint<HealthCheckResult> endpoint, ILogger<HealthModule> logger = null)
+        public static void ActivateCloudFoundryModules(HttpApplication context, IEnumerable<IHttpModule> httpModules)
         {
-            _endpoint = endpoint;
-            _logger = logger;
+            foreach (var httpModule in httpModules)
+            {
+                httpModule.Init(context);
+            }
         }
     }
 }

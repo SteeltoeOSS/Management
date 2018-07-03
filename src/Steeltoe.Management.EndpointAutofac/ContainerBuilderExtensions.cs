@@ -49,7 +49,7 @@ namespace Steeltoe.Management.EndpointAutofac
         /// </summary>
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        public static void UseCloudFoundryModules(this ContainerBuilder container, IConfiguration config)
+        public static void RegisterCloudFoundryModules(this ContainerBuilder container, IConfiguration config)
         {
             //container.RegisterTracingModule(config);
             //container.RegisterCloudFoundrySecurityModule(config);

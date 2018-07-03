@@ -14,11 +14,8 @@
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using Steeltoe.Management.Endpoint.Middleware;
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -62,7 +59,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
                     {
                         string loggerName = remaining.Value.TrimStart('/');
 
-                        var change = Deserialize(request.Body);
+                        var change = ((LoggersEndpoint)endpoint).DeserializeRequest(request.Body);
 
                         change.TryGetValue("configuredLevel", out string level);
 
@@ -98,29 +95,6 @@ namespace Steeltoe.Management.Endpoint.Loggers
 
             PathString path = new PathString(endpoint.Path);
             return context.Request.Path.StartsWithSegments(path);
-        }
-
-        // TODO: dedupe this method
-        private Dictionary<string, string> Deserialize(Stream stream)
-        {
-            try
-            {
-                var serializer = new JsonSerializer();
-
-                using (var sr = new StreamReader(stream))
-                {
-                    using (var jsonTextReader = new JsonTextReader(sr))
-                    {
-                        return serializer.Deserialize<Dictionary<string, string>>(jsonTextReader);
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                logger?.LogError("Error {0} deserializing", e);
-            }
-
-            return new Dictionary<string, string>();
         }
     }
 }

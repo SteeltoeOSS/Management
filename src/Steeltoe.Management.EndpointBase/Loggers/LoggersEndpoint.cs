@@ -13,9 +13,11 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Steeltoe.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 
@@ -115,6 +117,28 @@ namespace Steeltoe.Management.Endpoint.Loggers
             }
 
             provider.SetLogLevel(name, LoggerLevels.MapLogLevel(level));
+        }
+
+        public Dictionary<string, string> DeserializeRequest(Stream stream)
+        {
+            try
+            {
+                var serializer = new JsonSerializer();
+
+                using (var sr = new StreamReader(stream))
+                {
+                    using (var jsonTextReader = new JsonTextReader(sr))
+                    {
+                        return serializer.Deserialize<Dictionary<string, string>>(jsonTextReader);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                _logger?.LogError("Exception deserializing LoggersEndpoint Request: {Exception}", e);
+            }
+
+            return new Dictionary<string, string>();
         }
     }
 }
