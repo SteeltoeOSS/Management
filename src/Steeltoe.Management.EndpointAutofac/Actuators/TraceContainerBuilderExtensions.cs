@@ -65,6 +65,8 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
 
             container.RegisterType<DiagnosticsManager>().As<IDiagnosticsManager>().SingleInstance();
             container.RegisterInstance(new TraceOptions(config)).As<ITraceOptions>().SingleInstance();
+
+            // container.RegisterType<HttpEventListener>().As(typeof(ITraceRepository)).SingleInstance();
             container.RegisterType<TraceRepository>().As(typeof(ITraceRepository), typeof(TraceRepository)).SingleInstance();
             container.RegisterType<TraceEndpoint>().As<IEndpoint<List<TraceResult>>>().SingleInstance();
             container.RegisterType<EndpointOwinMiddleware<TraceEndpoint, List<TraceResult>>>();
