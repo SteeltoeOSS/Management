@@ -17,8 +17,10 @@ using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.HeapDump;
 using Steeltoe.Management.EndpointOwin;
+using Steeltoe.Management.EndpointSysWeb;
 using System;
 using System.IO;
+using System.Web;
 
 namespace Steeltoe.Management.EndpointAutofac.Actuators
 {
@@ -47,6 +49,31 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
             container.RegisterType<HeapDumper>().As<IHeapDumper>().WithParameter("basePathOverride", GetContentRoot());
             container.RegisterType<HeapDumpEndpoint>().As<IEndpoint<string>>();
             container.RegisterType<EndpointOwinMiddleware<HeapDumpEndpoint, string>>();
+        }
+
+        /// <summary>
+        /// Register the HeapDump endpoint, HttpModule and options
+        /// </summary>
+        /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
+        /// <param name="config">Your application's <see cref="IConfiguration"/></param>
+        public static void RegisterHeapDumpModule(this ContainerBuilder container, IConfiguration config)
+        {
+            if (container == null)
+            {
+                throw new ArgumentNullException(nameof(container));
+            }
+
+            if (config == null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
+
+            container.RegisterInstance(new HeapDumpOptions(config)).As<IHeapDumpOptions>();
+
+            // REVIEW: is this necessary? Running under IIS Express, the path comes up wrong
+            container.RegisterType<HeapDumper>().As<IHeapDumper>().WithParameter("basePathOverride", GetContentRoot());
+            container.RegisterType<HeapDumpEndpoint>().As<IEndpoint<string>>();
+            container.RegisterType<HeapDumpModule>().As<IHttpModule>();
         }
 
         public static string GetContentRoot()

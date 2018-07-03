@@ -13,43 +13,31 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
-using Microsoft.Owin;
 using Steeltoe.Management.Endpoint.HeapDump;
 using Steeltoe.Management.EndpointBase;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
+using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 
-namespace Steeltoe.Management.EndpointOwin.HeapDump
+namespace Steeltoe.Management.EndpointSysWeb
 {
-    public class HeapDumpEndpointOwinMiddleware : EndpointOwinMiddleware<HeapDumpEndpoint, string>
+    public class HeapDumpModule : ActuatorModule<HeapDumpEndpoint, string>
     {
-        protected new HeapDumpEndpoint _endpoint;
-
-        public HeapDumpEndpointOwinMiddleware(OwinMiddleware next, HeapDumpEndpoint endpoint, ILogger<HeapDumpEndpoint> logger = null)
-            : base(next, endpoint, logger)
+        public HeapDumpModule(HeapDumpEndpoint endpoint, ILogger<HeapDumpEndpoint> logger = null)
+            : base(endpoint, logger)
         {
-            _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
         }
 
-        public override async Task Invoke(IOwinContext context)
-        {
-            if (!PathAndMethodMatch(context.Request.Path, context.Request.Method))
-            {
-                await Next.Invoke(context);
-            }
-            else
-            {
-                await HandleHeapDumpRequestAsync(context);
-            }
-        }
-
-        protected internal async Task HandleHeapDumpRequestAsync(IOwinContext context)
+        protected override void HandleRequest(HttpContext context)
         {
             var filename = _endpoint.Invoke();
             _logger?.LogDebug("Returning: {0}", filename);
-            context.Response.Headers.SetValues("Content-Type", new string[] { "application/octet-stream" });
+            context.Response.Headers.Set("Content-Type", "application/octet-stream");
 
             if (!File.Exists(filename))
             {
@@ -58,7 +46,7 @@ namespace Steeltoe.Management.EndpointOwin.HeapDump
             }
 
             string gzFilename = filename + ".gz";
-            var result = await Utils.CompressFileAsync(filename, gzFilename);
+            var result = Utils.CompressFileAsync(filename, gzFilename);
 
             if (result != null)
             {

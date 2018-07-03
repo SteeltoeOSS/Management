@@ -56,7 +56,7 @@ namespace Steeltoe.Management.EndpointAutofac
             container.RegisterCloudFoundryModule(config);
             container.RegisterEnvModule(config); // not used by Cloud Foundry
             container.RegisterHealthModule(config);
-            //container.RegisterHeapDumpModule(config);
+            container.RegisterHeapDumpModule(config);
             //container.RegisterInfoModule(config);
             container.RegisterLoggersModule(config);
 
