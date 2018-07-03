@@ -33,7 +33,7 @@ namespace Steeltoe.Management.EndpointOwin.Env
         /// <returns>OWIN <see cref="IAppBuilder" /> with Env Endpoint added</returns>
         public static IAppBuilder UseEnvEndpointOwinMiddleware(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null)
         {
-            var hostingEnvironment = new FrameworkHostingEnvironment()
+            var hostingEnvironment = new GenericHostingEnvironment()
             {
                 ApplicationName = config[HostDefaults.ApplicationKey],
                 EnvironmentName = config[HostDefaults.EnvironmentKey] ?? EnvironmentName.Production,

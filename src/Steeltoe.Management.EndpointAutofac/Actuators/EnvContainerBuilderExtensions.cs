@@ -18,7 +18,8 @@ using Microsoft.Extensions.Hosting;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Env;
 using Steeltoe.Management.EndpointOwin;
-using Steeltoe.Management.EndpointOwin.Env;
+using Steeltoe.Management.EndpointSysWeb;
+using System.Web;
 
 namespace Steeltoe.Management.EndpointAutofac.Actuators
 {
@@ -43,9 +44,33 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
             }
 
             container.RegisterInstance(new EnvOptions(config)).As<IEnvOptions>();
-            container.RegisterInstance(hostingEnv ?? new FrameworkHostingEnvironment()).As<IHostingEnvironment>();
+            container.RegisterInstance(hostingEnv ?? new GenericHostingEnvironment()).As<IHostingEnvironment>();
             container.RegisterType<EnvEndpoint>().As<IEndpoint<EnvironmentDescriptor>>();
             container.RegisterType<EndpointOwinMiddleware<EnvEndpoint, EnvironmentDescriptor>>();
+        }
+
+        /// <summary>
+        /// Register the ENV endpoint, Http Module and options
+        /// </summary>
+        /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
+        /// <param name="config">Your application's <see cref="IConfiguration"/></param>
+        /// <param name="hostingEnv">A class describing the app hosting environment - defaults to <see cref="GenericHostingEnvironment"/></param>
+        public static void RegisterEnvModule(this ContainerBuilder container, IConfiguration config, IHostingEnvironment hostingEnv = null)
+        {
+            if (container == null)
+            {
+                throw new System.ArgumentNullException(nameof(container));
+            }
+
+            if (config == null)
+            {
+                throw new System.ArgumentNullException(nameof(config));
+            }
+
+            container.RegisterInstance(new EnvOptions(config)).As<IEnvOptions>();
+            container.RegisterInstance(hostingEnv ?? new GenericHostingEnvironment()).As<IHostingEnvironment>();
+            container.RegisterType<EnvEndpoint>().As<IEndpoint<EnvironmentDescriptor>>();
+            container.RegisterType<EnvModule>().As<IHttpModule>();
         }
     }
 }

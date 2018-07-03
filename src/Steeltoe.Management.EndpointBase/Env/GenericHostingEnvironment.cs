@@ -14,11 +14,10 @@
 
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
-using System;
 
-namespace Steeltoe.Management.EndpointOwin.Env
+namespace Steeltoe.Management.Endpoint.Env
 {
-    public class FrameworkHostingEnvironment : IHostingEnvironment
+    public class GenericHostingEnvironment : IHostingEnvironment
     {
         public string EnvironmentName { get; set; }
 

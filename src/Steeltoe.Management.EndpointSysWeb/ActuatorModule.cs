@@ -28,6 +28,17 @@ namespace Steeltoe.Management.EndpointSysWeb
         protected IEndpoint<TResult> _endpoint;
         protected ILogger _logger;
 
+        public ActuatorModule(ILogger logger)
+        {
+            _logger = logger;
+        }
+
+        public ActuatorModule(IEndpoint<TResult> endpoint, ILogger logger)
+        {
+            _endpoint = endpoint ?? throw new NullReferenceException(nameof(endpoint));
+            _logger = logger;
+        }
+
         public void Dispose()
         {
             throw new NotImplementedException();
@@ -98,7 +109,7 @@ namespace Steeltoe.Management.EndpointSysWeb
         protected new IEndpoint<TResult, TRequest> _endpoint;
 
         public ActuatorModule(IEndpoint<TResult, TRequest> endpoint, ILogger logger)
-            : base()
+            : base(logger)
         {
             _endpoint = endpoint;
         }

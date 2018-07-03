@@ -13,15 +13,14 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
-using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint;
-using Steeltoe.Management.Endpoint.Health;
+using Steeltoe.Management.Endpoint.Env;
 
 namespace Steeltoe.Management.EndpointSysWeb
 {
-    public class HealthModule : ActuatorModule<HealthEndpoint, HealthCheckResult>
+    public class EnvModule : ActuatorModule<EnvEndpoint, EnvironmentDescriptor>
     {
-        public HealthModule(IEndpoint<HealthCheckResult> endpoint, ILogger<HealthModule> logger = null)
+        public EnvModule(IEndpoint<EnvironmentDescriptor> endpoint, ILogger<EnvModule> logger = null)
             : base(endpoint, logger)
         {
         }
