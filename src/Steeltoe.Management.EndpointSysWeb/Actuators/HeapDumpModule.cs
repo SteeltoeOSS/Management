@@ -15,13 +15,8 @@
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.HeapDump;
 using Steeltoe.Management.EndpointBase;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web;
 
 namespace Steeltoe.Management.EndpointSysWeb
@@ -46,16 +41,15 @@ namespace Steeltoe.Management.EndpointSysWeb
             }
 
             string gzFilename = filename + ".gz";
-            var result = Utils.CompressFileAsync(filename, gzFilename);
+            var result = Utils.CompressFile(filename, gzFilename);
 
             if (result != null)
             {
                 using (result)
                 {
-                    context.Response.Headers.Add("Content-Disposition", new string[] { "attachment; filename=\"" + Path.GetFileName(gzFilename) + "\"" });
+                    context.Response.Headers.Add("Content-Disposition", "attachment; filename=\"" + Path.GetFileName(gzFilename) + "\"");
                     context.Response.StatusCode = (int)HttpStatusCode.OK;
-                    context.Response.ContentLength = result.Length;
-                    await result.CopyToAsync(context.Response.Body);
+                    result.CopyTo(context.Response.OutputStream);
                 }
 
                 File.Delete(gzFilename);

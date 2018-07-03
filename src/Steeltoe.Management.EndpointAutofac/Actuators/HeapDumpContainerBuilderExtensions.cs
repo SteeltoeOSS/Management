@@ -72,7 +72,7 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
 
             // REVIEW: is this necessary? Running under IIS Express, the path comes up wrong
             container.RegisterType<HeapDumper>().As<IHeapDumper>().WithParameter("basePathOverride", GetContentRoot());
-            container.RegisterType<HeapDumpEndpoint>().As<IEndpoint<string>>();
+            container.RegisterType<HeapDumpEndpoint>();
             container.RegisterType<HeapDumpModule>().As<IHttpModule>();
         }
 
