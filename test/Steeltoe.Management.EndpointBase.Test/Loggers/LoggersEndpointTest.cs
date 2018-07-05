@@ -106,5 +106,20 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
             Assert.NotNull(loggers);
             Assert.Empty(loggers);
         }
+
+        [Fact]
+        public void LoggersRequest_PathAndVerbMatching_ReturnsExpected()
+        {
+            var opts = new LoggersOptions();
+            var ep = new LoggersEndpoint(opts, null);
+
+            Assert.True(ep.RequestVerbAndPathMatch("GET", "/loggers"));
+            Assert.False(ep.RequestVerbAndPathMatch("PUT", "/loggers"));
+            Assert.False(ep.RequestVerbAndPathMatch("GET", "/badpath"));
+            Assert.True(ep.RequestVerbAndPathMatch("POST", "/loggers"));
+            Assert.False(ep.RequestVerbAndPathMatch("POST", "/badpath"));
+            Assert.True(ep.RequestVerbAndPathMatch("POST", "/loggers/Foo.Bar.Class"));
+            Assert.False(ep.RequestVerbAndPathMatch("POST", "/badpath/Foo.Bar.Class"));
+        }
     }
 }

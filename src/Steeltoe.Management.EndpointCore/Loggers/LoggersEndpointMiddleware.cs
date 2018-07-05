@@ -33,7 +33,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
 
         public async Task Invoke(HttpContext context)
         {
-            if (IsLoggerRequest(context))
+            if (endpoint.RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
             {
                 await HandleLoggersRequestAsync(context);
             }
@@ -83,18 +83,6 @@ namespace Steeltoe.Management.Endpoint.Loggers
             logger?.LogDebug("Returning: {0}", serialInfo);
             response.Headers.Add("Content-Type", "application/vnd.spring-boot.actuator.v1+json");
             await context.Response.WriteAsync(serialInfo);
-        }
-
-        // TODO: dedupe this method
-        protected internal bool IsLoggerRequest(HttpContext context)
-        {
-            if (!context.Request.Method.Equals("GET") && !context.Request.Method.Equals("POST"))
-            {
-                return false;
-            }
-
-            PathString path = new PathString(endpoint.Path);
-            return context.Request.Path.StartsWithSegments(path);
         }
     }
 }

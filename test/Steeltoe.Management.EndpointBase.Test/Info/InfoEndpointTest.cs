@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Steeltoe.Management.Endpoint.Info.Contributor;
 using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.Collections.Generic;
@@ -71,6 +72,18 @@ namespace Steeltoe.Management.Endpoint.Info.Test
                     Assert.True(tc.Called);
                 }
             }
+        }
+
+        [Fact]
+        public void InfoRequest_PathAndVerbMatching_ReturnsExpected()
+        {
+            var opts = new InfoOptions();
+            var contribs = new List<IInfoContributor>() { new GitInfoContributor() };
+            var ep = new InfoEndpoint(opts, contribs);
+
+            Assert.True(ep.RequestVerbAndPathMatch("GET", "/info"));
+            Assert.False(ep.RequestVerbAndPathMatch("PUT", "/info"));
+            Assert.False(ep.RequestVerbAndPathMatch("GET", "/badpath"));
         }
     }
 }

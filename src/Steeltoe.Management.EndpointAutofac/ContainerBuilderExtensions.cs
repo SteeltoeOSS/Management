@@ -21,7 +21,7 @@ namespace Steeltoe.Management.EndpointAutofac
     public static class ContainerBuilderExtensions
     {
         /// <summary>
-        /// Add all Actuators, configure CORS and Cloud Foundry request security
+        /// Add all actuator OWIN Middlewares, configure CORS and Cloud Foundry request security
         /// </summary>
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
@@ -45,7 +45,7 @@ namespace Steeltoe.Management.EndpointAutofac
         }
 
         /// <summary>
-        /// Add all Actuators, configure CORS and Cloud Foundry request security
+        /// Add all actuator Http Modules, configure CORS and Cloud Foundry request security
         /// </summary>
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
@@ -61,7 +61,7 @@ namespace Steeltoe.Management.EndpointAutofac
             container.RegisterLoggersModule(config);
 
             // container.RegisterMappingsModule(config); // not implemented
-            //container.RegisterMetricsModule(config);
+            container.RegisterMetricsModule(config);
             container.RegisterRefreshModule(config); // not used by Cloud Foundry
             container.RegisterThreadDumpModule(config);
             container.RegisterTraceModule(config);

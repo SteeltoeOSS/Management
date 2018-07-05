@@ -21,7 +21,6 @@ using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -43,22 +42,6 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
             ["management:endpoints:heapdump:enabled"] = "true",
             ["management:endpoints:heapdump:sensitive"] = "false",
         };
-
-        [Fact]
-        public void IsHeapDumpRequest_ReturnsExpected()
-        {
-            var opts = new HeapDumpOptions();
-
-            HeapDumper obs = new HeapDumper(opts);
-            var ep = new HeapDumpEndpoint(opts, obs);
-            var middle = new HeapDumpEndpointMiddleware(null, ep);
-            var context = CreateRequest("GET", "/heapdump");
-            Assert.True(middle.IsHeapDumpRequest(context));
-            var context2 = CreateRequest("PUT", "/heapdump");
-            Assert.False(middle.IsHeapDumpRequest(context2));
-            var context3 = CreateRequest("GET", "/badpath");
-            Assert.False(middle.IsHeapDumpRequest(context3));
-        }
 
         [Fact]
         public async void HandleHeapDumpRequestAsync_ReturnsExpected()

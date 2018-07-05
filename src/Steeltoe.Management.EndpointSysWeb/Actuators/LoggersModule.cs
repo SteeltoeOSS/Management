@@ -17,6 +17,7 @@ using Steeltoe.Management.Endpoint.Loggers;
 using System.Collections.Generic;
 using System.Net;
 using System.Web;
+using ANCHttp = Microsoft.AspNetCore.Http; // REVIEW: this usage of an AspNetCore library in a project for system.web apps
 
 namespace Steeltoe.Management.EndpointSysWeb
 {
@@ -46,14 +47,14 @@ namespace Steeltoe.Management.EndpointSysWeb
             {
                 // POST - change a logger level
                 _logger?.LogDebug("Incoming logger path: {0}", context.Request.Path);
-                //PathString epPath = new PathString(_endpoint.Path);
-                //if (context.Request.Path.StartsWithSegments(epPath, out PathString remaining))
-                if (context.Request.Path.StartsWith(_endpoint.Path))
+                var psPath = new ANCHttp.PathString(context.Request.Path);
+                var epPath = new ANCHttp.PathString(_endpoint.Path);
+
+                if (psPath.StartsWithSegments(epPath, out ANCHttp.PathString remaining))
                 {
-                    //if (remaining.HasValue)
-                    //{
-                        //string loggerName = remaining.Value.TrimStart('/');
-                        string loggerName = context.Request.Path.TrimStart('/');
+                    if (remaining.HasValue)
+                    {
+                        string loggerName = remaining.Value.TrimStart('/');
 
                         var change = ((LoggersEndpoint)_endpoint).DeserializeRequest(context.Request.InputStream);
 
@@ -65,7 +66,7 @@ namespace Steeltoe.Management.EndpointSysWeb
                             var changeReq = new LoggersChangeRequest(loggerName, level);
                             _endpoint.Invoke(changeReq);
                         }
-                    //}
+                    }
                 }
 
                 context.Response.StatusCode = (int)HttpStatusCode.BadRequest;

@@ -44,8 +44,7 @@ namespace Steeltoe.Management.EndpointOwin
 
         public override async Task Invoke(IOwinContext context)
         {
-            var mw = typeof(TEndpoint);
-            if (!PathAndMethodMatch(context.Request.Path, context.Request.Method))
+            if (!_endpoint.RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
             {
                 await Next.Invoke(context);
             }
@@ -78,16 +77,6 @@ namespace Steeltoe.Management.EndpointOwin
 
             return string.Empty;
         }
-
-        protected virtual bool PathAndMethodMatch(PathString requestPath, string httpMethod)
-        {
-            return requestPath.Equals(new PathString(_endpoint.Path)) && _endpoint.AllowedMethods.Any(m => m.Method.Equals(httpMethod));
-        }
-
-        protected virtual bool PathStartsWithAndMethodMatches(PathString requestPath, string httpMethod)
-        {
-            return requestPath.StartsWithSegments(new PathString(_endpoint.Path)) && _endpoint.AllowedMethods.Any(m => m.Method.Equals(httpMethod));
-        }
     }
 
 #pragma warning disable SA1402 // File may only contain a single class
@@ -105,16 +94,6 @@ namespace Steeltoe.Management.EndpointOwin
         {
             var result = _endpoint.Invoke(arg);
             return Serialize(result);
-        }
-
-        protected override bool PathAndMethodMatch(PathString requestPath, string httpMethod)
-        {
-            return requestPath.Equals(new PathString(_endpoint.Path)) && _endpoint.AllowedMethods.Any(m => m.Method.Equals(httpMethod));
-        }
-
-        protected override bool PathStartsWithAndMethodMatches(PathString requestPath, string httpMethod)
-        {
-            return requestPath.StartsWithSegments(new PathString(_endpoint.Path)) && _endpoint.AllowedMethods.Any(m => m.Method.Equals(httpMethod));
         }
     }
 #pragma warning restore SA1402 // File may only contain a single class

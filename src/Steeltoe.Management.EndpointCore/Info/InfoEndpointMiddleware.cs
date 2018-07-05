@@ -32,7 +32,7 @@ namespace Steeltoe.Management.Endpoint.Info
 
         public async Task Invoke(HttpContext context)
         {
-            if (IsInfoRequest(context))
+            if (endpoint.RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
             {
                 await HandleInfoRequestAsync(context);
             }
@@ -48,17 +48,6 @@ namespace Steeltoe.Management.Endpoint.Info
             logger?.LogDebug("Returning: {0}", serialInfo);
             context.Response.Headers.Add("Content-Type", "application/vnd.spring-boot.actuator.v1+json");
             await context.Response.WriteAsync(serialInfo);
-        }
-
-        protected internal bool IsInfoRequest(HttpContext context)
-        {
-            if (!context.Request.Method.Equals("GET"))
-            {
-                return false;
-            }
-
-            PathString path = new PathString(endpoint.Path);
-            return context.Request.Path.Equals(path);
         }
     }
 }

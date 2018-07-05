@@ -54,8 +54,7 @@ namespace Steeltoe.Management.EndpointSysWeb
             HttpApplication application = (HttpApplication)sender;
             HttpContext context = application.Context;
 
-            var mw = typeof(TEndpoint);
-            if (PathAndMethodMatch(context.Request.Path, context.Request.HttpMethod))
+            if (_endpoint.RequestVerbAndPathMatch(context.Request.HttpMethod, context.Request.Path))
             {
                 HandleRequest(context);
                 HttpContext.Current.ApplicationInstance.CompleteRequest();
@@ -68,16 +67,6 @@ namespace Steeltoe.Management.EndpointSysWeb
             var result = _endpoint.Invoke();
             context.Response.Headers.Set("Content-Type", "application/vnd.spring-boot.actuator.v1+json");
             context.Response.Write(Serialize(result));
-        }
-
-        protected virtual bool PathAndMethodMatch(string requestPath, string httpMethod)
-        {
-            return requestPath.Equals(_endpoint.Path) && _endpoint.AllowedMethods.Any(m => m.Method.Equals(httpMethod));
-        }
-
-        protected virtual bool PathStartsWithAndMethodMatches(string requestPath, string httpMethod)
-        {
-            return requestPath.StartsWith(_endpoint.Path) && _endpoint.AllowedMethods.Any(m => m.Method.Equals(httpMethod));
         }
 
         protected virtual string Serialize<T>(T result)
@@ -120,14 +109,17 @@ namespace Steeltoe.Management.EndpointSysWeb
             return Serialize(result);
         }
 
-        protected override bool PathAndMethodMatch(string requestPath, string httpMethod)
+        // This method is identical to what it overrides, the difference being that _endpoint isn't null here
+        protected override void FilterAndPreProcessRequest(object sender, EventArgs e)
         {
-            return requestPath.Equals(_endpoint.Path) && _endpoint.AllowedMethods.Any(m => m.Method.Equals(httpMethod));
-        }
+            HttpApplication application = (HttpApplication)sender;
+            HttpContext context = application.Context;
 
-        protected override bool PathStartsWithAndMethodMatches(string requestPath, string httpMethod)
-        {
-            return requestPath.StartsWith(_endpoint.Path) && _endpoint.AllowedMethods.Any(m => m.Method.Equals(httpMethod));
+            if (_endpoint.RequestVerbAndPathMatch(context.Request.HttpMethod, context.Request.Path))
+            {
+                HandleRequest(context);
+                HttpContext.Current.ApplicationInstance.CompleteRequest();
+            }
         }
     }
 }

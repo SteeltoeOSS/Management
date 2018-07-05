@@ -21,7 +21,6 @@ using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Net;
 using Xunit;
@@ -42,22 +41,6 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
             ["management:endpoints:dump:enabled"] = "true",
             ["management:endpoints:dump:sensitive"] = "false",
         };
-
-        [Fact]
-        public void IsDumpRequest_ReturnsExpected()
-        {
-            var opts = new ThreadDumpOptions();
-
-            ThreadDumper obs = new ThreadDumper(opts);
-            var ep = new ThreadDumpEndpoint(opts, obs);
-            var middle = new ThreadDumpEndpointMiddleware(null, ep);
-            var context = CreateRequest("GET", "/dump");
-            Assert.True(middle.IsThreadDumpRequest(context));
-            var context2 = CreateRequest("PUT", "/dump");
-            Assert.False(middle.IsThreadDumpRequest(context2));
-            var context3 = CreateRequest("GET", "/badpath");
-            Assert.False(middle.IsThreadDumpRequest(context3));
-        }
 
         [Fact]
         public async void HandleThreadDumpRequestAsync_ReturnsExpected()

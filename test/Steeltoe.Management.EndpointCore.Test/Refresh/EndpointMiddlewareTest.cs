@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
@@ -42,25 +41,6 @@ namespace Steeltoe.Management.Endpoint.Refresh.Test
             ["management:endpoints:path"] = "/cloudfoundryapplication"
         };
 
-        [Fact]
-        public void IsRefreshRequest_ReturnsExpected()
-        {
-            var opts = new RefreshOptions();
-
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.AddInMemoryCollection(appsettings);
-            var config = configurationBuilder.Build();
-
-            var ep = new RefreshEndpoint(opts, config);
-            var middle = new RefreshEndpointMiddleware(null, ep);
-
-            var context = CreateRequest("GET", "/refresh");
-            Assert.True(middle.IsEnvRequest(context));
-            var context2 = CreateRequest("PUT", "/refresh");
-            Assert.False(middle.IsEnvRequest(context2));
-            var context3 = CreateRequest("GET", "/badpath");
-            Assert.False(middle.IsEnvRequest(context3));
-        }
 
         [Fact]
         public async void HandleRefreshRequestAsync_ReturnsExpected()

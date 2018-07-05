@@ -25,7 +25,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
 {
     public class LoggersEndpoint : AbstractEndpoint<Dictionary<string, object>, LoggersChangeRequest>
     {
-        private static List<string> levels = new List<string>()
+        private static readonly List<string> Levels = new List<string>()
         {
             LoggerLevels.MapLogLevel(LogLevel.None),
             LoggerLevels.MapLogLevel(LogLevel.Critical),
@@ -40,7 +40,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
         private IDynamicLoggerProvider _cloudFoundryLoggerProvider;
 
         public LoggersEndpoint(ILoggersOptions options, ILoggerProvider cloudFoundryLoggerProvider, ILogger<LoggersEndpoint> logger = null)
-            : base(options, new List<HttpMethod> { HttpMethod.Get, HttpMethod.Post })
+            : base(options, new List<HttpMethod> { HttpMethod.Get, HttpMethod.Post }, false)
         {
             _cloudFoundryLoggerProvider = cloudFoundryLoggerProvider as DynamicLoggerProvider;
             _logger = logger;
@@ -89,7 +89,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
 
         public virtual void AddLevels(Dictionary<string, object> result)
         {
-            result.Add("levels", levels);
+            result.Add("levels", Levels);
         }
 
         public virtual ICollection<ILoggerConfiguration> GetLoggerConfigurations(IDynamicLoggerProvider provider)

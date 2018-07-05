@@ -29,7 +29,13 @@ namespace Steeltoe.Management.Endpoint
 
         string Path { get; }
 
-        IEnumerable<HttpMethod> AllowedMethods { get; }
+        /// <summary>
+        /// Evaluate the path and verb of an Http request to determine if it should be processed by this endpoint
+        /// </summary>
+        /// <param name="httpMethod">Request Verb (eg: GET, POST, PUT, etc)</param>
+        /// <param name="requestPath">Request path</param>
+        /// <returns>A determination of whether the request was meant for this endpoint</returns>
+        bool RequestVerbAndPathMatch(string httpMethod, string requestPath);
     }
 
     public interface IEndpoint<TResult> : IEndpoint

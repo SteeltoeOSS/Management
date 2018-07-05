@@ -34,7 +34,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
 
         public async Task Invoke(HttpContext context)
         {
-            if (IsMetricsRequest(context))
+            if (endpoint.RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
             {
                 await HandleMetricsRequestAsync(context);
             }
@@ -138,17 +138,6 @@ namespace Steeltoe.Management.Endpoint.Metrics
             }
 
             return null;
-        }
-
-        protected internal bool IsMetricsRequest(HttpContext context)
-        {
-            if (!context.Request.Method.Equals("GET"))
-            {
-                return false;
-            }
-
-            PathString path = new PathString(endpoint.Path);
-            return context.Request.Path.StartsWithSegments(path);
         }
     }
 }

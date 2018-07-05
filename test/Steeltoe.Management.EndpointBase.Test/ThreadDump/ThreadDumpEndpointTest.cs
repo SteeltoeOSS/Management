@@ -35,5 +35,17 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
             Assert.NotNull(result);
             Assert.True(dumper.DumpThreadsCalled);
         }
+
+        [Fact]
+        public void DumpRequest_PathAndVerbMatching_ReturnsExpected()
+        {
+            var opts = new ThreadDumpOptions();
+            var obs = new ThreadDumper(opts);
+            var ep = new ThreadDumpEndpoint(opts, obs);
+
+            Assert.True(ep.RequestVerbAndPathMatch("GET", "/dump"));
+            Assert.False(ep.RequestVerbAndPathMatch("PUT", "/dump"));
+            Assert.False(ep.RequestVerbAndPathMatch("GET", "/badpath"));
+        }
     }
 }

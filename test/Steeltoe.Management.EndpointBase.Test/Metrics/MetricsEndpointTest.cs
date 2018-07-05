@@ -548,6 +548,24 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             Assert.Equal(3, resp.AvailableTags.Count);
         }
 
+        [Fact]
+        public void MetricsRequest_PathAndVerbMatching_ReturnsExpected()
+        {
+            var opts = new MetricsOptions();
+            var stats = new OpenCensusStats();
+
+            var ep = new MetricsEndpoint(opts, stats);
+
+            Assert.True(ep.RequestVerbAndPathMatch("GET", "/metrics"));
+            Assert.False(ep.RequestVerbAndPathMatch("PUT", "/metrics"));
+            Assert.False(ep.RequestVerbAndPathMatch("GET", "/badpath"));
+            Assert.False(ep.RequestVerbAndPathMatch("POST", "/metrics"));
+            Assert.False(ep.RequestVerbAndPathMatch("DELETE", "/metrics"));
+            Assert.True(ep.RequestVerbAndPathMatch("GET", "/metrics/Foo.Bar.Class"));
+            Assert.True(ep.RequestVerbAndPathMatch("GET", "/metrics/Foo.Bar.Class?tag=key:value&tag=key1:value1"));
+            Assert.True(ep.RequestVerbAndPathMatch("GET", "/metrics?tag=key:value&tag=key1:value1"));
+        }
+
         private void SetupStats(OpenCensusStats stats)
         {
             ITagKey exceptionKey = TagKey.Create("exception");

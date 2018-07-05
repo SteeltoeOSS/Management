@@ -178,6 +178,24 @@ namespace Steeltoe.Management.Endpoint.Env.Test
             Assert.Null(prop.Origin);
         }
 
+        [Fact]
+        public void EnvRequest_PathAndVerbMatching_ReturnsExpected()
+        {
+            var opts = new EnvOptions();
+            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddInMemoryCollection(new Dictionary<string, string>());
+            var config = configurationBuilder.Build();
+            var host = new GenericHostingEnvironment()
+            {
+                EnvironmentName = "EnvironmentName"
+            };
+            var ep = new EnvEndpoint(opts, config, host);
+
+            Assert.True(ep.RequestVerbAndPathMatch("GET", "/env"));
+            Assert.False(ep.RequestVerbAndPathMatch("PUT", "/env"));
+            Assert.False(ep.RequestVerbAndPathMatch("GET", "/badpath"));
+        }
+
         private class TestHosting : IHostingEnvironment
         {
             public string EnvironmentName { get => "EnvironmentName"; set => throw new NotImplementedException(); }

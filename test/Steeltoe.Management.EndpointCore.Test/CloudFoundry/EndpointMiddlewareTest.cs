@@ -46,23 +46,6 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         };
 
         [Fact]
-        public void IsCloudFoundryRequest_ReturnsExpected()
-        {
-            var opts = new CloudFoundryOptions();
-            var ep = new CloudFoundryEndpoint(opts);
-            var middle = new CloudFoundryEndpointMiddleware(null, ep);
-
-            var context = CreateRequest("GET", "/");
-            Assert.True(middle.IsCloudFoundryRequest(context));
-
-            var context2 = CreateRequest("PUT", "/");
-            Assert.False(middle.IsCloudFoundryRequest(context2));
-
-            var context3 = CreateRequest("GET", "/badpath");
-            Assert.False(middle.IsCloudFoundryRequest(context3));
-        }
-
-        [Fact]
         public async void HandleCloudFoundryRequestAsync_ReturnsExpected()
         {
             var opts = new CloudFoundryOptions();

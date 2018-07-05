@@ -34,7 +34,7 @@ namespace Steeltoe.Management.Endpoint.Health
         {
             this.endpoint = endpoint;
 
-            if (IsHealthRequest(context))
+            if (endpoint.RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
             {
                 await HandleHealthRequestAsync(context);
             }
@@ -52,17 +52,6 @@ namespace Steeltoe.Management.Endpoint.Health
             await context.Response.WriteAsync(serialInfo);
         }
 
-        protected internal bool IsHealthRequest(HttpContext context)
-        {
-            if (!context.Request.Method.Equals("GET"))
-            {
-                return false;
-            }
-
-            PathString path = new PathString(endpoint.Path);
-            return context.Request.Path.Equals(path);
-        }
-
         protected internal string DoRequest(HttpContext context)
         {
             var result = endpoint.Invoke();
@@ -72,14 +61,9 @@ namespace Steeltoe.Management.Endpoint.Health
 
         protected internal int GetStatusCode(HealthCheckResult health)
         {
-            if (health.Status == HealthStatus.DOWN || health.Status == HealthStatus.OUT_OF_SERVICE)
-            {
-                return 503;
-            }
-            else
-            {
-                return 200;
-            }
+            return health.Status == HealthStatus.DOWN || health.Status == HealthStatus.OUT_OF_SERVICE
+                ? 503
+                : 200;
         }
     }
 }

@@ -33,7 +33,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump
 
         public async Task Invoke(HttpContext context)
         {
-            if (IsHeapDumpRequest(context))
+            if (endpoint.RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
             {
                 await HandleHeapDumpRequestAsync(context);
             }
@@ -74,17 +74,6 @@ namespace Steeltoe.Management.Endpoint.HeapDump
             {
                 context.Response.StatusCode = StatusCodes.Status404NotFound;
             }
-        }
-
-        protected internal bool IsHeapDumpRequest(HttpContext context)
-        {
-            if (!context.Request.Method.Equals("GET"))
-            {
-                return false;
-            }
-
-            PathString path = new PathString(endpoint.Path);
-            return context.Request.Path.Equals(path);
         }
     }
 }

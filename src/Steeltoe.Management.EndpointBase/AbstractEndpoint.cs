@@ -14,6 +14,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 
 namespace Steeltoe.Management.Endpoint
@@ -22,10 +23,15 @@ namespace Steeltoe.Management.Endpoint
     {
         protected IEndpointOptions options;
 
-        public AbstractEndpoint(IEndpointOptions options, IEnumerable<HttpMethod> allowedMethods)
+        private readonly bool exactRequestPathMatching;
+
+        private IEnumerable<HttpMethod> AllowedMethods { get; }
+
+        public AbstractEndpoint(IEndpointOptions options, IEnumerable<HttpMethod> allowedMethods, bool exactRequestPathMatching = true)
         {
             this.options = options ?? throw new ArgumentNullException(nameof(options));
             this.AllowedMethods = allowedMethods ?? new List<HttpMethod> { HttpMethod.Get };
+            this.exactRequestPathMatching = exactRequestPathMatching;
         }
 
         public virtual string Id => options.Id;
@@ -38,14 +44,24 @@ namespace Steeltoe.Management.Endpoint
 
         public string Path => options.Path;
 
-        public IEnumerable<HttpMethod> AllowedMethods { get; }
+        public bool RequestVerbAndPathMatch(string httpMethod, string requestPath)
+        {
+            return exactRequestPathMatching
+                ? requestPath.Equals(Path) && AllowedMethods.Any(m => m.Method.Equals(httpMethod))
+                : requestPath.StartsWith(Path) && AllowedMethods.Any(m => m.Method.Equals(httpMethod));
+        }
+
     }
 
 #pragma warning disable SA1402 // File may only contain a single class
+    /// <summary>
+    /// Base class for management endpoints
+    /// </summary>
+    /// <typeparam name="TResult">Type of response returned from calls to this endpoint</typeparam>
     public abstract class AbstractEndpoint<TResult> : AbstractEndpoint, IEndpoint<TResult>
     {
-        public AbstractEndpoint(IEndpointOptions options, IEnumerable<HttpMethod> allowedMethods = null)
-            : base(options, allowedMethods)
+        public AbstractEndpoint(IEndpointOptions options, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true)
+            : base(options, allowedMethods, exactRequestPathMatching)
         {
         }
 
@@ -55,10 +71,21 @@ namespace Steeltoe.Management.Endpoint
         }
     }
 
+    /// <summary>
+    /// Base class for endpoints that allow POST requests
+    /// </summary>
+    /// <typeparam name="TResult">Type of response returned from calls to this endpoint</typeparam>
+    /// <typeparam name="TRequest">Type of request that can be passed to this endpoint</typeparam>
     public abstract class AbstractEndpoint<TResult, TRequest> : AbstractEndpoint, IEndpoint<TResult, TRequest>
     {
-        public AbstractEndpoint(IEndpointOptions options, IEnumerable<HttpMethod> allowedMethods = null)
-            : base(options, allowedMethods)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AbstractEndpoint{TResult, TRequest}"/> class.
+        /// </summary>
+        /// <param name="options">Endpoint configuration options</param>
+        /// <param name="allowedMethods">Http methods this endpoint will handle.<para />Allows GET by default</param>
+        /// <param name="exactRequestPathMatching">If set to false, requests only need to start with the configured path value to be processed</param>
+        public AbstractEndpoint(IEndpointOptions options, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true)
+            : base(options, allowedMethods, exactRequestPathMatching)
         {
         }
 

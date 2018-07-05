@@ -32,7 +32,7 @@ namespace Steeltoe.Management.EndpointOwin.Loggers
 
         public override async Task Invoke(IOwinContext context)
         {
-            if (!PathStartsWithAndMethodMatches(context.Request.Path, context.Request.Method))
+            if (!_endpoint.RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
             {
                 await Next.Invoke(context);
             }

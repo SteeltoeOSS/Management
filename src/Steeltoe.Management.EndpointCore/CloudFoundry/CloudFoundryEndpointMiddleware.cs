@@ -34,7 +34,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
 
         public async Task Invoke(HttpContext context)
         {
-            if (IsCloudFoundryRequest(context))
+            if (endpoint.RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
             {
                 await HandleCloudFoundryRequestAsync(context);
             }
@@ -62,17 +62,6 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             }
 
             return scheme + "://" + request.Host.ToString() + request.Path.ToString();
-        }
-
-        protected internal bool IsCloudFoundryRequest(HttpContext context)
-        {
-            if (!context.Request.Method.Equals("GET"))
-            {
-                return false;
-            }
-
-            PathString path = new PathString(endpoint.Path);
-            return context.Request.Path.Equals(path);
         }
     }
 }

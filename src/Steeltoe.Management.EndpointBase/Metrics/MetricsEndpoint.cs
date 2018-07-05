@@ -26,7 +26,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
         private IStats _stats;
 
         public MetricsEndpoint(IMetricsOptions options, IStats stats,  ILogger<MetricsEndpoint> logger = null)
-            : base(options)
+            : base(options, null, false)
         {
             _stats = stats ?? throw new ArgumentNullException(nameof(stats));
             _logger = logger;

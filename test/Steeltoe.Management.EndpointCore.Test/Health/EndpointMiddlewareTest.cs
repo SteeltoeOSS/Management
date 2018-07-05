@@ -40,25 +40,6 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         };
 
         [Fact]
-        public void IsHealthRequest_ReturnsExpected()
-        {
-            var opts = new HealthOptions();
-            var contribs = new List<IHealthContributor>() { new DiskSpaceContributor() };
-            var ep = new HealthEndpoint(opts, new DefaultHealthAggregator(), contribs);
-            var middle = new HealthEndpointMiddleware(null);
-            middle.Endpoint = ep;
-
-            var context = CreateRequest("GET", "/health");
-            Assert.True(middle.IsHealthRequest(context));
-
-            var context2 = CreateRequest("PUT", "/health");
-            Assert.False(middle.IsHealthRequest(context2));
-
-            var context3 = CreateRequest("GET", "/badpath");
-            Assert.False(middle.IsHealthRequest(context3));
-        }
-
-        [Fact]
         public async void HandleHealthRequestAsync_ReturnsExpected()
         {
             var opts = new HealthOptions();

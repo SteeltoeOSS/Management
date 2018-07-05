@@ -34,7 +34,7 @@ namespace Steeltoe.Management.EndpointOwin.Metrics
 
         public override async Task Invoke(IOwinContext context)
         {
-            if (!PathAndMethodMatch(context.Request.Path, context.Request.Method))
+            if (!_endpoint.RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
             {
                 await Next.Invoke(context);
             }

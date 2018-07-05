@@ -48,24 +48,6 @@ namespace Steeltoe.Management.Endpoint.Info.Test
         };
 
         [Fact]
-        public void IsInfoRequest_ReturnsExpected()
-        {
-            var opts = new InfoOptions();
-            var contribs = new List<IInfoContributor>() { new GitInfoContributor() };
-            var ep = new InfoEndpoint(opts, contribs);
-            var middle = new InfoEndpointMiddleware(null, ep);
-
-            var context = CreateRequest("GET", "/info");
-            Assert.True(middle.IsInfoRequest(context));
-
-            var context2 = CreateRequest("PUT", "/info");
-            Assert.False(middle.IsInfoRequest(context2));
-
-            var context3 = CreateRequest("GET", "/badpath");
-            Assert.False(middle.IsInfoRequest(context3));
-        }
-
-        [Fact]
         public async void HandleInfoRequestAsync_ReturnsExpected()
         {
             var opts = new InfoOptions();

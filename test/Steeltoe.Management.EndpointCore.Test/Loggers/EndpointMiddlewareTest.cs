@@ -45,36 +45,6 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
         };
 
         [Fact]
-        public void IsLoggersRequest_ReturnsExpected()
-        {
-            var opts = new LoggersOptions();
-
-            var ep = new LoggersEndpoint(opts, null);
-            var middle = new LoggersEndpointMiddleware(null, ep);
-
-            var context = CreateRequest("GET", "/loggers");
-            Assert.True(middle.IsLoggerRequest(context));
-
-            var context2 = CreateRequest("PUT", "/loggers");
-            Assert.False(middle.IsLoggerRequest(context2));
-
-            var context3 = CreateRequest("GET", "/badpath");
-            Assert.False(middle.IsLoggerRequest(context3));
-
-            var context4 = CreateRequest("POST", "/loggers");
-            Assert.True(middle.IsLoggerRequest(context4));
-
-            var context5 = CreateRequest("POST", "/badpath");
-            Assert.False(middle.IsLoggerRequest(context5));
-
-            var context6 = CreateRequest("POST", "/loggers/Foo.Bar.Class");
-            Assert.True(middle.IsLoggerRequest(context6));
-
-            var context7 = CreateRequest("POST", "/badpath/Foo.Bar.Class");
-            Assert.False(middle.IsLoggerRequest(context7));
-        }
-
-        [Fact]
         public async void HandleLoggersRequestAsync_ReturnsExpected()
         {
             var opts = new LoggersOptions();
