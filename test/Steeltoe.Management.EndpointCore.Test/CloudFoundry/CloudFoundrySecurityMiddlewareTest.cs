@@ -50,17 +50,6 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         }
 
         [Fact]
-        public void IsCloudFoundryRequest_ReturnsExpected()
-        {
-            var opts = new CloudFoundryOptions();
-            var middle = new CloudFoundrySecurityMiddleware(null, opts, null);
-            var securityBase = new SecurityBase(opts, null);
-
-            Assert.True(securityBase.IsCloudFoundryRequest("/"));
-            Assert.True(securityBase.IsCloudFoundryRequest("/badpath"));
-        }
-
-        [Fact]
         public async void CloudFoundrySecurityMiddleware_ReturnsServiceUnavailable()
         {
             var appSettings = new Dictionary<string, string>()

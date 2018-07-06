@@ -30,6 +30,16 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
         /// <returns>Your OWIN <see cref="IAppBuilder"/> with Cloud Foundry actuator attached</returns>
         public static IAppBuilder UseCloudFoundryEndpointMiddleware(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null)
         {
+            if (builder == null)
+            {
+                throw new System.ArgumentNullException(nameof(builder));
+            }
+
+            if (config == null)
+            {
+                throw new System.ArgumentNullException(nameof(config));
+            }
+
             var endpoint = new CloudFoundryEndpoint(new CloudFoundryOptions(config), loggerFactory?.CreateLogger<CloudFoundryEndpoint>());
             var logger = loggerFactory?.CreateLogger<CloudFoundryEndpointOwinMiddleware>();
             return builder.Use<CloudFoundryEndpointOwinMiddleware>(endpoint, logger);

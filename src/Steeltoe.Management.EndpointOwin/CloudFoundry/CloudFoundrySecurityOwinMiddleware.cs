@@ -18,8 +18,6 @@ using Steeltoe.Common;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -146,12 +144,12 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
 
         private void LogError(IOwinContext context, SecurityResult error)
         {
-            _logger.LogError("Actuator Security Error: {ErrorCode} - {ErrorMessage}", error.Code, error.Message);
-            if (_logger.IsEnabled(LogLevel.Trace))
+            _logger?.LogError("Actuator Security Error: {ErrorCode} - {ErrorMessage}", error.Code, error.Message);
+            if (_logger?.IsEnabled(LogLevel.Trace) == true)
             {
                 foreach (var header in context.Request.Headers)
                 {
-                    _logger.LogTrace("Header: {HeaderKey} - {HeaderValue}", header.Key, header.Value);
+                    _logger?.LogTrace("Header: {HeaderKey} - {HeaderValue}", header.Key, header.Value);
                 }
             }
         }

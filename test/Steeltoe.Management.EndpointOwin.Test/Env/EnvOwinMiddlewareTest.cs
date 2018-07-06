@@ -18,7 +18,6 @@ using Steeltoe.Management.Endpoint.Env;
 using Steeltoe.Management.EndpointOwin.Test;
 using System.IO;
 using System.Net;
-using System.Text;
 using Xunit;
 
 namespace Steeltoe.Management.EndpointOwin.Env.Test

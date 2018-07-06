@@ -34,6 +34,11 @@ namespace Steeltoe.Management.EndpointOwin.HeapDump
         /// <returns>Your <see cref="IAppBuilder"/> with Heap Dump middleware attached</returns>
         public static IAppBuilder UseHeapDumpEndpointMiddleware(this IAppBuilder builder, IConfiguration config, string applicationPathOnDisk = null, ILoggerFactory loggerFactory = null)
         {
+            if (builder == null)
+            {
+                throw new System.ArgumentNullException(nameof(builder));
+            }
+
             if (config == null)
             {
                 throw new System.ArgumentNullException(nameof(config));

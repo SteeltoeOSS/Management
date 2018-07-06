@@ -32,6 +32,16 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
         /// <returns>Your OWIN <see cref="IAppBuilder"/> with Cloud Foundry request security and CORS configured</returns>
         public static IAppBuilder UseCloudFoundrySecurityMiddleware(this IAppBuilder builder, IConfiguration config, CorsOptions corsOptions = null, ILoggerFactory loggerFactory = null)
         {
+            if (builder == null)
+            {
+                throw new System.ArgumentNullException(nameof(builder));
+            }
+
+            if (config == null)
+            {
+                throw new System.ArgumentNullException(nameof(config));
+            }
+
             var logger = loggerFactory?.CreateLogger<CloudFoundrySecurityOwinMiddleware>();
             builder.UseCors(corsOptions ?? CorsOptions.AllowAll);
             return builder.Use<CloudFoundrySecurityOwinMiddleware>(new CloudFoundryOptions(config), logger);
