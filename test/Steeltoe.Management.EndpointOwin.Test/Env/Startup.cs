@@ -12,20 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.Common.HealthChecks;
+using Microsoft.Extensions.Configuration;
+using Owin;
+using Steeltoe.Management.EndpointOwin.Test;
 
-namespace Steeltoe.Management.Endpoint.Health.Test
+namespace Steeltoe.Management.EndpointOwin.Env.Test
 {
-    public class OutOfSserviceContributor : IHealthContributor
+    public class Startup
     {
-        public string Id { get; } = "Out";
-
-        public HealthCheckResult Health()
+        public void Configuration(IAppBuilder app)
         {
-            return new HealthCheckResult()
-            {
-                Status = HealthStatus.OUT_OF_SERVICE
-            };
+            var builder = new ConfigurationBuilder();
+            builder.AddInMemoryCollection(OwinTestHelpers.Appsettings);
+            var config = builder.Build();
+
+            app.UseEnvEndpointMiddleware(config);
         }
     }
 }

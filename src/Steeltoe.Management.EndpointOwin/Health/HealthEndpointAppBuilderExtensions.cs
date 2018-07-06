@@ -133,8 +133,8 @@ namespace Steeltoe.Management.EndpointOwin.Health
             }
 
             var endpoint = new HealthEndpoint(options, aggregator, contributors, loggerFactory?.CreateLogger<HealthEndpoint>());
-            var logger = loggerFactory?.CreateLogger<EndpointOwinMiddleware<HealthEndpoint, HealthCheckResult>>();
-            return builder.Use<EndpointOwinMiddleware<HealthEndpoint, HealthCheckResult>>(endpoint, logger);
+            var logger = loggerFactory?.CreateLogger<HealthEndpointOwinMiddleware>();
+            return builder.Use<HealthEndpointOwinMiddleware>(endpoint, logger);
         }
 
         internal static List<IHealthContributor> GetDefaultHealthContributors()

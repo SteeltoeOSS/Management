@@ -12,20 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.Extensions.Logging;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Management.Endpoint.Health;
+using System.Collections.Generic;
 
-namespace Steeltoe.Management.Endpoint.Health.Test
+namespace Steeltoe.Management.EndpointOwin.Health.Test
 {
-    public class OutOfSserviceContributor : IHealthContributor
+    internal class TestHealthEndpoint : HealthEndpoint
     {
-        public string Id { get; } = "Out";
-
-        public HealthCheckResult Health()
+        public TestHealthEndpoint(IHealthOptions options, IHealthAggregator aggregator, IEnumerable<IHealthContributor> contributors, ILogger<HealthEndpoint> logger = null)
+            : base(options, aggregator, contributors, logger)
         {
-            return new HealthCheckResult()
-            {
-                Status = HealthStatus.OUT_OF_SERVICE
-            };
+        }
+
+        public override HealthCheckResult Invoke()
+        {
+            return new HealthCheckResult();
         }
     }
 }

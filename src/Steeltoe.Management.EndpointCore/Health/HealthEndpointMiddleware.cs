@@ -55,15 +55,8 @@ namespace Steeltoe.Management.Endpoint.Health
         protected internal string DoRequest(HttpContext context)
         {
             var result = endpoint.Invoke();
-            context.Response.StatusCode = GetStatusCode(result);
+            context.Response.StatusCode = ((HealthEndpoint)endpoint).GetStatusCode(result);
             return Serialize(result);
-        }
-
-        protected internal int GetStatusCode(HealthCheckResult health)
-        {
-            return health.Status == HealthStatus.DOWN || health.Status == HealthStatus.OUT_OF_SERVICE
-                ? 503
-                : 200;
         }
     }
 }

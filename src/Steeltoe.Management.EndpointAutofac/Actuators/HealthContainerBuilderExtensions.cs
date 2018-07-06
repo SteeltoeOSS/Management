@@ -19,6 +19,7 @@ using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Health.Contributor;
 using Steeltoe.Management.EndpointOwin;
+using Steeltoe.Management.EndpointOwin.Health;
 using Steeltoe.Management.EndpointSysWeb;
 using System;
 using System.Web;
@@ -100,7 +101,7 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
             }
 
             container.RegisterType<HealthEndpoint>().As<IEndpoint<HealthCheckResult>>();
-            container.RegisterType<EndpointOwinMiddleware<HealthEndpoint, HealthCheckResult>>();
+            container.RegisterType<HealthEndpointOwinMiddleware>();
         }
 
         /// <summary>

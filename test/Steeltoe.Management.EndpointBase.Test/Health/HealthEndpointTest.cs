@@ -96,5 +96,18 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             Assert.False(ep.RequestVerbAndPathMatch("PUT", "/health"));
             Assert.False(ep.RequestVerbAndPathMatch("GET", "/badpath"));
         }
+
+        [Fact]
+        public void GetStatusCode_ReturnsExpected()
+        {
+            var opts = new HealthOptions();
+            var contribs = new List<IHealthContributor>() { new DiskSpaceContributor() };
+            var ep = new HealthEndpoint(opts, new DefaultHealthAggregator(), contribs);
+
+            Assert.Equal(503, ep.GetStatusCode(new HealthCheckResult { Status = HealthStatus.DOWN }));
+            Assert.Equal(503, ep.GetStatusCode(new HealthCheckResult { Status = HealthStatus.OUT_OF_SERVICE }));
+            Assert.Equal(200, ep.GetStatusCode(new HealthCheckResult { Status = HealthStatus.UP }));
+            Assert.Equal(200, ep.GetStatusCode(new HealthCheckResult { Status = HealthStatus.UNKNOWN }));
+        }
     }
 }
