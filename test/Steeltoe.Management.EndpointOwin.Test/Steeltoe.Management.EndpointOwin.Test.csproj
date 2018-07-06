@@ -17,15 +17,6 @@
     <None Update="git.properties">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Info\empty.git.properties">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Info\garbage.git.properties">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Info\git.properties">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="xunit.runner.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -37,6 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.CSharp" Version="$(CSharpVersion)" />
     <PackageReference Include="Microsoft.Owin.Testing" Version="$(OwinVersion)" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="$(AspNetCoreTestVersion)" />
     <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="$(AspNetCoreTestVersion)" />

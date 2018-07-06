@@ -20,7 +20,6 @@ using Steeltoe.Management.Endpoint.Health.Contributor;
 using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.EndpointOwin.Test;
 using System.Collections.Generic;
-using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -28,7 +27,7 @@ using Xunit;
 
 namespace Steeltoe.Management.EndpointOwin.Health.Test
 {
-    public class HealthOwinMiddlewareTest : BaseTest
+    public class HealthEndpointOwinMiddlewareTest : BaseTest
     {
         [Fact]
         public async void HealthInvoke_ReturnsExpected()
@@ -41,10 +40,7 @@ namespace Steeltoe.Management.EndpointOwin.Health.Test
             var context = OwinTestHelpers.CreateRequest("GET", "/health");
 
             // act
-            await middle.Invoke(context);
-            context.Response.Body.Seek(0, SeekOrigin.Begin);
-            var rdr = new StreamReader(context.Response.Body);
-            var json = await rdr.ReadToEndAsync();
+            var json = await middle.InvokeAndReadResponse(context);
 
             // assert
             Assert.Equal("{\"status\":\"UNKNOWN\"}", json);

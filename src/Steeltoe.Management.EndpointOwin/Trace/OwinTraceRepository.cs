@@ -99,7 +99,7 @@ namespace Steeltoe.Management.EndpointOwin.Trace
 
             if (_options.AddParameters)
             {
-                details.Add("parameters", GetRequestParameters(request));
+                details.Add("parameters", GetRequestParametersAsync(request));
             }
 
             if (_options.AddQueryString)
@@ -182,7 +182,7 @@ namespace Steeltoe.Management.EndpointOwin.Trace
             return context?.Request?.User?.Identity?.Name;
         }
 
-        protected internal async Task<Dictionary<string, string[]>> GetRequestParameters(IOwinRequest request)
+        protected internal async Task<Dictionary<string, string[]>> GetRequestParametersAsync(IOwinRequest request)
         {
             Dictionary<string, string[]> parameters = new Dictionary<string, string[]>();
             var query = request.Query;
@@ -218,7 +218,8 @@ namespace Steeltoe.Management.EndpointOwin.Trace
             // REVIEW: accessing session in OWIN is... not this easy
             // var sessionFeature = context.Features.Get<ISessionFeature>();
             // return sessionFeature == null ? null : context.Session.Id;
-            return "Not Implemented";
+            _logger?.LogInformation("SessionId requested, but this feature isn't implemented");
+            return null;
         }
 
         protected internal string GetTimeTaken(TimeSpan duration)
@@ -235,7 +236,8 @@ namespace Steeltoe.Management.EndpointOwin.Trace
 
         private bool HasFormContentType(IOwinRequest request)
         {
-            return request.MediaType.Equals("application/x-www-form-urlencoded", StringComparison.OrdinalIgnoreCase) || request.MediaType.Equals("multipart/form-data", StringComparison.OrdinalIgnoreCase);
+            return request.MediaType != null &&
+                (request.MediaType.Equals("application/x-www-form-urlencoded", StringComparison.OrdinalIgnoreCase) || request.MediaType.Equals("multipart/form-data", StringComparison.OrdinalIgnoreCase));
         }
     }
 }

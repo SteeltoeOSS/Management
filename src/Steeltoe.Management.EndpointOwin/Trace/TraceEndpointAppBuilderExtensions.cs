@@ -22,14 +22,32 @@ namespace Steeltoe.Management.EndpointOwin.Trace
 {
     public static class TraceEndpointAppBuilderExtensions
     {
-        public static IAppBuilder UseTraceEndpointMiddleware(this IAppBuilder builder, IConfiguration config, ITraceRepository traceRepository = null, ILoggerFactory loggerFactory = null)
+        /// <summary>
+        /// Add Request Trace middleware to OWIN Pipeline
+        /// </summary>
+        /// <param name="builder">OWIN <see cref="IAppBuilder" /></param>
+        /// <param name="config"><see cref="IConfiguration"/> of application for configuring thread dump endpoint</param>
+        /// <param name="traceRepository">A repository that contains recent application traces</param>
+        /// <param name="loggerFactory">For logging within the middleware</param>
+        /// <returns>OWIN <see cref="IAppBuilder" /> with Trace Endpoint added</returns>
+        public static IAppBuilder UseTraceEndpointMiddleware(this IAppBuilder builder, IConfiguration config, ITraceRepository traceRepository, ILoggerFactory loggerFactory = null)
         {
-            var options = new TraceOptions(config);
-            if (traceRepository == null)
+            if (builder == null)
             {
-                traceRepository = new OwinTraceRepository(options, loggerFactory?.CreateLogger<OwinTraceRepository>());
+                throw new System.ArgumentNullException(nameof(builder));
             }
 
+            if (config == null)
+            {
+                throw new System.ArgumentNullException(nameof(config));
+            }
+
+            if (traceRepository == null)
+            {
+                throw new System.ArgumentNullException(nameof(traceRepository));
+            }
+
+            var options = new TraceOptions(config);
             var endpoint = new TraceEndpoint(options, traceRepository, loggerFactory?.CreateLogger<TraceEndpoint>());
             var logger = loggerFactory?.CreateLogger<EndpointOwinMiddleware<TraceEndpoint, List<TraceResult>>>();
             return builder.Use<EndpointOwinMiddleware<TraceEndpoint, List<TraceResult>>>(endpoint, logger);

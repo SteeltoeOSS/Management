@@ -12,20 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.Management.Endpoint.CloudFoundry;
-using Xunit;
+using System.Security.Principal;
 
-namespace Steeltoe.Management.EndpointBase.Test.CloudFoundry
+namespace Steeltoe.Management.EndpointOwin.Trace.Test
 {
-    public class SecurityBaseTest
+    internal class MyIdentity : IIdentity
     {
-        [Fact]
-        public void IsCloudFoundryRequest_ReturnsExpected()
-        {
-            var securityBase = new SecurityBase(new CloudFoundryOptions(), null);
+        public string Name { get; } = "MyTestName";
 
-            Assert.True(securityBase.IsCloudFoundryRequest("/"));
-            Assert.True(securityBase.IsCloudFoundryRequest("/badpath"));
-        }
+        public string AuthenticationType { get; } = "MyTestAuthType";
+
+        public bool IsAuthenticated { get; } = true;
     }
 }

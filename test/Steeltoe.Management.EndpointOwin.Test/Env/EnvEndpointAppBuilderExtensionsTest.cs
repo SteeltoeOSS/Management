@@ -29,14 +29,16 @@ namespace Steeltoe.Management.EndpointOwin.Env.Test
             IAppBuilder builder = null;
             IConfiguration config = new ConfigurationBuilder().Build();
 
-            Assert.Throws<ArgumentNullException>(() => builder.UseEnvEndpointMiddleware(config));
+            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseEnvEndpointMiddleware(config));
+            Assert.Equal("builder", exception.ParamName);
         }
 
         [Fact]
         public void UseEnvEndpointOwinMiddleware_ThrowsIfConfigNull()
         {
             IAppBuilder builder = new AppBuilder();
-            Assert.Throws<ArgumentNullException>(() => builder.UseEnvEndpointMiddleware(null));
+            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseEnvEndpointMiddleware(null));
+            Assert.Equal("config", exception.ParamName);
         }
     }
 }

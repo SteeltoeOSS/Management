@@ -17,7 +17,6 @@ using Newtonsoft.Json;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.EndpointOwin.Test;
-using System.IO;
 using System.Net;
 using Xunit;
 
@@ -33,10 +32,7 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry.Test
             var context = OwinTestHelpers.CreateRequest("GET", "/");
 
             // act
-            await middle.Invoke(context);
-            context.Response.Body.Seek(0, SeekOrigin.Begin);
-            var rdr = new StreamReader(context.Response.Body);
-            string json = await rdr.ReadToEndAsync();
+            var json = await middle.InvokeAndReadResponse(context);
 
             // assert
             Assert.Equal("{\"type\":\"steeltoe\",\"_links\":{}}", json);

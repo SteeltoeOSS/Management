@@ -19,7 +19,6 @@ using Newtonsoft.Json.Serialization;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Health;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Management.EndpointOwin

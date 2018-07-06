@@ -31,6 +31,16 @@ namespace Steeltoe.Management.EndpointOwin.Refresh
         /// <returns>OWIN <see cref="IAppBuilder" /> with Refresh Endpoint added</returns>
         public static IAppBuilder UseRefreshEndpointMiddleware(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null)
         {
+            if (builder == null)
+            {
+                throw new System.ArgumentNullException(nameof(builder));
+            }
+
+            if (config == null)
+            {
+                throw new System.ArgumentNullException(nameof(config));
+            }
+
             var endpoint = new RefreshEndpoint(new RefreshOptions(config), config, loggerFactory?.CreateLogger<RefreshEndpoint>());
             var logger = loggerFactory?.CreateLogger<EndpointOwinMiddleware<RefreshEndpoint, IList<string>>>();
             return builder.Use<EndpointOwinMiddleware<RefreshEndpoint, IList<string>>>(endpoint, logger);
