@@ -90,12 +90,9 @@ namespace Steeltoe.Management.Endpoint.Env
 
         public virtual string GetPropertySourceName(IConfigurationProvider provider)
         {
-            if (provider is FileConfigurationProvider fileProvider)
-            {
-                return provider.GetType().Name + ": [" + fileProvider.Source.Path + "]";
-            }
-
-            return provider.GetType().Name;
+            return provider is FileConfigurationProvider fileProvider
+                ? provider.GetType().Name + ": [" + fileProvider.Source.Path + "]"
+                : provider.GetType().Name;
         }
     }
 }

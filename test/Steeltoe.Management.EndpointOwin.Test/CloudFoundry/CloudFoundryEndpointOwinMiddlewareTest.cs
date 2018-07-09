@@ -50,9 +50,9 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry.Test
                 Assert.NotNull(json);
                 var links = JsonConvert.DeserializeObject<Links>(json);
                 Assert.NotNull(links);
-                Assert.True(links._links.ContainsKey("self"));
+                Assert.True(links._links.ContainsKey("self"), "Self is one of the available links");
                 Assert.Equal("http://localhost/cloudfoundryapplication", links._links["self"].href);
-                Assert.True(links._links.ContainsKey("info"));
+                Assert.True(links._links.ContainsKey("info"), "Info is one of the available links");
                 Assert.Equal("http://localhost/cloudfoundryapplication/info", links._links["info"].href);
             }
         }

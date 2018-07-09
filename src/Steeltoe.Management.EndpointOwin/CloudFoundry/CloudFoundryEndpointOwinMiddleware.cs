@@ -17,7 +17,6 @@ using Microsoft.Owin;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using System;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Management.EndpointOwin.CloudFoundry
@@ -55,11 +54,6 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
             }
 
             return scheme + "://" + request.Host.ToString() + request.Path.ToString();
-        }
-
-        private bool AddCorsHeaders(IOwinContext context)
-        {
-            return context.Request.Path.StartsWithSegments(new PathString(_endpoint.Path));
         }
 
         private bool IsCloudFoundryRequest(IOwinContext context)

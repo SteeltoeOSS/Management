@@ -27,6 +27,16 @@ namespace Steeltoe.Management.EndpointAutofac
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
         public static void UseCloudFoundryMiddlewares(this ContainerBuilder container, IConfiguration config)
         {
+            if (container == null)
+            {
+                throw new System.ArgumentNullException(nameof(container));
+            }
+
+            if (config == null)
+            {
+                throw new System.ArgumentNullException(nameof(config));
+            }
+
             // comment out the next line if experimenting with EndpointOwin\Trace\HttpEventListener
             container.RegisterTracingMiddleware(config);
             container.RegisterCloudFoundrySecurityMiddleware(config);

@@ -17,6 +17,7 @@
   
   <ItemGroup>
     <PackageReference Include="Autofac" Version="$(AutofacVersion)" />
+    <PackageReference Include="Steeltoe.Common.Autofac" Version="$(SteeltoeCommonVersion)" />
     <PackageReference Include="StyleCop.Analyzers" Version="$(StyleCopVersion)">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>

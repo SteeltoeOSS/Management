@@ -19,25 +19,34 @@ using Steeltoe.Management.Endpoint.Test;
 using System;
 using Xunit;
 
-namespace Steeltoe.Management.EndpointOwin.Refresh.Test
+namespace Steeltoe.Management.EndpointOwin.Metrics.Test
 {
-    public class RefreshEndpointAppBuilderExtensionsTest : BaseTest
+    public class MetricsEndpointAppBuilderExtensionsTest : BaseTest
     {
         [Fact]
-        public void UseRefreshEndpointMiddleware_ThrowsIfBuilderNull()
+        public void UseMetricsEndpointMiddleware_ThrowsIfBuilderNull()
         {
             IAppBuilder builder = null;
             var config = new ConfigurationBuilder().Build();
-            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseRefreshEndpointMiddleware(config));
+            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseMetricsEndpointMiddleware(config));
             Assert.Equal("builder", exception.ParamName);
         }
 
         [Fact]
-        public void UseRefreshEndpointMiddleware_ThrowsIfConfigNull()
+        public void UseMetricsEndpointMiddleware_ThrowsIfConfigNull()
         {
             IAppBuilder builder = new AppBuilder();
-            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseRefreshEndpointMiddleware(null));
+            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseMetricsEndpointMiddleware(null));
             Assert.Equal("config", exception.ParamName);
+        }
+
+        [Fact]
+        public void UseMetricsEndpointMiddleware_ThrowsIfStatsNull()
+        {
+            IAppBuilder builder = new AppBuilder();
+            var config = new ConfigurationBuilder().Build();
+            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseMetricsEndpointMiddleware(config, stats: null));
+            Assert.Equal("stats", exception.ParamName);
         }
     }
 }
