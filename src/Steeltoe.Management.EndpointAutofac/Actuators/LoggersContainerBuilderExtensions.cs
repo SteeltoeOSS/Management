@@ -16,6 +16,7 @@ using Autofac;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
+using Steeltoe.Common.Logging.Autofac;
 using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Loggers;
 using Steeltoe.Management.EndpointOwin.Loggers;
@@ -55,13 +56,8 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
                 loggerFactory = new LoggerFactory(new List<ILoggerProvider> { loggerProvider });
             }
 
-            /* REVIEW: if logging not already added to container ?? */
+            container.RegisterLogging(config);
             container.RegisterInstance(loggerProvider).As<ILoggerProvider>();
-            container.RegisterInstance(loggerFactory).As<ILoggerFactory>().SingleInstance();
-            container.RegisterInstance(loggerFactory.CreateLogger("generic")).As(typeof(ILogger));
-            container.RegisterGeneric(typeof(Logger<>)).As(typeof(ILogger<>)).SingleInstance();
-            /* END REVIEW */
-
             container.RegisterInstance(new LoggersOptions(config)).As<ILoggersOptions>();
             container.RegisterType<LoggersEndpoint>();
             container.RegisterType<LoggersEndpointOwinMiddleware>();

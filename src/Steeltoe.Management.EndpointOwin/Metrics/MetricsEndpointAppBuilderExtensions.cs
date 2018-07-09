@@ -31,6 +31,16 @@ namespace Steeltoe.Management.EndpointOwin.Metrics
         /// <returns>OWIN <see cref="IAppBuilder" /> with Metrics Endpoint added</returns>
         public static IAppBuilder UseMetricsEndpointMiddleware(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null)
         {
+            if (builder == null)
+            {
+                throw new System.ArgumentNullException(nameof(builder));
+            }
+
+            if (config == null)
+            {
+                throw new System.ArgumentNullException(nameof(config));
+            }
+
             var stats = new OpenCensusStats();
             return builder.UseMetricsEndpointMiddleware(config, stats, loggerFactory);
         }
@@ -45,6 +55,21 @@ namespace Steeltoe.Management.EndpointOwin.Metrics
         /// <returns>OWIN <see cref="IAppBuilder" /> with Metrics Endpoint added</returns>
         public static IAppBuilder UseMetricsEndpointMiddleware(this IAppBuilder builder, IConfiguration config, IStats stats, ILoggerFactory loggerFactory = null)
         {
+            if (builder == null)
+            {
+                throw new System.ArgumentNullException(nameof(builder));
+            }
+
+            if (config == null)
+            {
+                throw new System.ArgumentNullException(nameof(config));
+            }
+
+            if (stats == null)
+            {
+                throw new System.ArgumentNullException(nameof(stats));
+            }
+
             var endpoint = new MetricsEndpoint(new MetricsOptions(config), stats, loggerFactory?.CreateLogger<MetricsEndpoint>());
             var logger = loggerFactory?.CreateLogger<EndpointOwinMiddleware<MetricsEndpoint, MetricsRequest>>();
             return builder.Use<MetricsEndpointOwinMiddleware>(endpoint, logger);

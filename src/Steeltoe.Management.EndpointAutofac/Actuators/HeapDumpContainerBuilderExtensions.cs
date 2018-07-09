@@ -16,7 +16,7 @@ using Autofac;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.HeapDump;
-using Steeltoe.Management.EndpointOwin;
+using Steeltoe.Management.EndpointOwin.HeapDump;
 using System;
 using System.IO;
 
@@ -43,10 +43,10 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
 
             container.RegisterInstance(new HeapDumpOptions(config)).As<IHeapDumpOptions>();
 
-            // REVIEW: is this necessary? Running under IIS Express, the path comes up wrong
+            // REVIEW: is this path override necessary? Running under IIS Express, the path comes up wrong
             container.RegisterType<HeapDumper>().As<IHeapDumper>().WithParameter("basePathOverride", GetContentRoot());
-            container.RegisterType<HeapDumpEndpoint>().As<IEndpoint<string>>();
-            container.RegisterType<EndpointOwinMiddleware<HeapDumpEndpoint, string>>();
+            container.RegisterType<HeapDumpEndpoint>();
+            container.RegisterType<HeapDumpEndpointOwinMiddleware>();
         }
 
         /// <summary>
