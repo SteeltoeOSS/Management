@@ -25,19 +25,17 @@ namespace Steeltoe.Management.Endpoint.Module
     public class ActuatorModule : IHttpModule
     {
         protected ILogger<ActuatorModule> _logger;
-        protected IDictionary<IEndpoint, IActuatorHandler> _endpoints;
-        protected ISecurityService _securityService;
+        protected IList<IActuatorHandler> _handlers;
 
         public ActuatorModule()
             : base()
         {
         }
 
-        public ActuatorModule(ISecurityService securityService, IDictionary<IEndpoint, IActuatorHandler> endpoints, ILogger<ActuatorModule> logger)
+        public ActuatorModule(IList<IActuatorHandler> handlers, ILogger<ActuatorModule> logger)
         {
             _logger = logger;
-            _endpoints = endpoints;
-            _securityService = securityService;
+            _handlers = handlers;
         }
 
         public virtual void Dispose()
@@ -51,14 +49,9 @@ namespace Steeltoe.Management.Endpoint.Module
                 _logger = ActuatorConfiguration.LoggerFactory?.CreateLogger<ActuatorModule>();
             }
 
-            if (_endpoints == null)
+            if (_handlers == null)
             {
-                _endpoints = ActuatorConfiguration.ConfiguredEndpoints;
-            }
-
-            if (_securityService == null)
-            {
-                _securityService = ActuatorConfiguration.SecurityService;
+                _handlers = ActuatorConfiguration.ConfiguredHandlers;
             }
 
             EventHandlerTaskAsyncHelper asyncHelper = new EventHandlerTaskAsyncHelper(FilterAndPreProcessRequest);
@@ -69,19 +62,16 @@ namespace Steeltoe.Management.Endpoint.Module
         {
             HttpApplication application = (HttpApplication)sender;
             HttpContext context = application.Context;
-            if (_endpoints == null)
+            if (_handlers == null)
             {
                 return;
             }
 
-            foreach (var kvp in _endpoints)
+            foreach (var handler in _handlers)
             {
-                var ep = kvp.Key;
-                var handler = kvp.Value;
-
-                if (ep.RequestVerbAndPathMatch(context.Request.HttpMethod, context.Request.Path))
+                if (handler.RequestVerbAndPathMatch(context.Request.HttpMethod, context.Request.Path))
                 {
-                    if (await _securityService?.IsAccessAllowed(context, ep.Options))
+                    if (await handler.IsAccessAllowed(context))
                     {
                         handler.HandleRequest(context);
                     }

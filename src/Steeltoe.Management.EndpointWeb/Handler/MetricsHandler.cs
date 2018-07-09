@@ -25,8 +25,8 @@ namespace Steeltoe.Management.Endpoint.Handler
 {
     public class MetricsHandler : ActuatorHandler<MetricsEndpoint, IMetricsResponse, MetricsRequest>
     {
-        public MetricsHandler(MetricsEndpoint endpoint, ILogger<MetricsHandler> logger = null)
-            : base(endpoint, logger)
+        public MetricsHandler(MetricsEndpoint endpoint, ISecurityService securityService, ILogger<MetricsHandler> logger = null)
+            : base(endpoint, securityService, null, false, logger)
         {
         }
 

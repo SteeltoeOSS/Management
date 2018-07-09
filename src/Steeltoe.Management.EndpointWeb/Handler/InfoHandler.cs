@@ -21,8 +21,8 @@ namespace Steeltoe.Management.Endpoint.Handler
 {
     public class InfoHandler : ActuatorHandler<InfoEndpoint, Dictionary<string, object>>
     {
-        public InfoHandler(InfoEndpoint endpoint, ILogger<InfoHandler> logger = null)
-            : base(endpoint, logger)
+        public InfoHandler(InfoEndpoint endpoint, ISecurityService securityService, ILogger<InfoHandler> logger = null)
+            : base(endpoint, securityService, null, true, logger)
         {
         }
     }

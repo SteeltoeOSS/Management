@@ -13,16 +13,17 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Management.Endpoint.Mappings;
 using Steeltoe.Management.Endpoint.Security;
 using System.Web;
 using System.Web.Routing;
 
 namespace Steeltoe.Management.Endpoint.Handler
 {
-    public class MappingsHandler : ActuatorHandler
+    public class MappingsHandler : ActuatorHandler<MappingsEndpoint, ApplicationMappings>
     {
-        public MappingsHandler(ILogger<MappingsHandler> logger = null)
-            : base(logger)
+        public MappingsHandler(IEndpoint<ApplicationMappings> endpoint, ISecurityService securityService, ILogger<MappingsHandler> logger = null)
+            : base(endpoint, securityService, null, true, logger)
         {
         }
 

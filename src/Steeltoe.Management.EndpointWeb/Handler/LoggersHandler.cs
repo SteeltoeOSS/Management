@@ -17,14 +17,15 @@ using Steeltoe.Management.Endpoint.Loggers;
 using Steeltoe.Management.Endpoint.Security;
 using System.Collections.Generic;
 using System.Net;
+using System.Net.Http;
 using System.Web;
 
 namespace Steeltoe.Management.Endpoint.Handler
 {
     public class LoggersHandler : ActuatorHandler<LoggersEndpoint, Dictionary<string, object>, LoggersChangeRequest>
     {
-        public LoggersHandler(LoggersEndpoint endpoint, ILogger<LoggersHandler> logger = null)
-            : base(endpoint, logger)
+        public LoggersHandler(LoggersEndpoint endpoint, ISecurityService securityService, ILogger<LoggersHandler> logger = null)
+            : base(endpoint, securityService, new List<HttpMethod> { HttpMethod.Get, HttpMethod.Post }, false, logger)
         {
         }
 
@@ -64,6 +65,8 @@ namespace Steeltoe.Management.Endpoint.Handler
                         {
                             var changeReq = new LoggersChangeRequest(loggerName, level);
                             _endpoint.Invoke(changeReq);
+                            context.Response.StatusCode = (int)HttpStatusCode.OK;
+                            return;
                         }
                     }
                 }

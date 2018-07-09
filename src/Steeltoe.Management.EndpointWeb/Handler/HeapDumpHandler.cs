@@ -24,8 +24,8 @@ namespace Steeltoe.Management.Endpoint.Handler
 {
     public class HeapDumpHandler : ActuatorHandler<HeapDumpEndpoint, string>
     {
-        public HeapDumpHandler(HeapDumpEndpoint endpoint, ILogger<HeapDumpHandler> logger = null)
-            : base(endpoint, logger)
+        public HeapDumpHandler(HeapDumpEndpoint endpoint, ISecurityService securityService, ILogger<HeapDumpHandler> logger = null)
+            : base(endpoint, securityService, null, true, logger)
         {
         }
 

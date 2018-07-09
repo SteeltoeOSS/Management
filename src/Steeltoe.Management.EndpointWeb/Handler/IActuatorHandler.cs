@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Threading.Tasks;
 using System.Web;
 
 namespace Steeltoe.Management.Endpoint.Handler
@@ -19,5 +20,9 @@ namespace Steeltoe.Management.Endpoint.Handler
     public interface IActuatorHandler
     {
         void HandleRequest(HttpContext context);
+
+        bool RequestVerbAndPathMatch(string httpMethod, string requestPath);
+
+        Task<bool> IsAccessAllowed(HttpContext context);
     }
 }

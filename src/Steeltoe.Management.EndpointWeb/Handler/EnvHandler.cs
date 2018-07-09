@@ -20,8 +20,8 @@ namespace Steeltoe.Management.Endpoint.Handler
 {
     public class EnvHandler : ActuatorHandler<EnvEndpoint, EnvironmentDescriptor>
     {
-        public EnvHandler(IEndpoint<EnvironmentDescriptor> endpoint, ILogger<EnvHandler> logger = null)
-            : base(endpoint, logger)
+        public EnvHandler(IEndpoint<EnvironmentDescriptor> endpoint, ISecurityService securityService, ILogger<EnvHandler> logger = null)
+            : base(endpoint, securityService, null, true, logger)
         {
         }
     }

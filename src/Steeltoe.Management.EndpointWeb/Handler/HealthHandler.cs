@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Web;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Health;
@@ -21,9 +22,18 @@ namespace Steeltoe.Management.Endpoint.Handler
 {
     public class HealthHandler : ActuatorHandler<HealthEndpoint, HealthCheckResult>
     {
-        public HealthHandler(IEndpoint<HealthCheckResult> endpoint, ILogger<HealthHandler> logger = null)
-            : base(endpoint, logger)
+        public HealthHandler(IEndpoint<HealthCheckResult> endpoint, ISecurityService securityService, ILogger<HealthHandler> logger = null)
+            : base(endpoint, securityService, null, true, logger)
         {
+        }
+
+        public override void HandleRequest(HttpContext context)
+        {
+            _logger?.LogTrace("Processing {SteeltoeEndpoint} request", typeof(HealthHandler));
+            var result = _endpoint.Invoke();
+            context.Response.Headers.Set("Content-Type", "application/vnd.spring-boot.actuator.v1+json");
+            context.Response.Write(Serialize(result));
+            context.Response.StatusCode = ((HealthEndpoint)_endpoint).GetStatusCode(result);
         }
     }
 }

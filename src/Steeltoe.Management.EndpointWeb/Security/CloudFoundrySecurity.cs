@@ -40,11 +40,15 @@ namespace Steeltoe.Management.Endpoint.Security
             // if running on Cloud Foundry, security is enabled, the path starts with /cloudfoundryapplication...
             if (Platform.IsCloudFoundry && _options.IsEnabled)
             {
-                context.Response.Headers.Set("Access-Control-Allow-Credentials", "true");
-                context.Response.Headers.Set("Access-Control-Allow-Origin", context.Request.Headers.Get("origin"));
-                context.Response.Headers.Set("Access-Control-Allow-Headers", "Authorization,X-Cf-App-Instance,Content-Type");
-
                 _logger?.LogTrace("Beginning Cloud Foundry Security Processing");
+
+                if (context.Request.HttpMethod == "OPTIONS")
+                {
+                    return true;
+                }
+
+                var origin = context.Request.Headers.Get("Origin");
+                context.Response.Headers.Set("Access-Control-Allow-Origin", origin ?? "*");
 
                 // identify the application so we can confirm the user making the request has permission
                 if (string.IsNullOrEmpty(_options.ApplicationId))

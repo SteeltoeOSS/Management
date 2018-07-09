@@ -16,7 +16,12 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Steeltoe.Management.Endpoint.Health;
+using Steeltoe.Management.Endpoint.Security;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web;
 
 namespace Steeltoe.Management.Endpoint.Handler
@@ -24,15 +29,18 @@ namespace Steeltoe.Management.Endpoint.Handler
     public class ActuatorHandler : IActuatorHandler
     {
         protected ILogger _logger;
+        protected IEnumerable<HttpMethod> _allowedMethods;
+        protected bool _exactRequestPathMatching;
+        protected ISecurityService _securityService;
 
-        public ActuatorHandler()
-            : base()
-        {
-        }
-
-        public ActuatorHandler(ILogger logger)
+        public ActuatorHandler(ISecurityService securityService, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
         {
             _logger = logger;
+            _allowedMethods = allowedMethods;
+            _exactRequestPathMatching = exactRequestPathMatching;
+            _allowedMethods = allowedMethods ?? new List<HttpMethod> { HttpMethod.Get };
+            _exactRequestPathMatching = exactRequestPathMatching;
+            _securityService = securityService;
         }
 
         public virtual void Dispose()
@@ -41,6 +49,16 @@ namespace Steeltoe.Management.Endpoint.Handler
 
         public virtual void HandleRequest(HttpContext context)
         {
+        }
+
+        public virtual Task<bool> IsAccessAllowed(HttpContext context)
+        {
+            return Task.FromResult(false);
+        }
+
+        public virtual bool RequestVerbAndPathMatch(string httpMethod, string requestPath)
+        {
+            return false;
         }
 
         protected virtual string Serialize<T>(T result)
@@ -71,18 +89,13 @@ namespace Steeltoe.Management.Endpoint.Handler
     {
         protected IEndpoint<TResult> _endpoint;
 
-        public ActuatorHandler()
-            : base()
+        public ActuatorHandler(ISecurityService securityService, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
+            : base(securityService, allowedMethods, exactRequestPathMatching, logger)
         {
         }
 
-        public ActuatorHandler(ILogger logger)
-            : base(logger)
-        {
-        }
-
-        public ActuatorHandler(IEndpoint<TResult> endpoint, ILogger logger)
-            : this(logger)
+        public ActuatorHandler(IEndpoint<TResult> endpoint, ISecurityService securityService, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
+            : base(securityService, allowedMethods, exactRequestPathMatching, logger)
         {
             _endpoint = endpoint ?? throw new NullReferenceException(nameof(endpoint));
         }
@@ -94,6 +107,18 @@ namespace Steeltoe.Management.Endpoint.Handler
             context.Response.Headers.Set("Content-Type", "application/vnd.spring-boot.actuator.v1+json");
             context.Response.Write(Serialize(result));
         }
+
+        public override bool RequestVerbAndPathMatch(string httpMethod, string requestPath)
+        {
+            return _exactRequestPathMatching
+                ? requestPath.Equals(_endpoint.Path) && _allowedMethods.Any(m => m.Method.Equals(httpMethod))
+                : requestPath.StartsWith(_endpoint.Path) && _allowedMethods.Any(m => m.Method.Equals(httpMethod));
+        }
+
+        public async override Task<bool> IsAccessAllowed(HttpContext context)
+        {
+            return await _securityService?.IsAccessAllowed(context, _endpoint.Options);
+        }
     }
 
 #pragma warning disable SA1402 // File may only contain a single class
@@ -102,18 +127,8 @@ namespace Steeltoe.Management.Endpoint.Handler
     {
         protected new IEndpoint<TResult, TRequest> _endpoint;
 
-        public ActuatorHandler()
-            : base()
-        {
-        }
-
-        public ActuatorHandler(ILogger logger)
-            : base(logger)
-        {
-        }
-
-        public ActuatorHandler(IEndpoint<TResult, TRequest> endpoint, ILogger logger)
-            : base(logger)
+        public ActuatorHandler(IEndpoint<TResult, TRequest> endpoint, ISecurityService securityService, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
+            : base(securityService, allowedMethods, exactRequestPathMatching, logger)
         {
             _endpoint = endpoint ?? throw new NullReferenceException(nameof(endpoint));
         }
@@ -122,6 +137,18 @@ namespace Steeltoe.Management.Endpoint.Handler
         {
             var result = _endpoint.Invoke(arg);
             return Serialize(result);
+        }
+
+        public override bool RequestVerbAndPathMatch(string httpMethod, string requestPath)
+        {
+            return _exactRequestPathMatching
+                  ? requestPath.Equals(_endpoint.Path) && _allowedMethods.Any(m => m.Method.Equals(httpMethod))
+                  : requestPath.StartsWith(_endpoint.Path) && _allowedMethods.Any(m => m.Method.Equals(httpMethod));
+        }
+
+        public async override Task<bool> IsAccessAllowed(HttpContext context)
+        {
+            return await _securityService?.IsAccessAllowed(context, _endpoint.Options);
         }
     }
 }
