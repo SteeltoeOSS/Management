@@ -26,9 +26,9 @@
     <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNet.TelemetryCorrelation" Version="1.0.3" />
-    <PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.2.6" />
-    <PackageReference Include="Microsoft.Web.Infrastructure" Version="1.0.0" />
+    <PackageReference Include="Microsoft.AspNet.TelemetryCorrelation" Version="$(TelemetryCorrelationVersion)" />
+    <PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="$(WebApiCoreVersion)" />
+    <PackageReference Include="Microsoft.Web.Infrastructure" Version="$(WebInfrastructureVersion)" />
     <PackageReference Include="StyleCop.Analyzers" Version="$(StyleCopVersion)">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
