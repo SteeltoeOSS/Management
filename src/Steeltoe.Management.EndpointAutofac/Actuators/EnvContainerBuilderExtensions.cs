@@ -18,8 +18,6 @@ using Microsoft.Extensions.Hosting;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Env;
 using Steeltoe.Management.EndpointOwin;
-using Steeltoe.Management.EndpointSysWeb;
-using System.Web;
 
 namespace Steeltoe.Management.EndpointAutofac.Actuators
 {
@@ -55,22 +53,22 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
         /// <param name="hostingEnv">A class describing the app hosting environment - defaults to <see cref="GenericHostingEnvironment"/></param>
-        public static void RegisterEnvModule(this ContainerBuilder container, IConfiguration config, IHostingEnvironment hostingEnv = null)
-        {
-            if (container == null)
-            {
-                throw new System.ArgumentNullException(nameof(container));
-            }
+        //public static void RegisterEnvModule(this ContainerBuilder container, IConfiguration config, IHostingEnvironment hostingEnv = null)
+        //{
+        //    if (container == null)
+        //    {
+        //        throw new System.ArgumentNullException(nameof(container));
+        //    }
 
-            if (config == null)
-            {
-                throw new System.ArgumentNullException(nameof(config));
-            }
+        //    if (config == null)
+        //    {
+        //        throw new System.ArgumentNullException(nameof(config));
+        //    }
 
-            container.RegisterInstance(new EnvOptions(config)).As<IEnvOptions>();
-            container.RegisterInstance(hostingEnv ?? new GenericHostingEnvironment()).As<IHostingEnvironment>();
-            container.RegisterType<EnvEndpoint>().As<IEndpoint<EnvironmentDescriptor>>();
-            container.RegisterType<EnvModule>().As<IHttpModule>();
-        }
+        //    container.RegisterInstance(new EnvOptions(config)).As<IEnvOptions>();
+        //    container.RegisterInstance(hostingEnv ?? new GenericHostingEnvironment()).As<IHostingEnvironment>();
+        //    container.RegisterType<EnvEndpoint>().As<IEndpoint<EnvironmentDescriptor>>();
+        //    container.RegisterType<EnvModule>().As<IHttpModule>();
+        //}
     }
 }

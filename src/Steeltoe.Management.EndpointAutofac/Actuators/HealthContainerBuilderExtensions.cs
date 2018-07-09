@@ -20,9 +20,7 @@ using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Health.Contributor;
 using Steeltoe.Management.EndpointOwin;
 using Steeltoe.Management.EndpointOwin.Health;
-using Steeltoe.Management.EndpointSysWeb;
 using System;
-using System.Web;
 
 namespace Steeltoe.Management.EndpointAutofac.Actuators
 {
@@ -109,20 +107,20 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
         /// </summary>
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        public static void RegisterHealthModule(this ContainerBuilder container, IConfiguration config)
-        {
-            if (container == null)
-            {
-                throw new ArgumentNullException(nameof(container));
-            }
+        //public static void RegisterHealthModule(this ContainerBuilder container, IConfiguration config)
+        //{
+        //    if (container == null)
+        //    {
+        //        throw new ArgumentNullException(nameof(container));
+        //    }
 
-            if (config == null)
-            {
-                throw new ArgumentNullException(nameof(config));
-            }
+        //    if (config == null)
+        //    {
+        //        throw new ArgumentNullException(nameof(config));
+        //    }
 
-            container.RegisterHealthModule(config, new DefaultHealthAggregator(), new Type[] { typeof(DiskSpaceContributor) });
-        }
+        //    container.RegisterHealthModule(config, new DefaultHealthAggregator(), new Type[] { typeof(DiskSpaceContributor) });
+        //}
 
         /// <summary>
         /// Register the Health endpoint, IHttpModule and options
@@ -130,20 +128,20 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
         /// <param name="contributors">Types that implement <see cref="IHealthContributor"/></param>
-        public static void RegisterHealthModule(this ContainerBuilder container, IConfiguration config, params Type[] contributors)
-        {
-            if (container == null)
-            {
-                throw new ArgumentNullException(nameof(container));
-            }
+        //public static void RegisterHealthModule(this ContainerBuilder container, IConfiguration config, params Type[] contributors)
+        //{
+        //    if (container == null)
+        //    {
+        //        throw new ArgumentNullException(nameof(container));
+        //    }
 
-            if (config == null)
-            {
-                throw new ArgumentNullException(nameof(config));
-            }
+        //    if (config == null)
+        //    {
+        //        throw new ArgumentNullException(nameof(config));
+        //    }
 
-            container.RegisterHealthModule(config, new DefaultHealthAggregator(), contributors);
-        }
+        //    container.RegisterHealthModule(config, new DefaultHealthAggregator(), contributors);
+        //}
 
         /// <summary>
         /// Register the Health endpoint, IHttpModule and options
@@ -152,32 +150,32 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
         /// <param name="aggregator">Your <see cref="IHealthAggregator"/></param>
         /// <param name="contributors">Types that implement <see cref="IHealthContributor"/></param>
-        public static void RegisterHealthModule(this ContainerBuilder container, IConfiguration config, IHealthAggregator aggregator, params Type[] contributors)
-        {
-            if (container == null)
-            {
-                throw new ArgumentNullException(nameof(container));
-            }
+        //public static void RegisterHealthModule(this ContainerBuilder container, IConfiguration config, IHealthAggregator aggregator, params Type[] contributors)
+        //{
+        //    if (container == null)
+        //    {
+        //        throw new ArgumentNullException(nameof(container));
+        //    }
 
-            if (config == null)
-            {
-                throw new ArgumentNullException(nameof(config));
-            }
+        //    if (config == null)
+        //    {
+        //        throw new ArgumentNullException(nameof(config));
+        //    }
 
-            if (aggregator == null)
-            {
-                aggregator = new DefaultHealthAggregator();
-            }
+        //    if (aggregator == null)
+        //    {
+        //        aggregator = new DefaultHealthAggregator();
+        //    }
 
-            container.RegisterInstance(new HealthOptions(config)).As<IHealthOptions>();
-            container.RegisterInstance(aggregator).As<IHealthAggregator>();
-            foreach (var c in contributors)
-            {
-                container.RegisterType(c).As<IHealthContributor>();
-            }
+        //    container.RegisterInstance(new HealthOptions(config)).As<IHealthOptions>();
+        //    container.RegisterInstance(aggregator).As<IHealthAggregator>();
+        //    foreach (var c in contributors)
+        //    {
+        //        container.RegisterType(c).As<IHealthContributor>();
+        //    }
 
-            container.RegisterType<HealthEndpoint>().As<IEndpoint<HealthCheckResult>>();
-            container.RegisterType<HealthModule>().As<IHttpModule>();
-        }
+        //    container.RegisterType<HealthEndpoint>().As<IEndpoint<HealthCheckResult>>();
+        //    container.RegisterType<HealthModule>().As<IHttpModule>();
+        //}
     }
 }

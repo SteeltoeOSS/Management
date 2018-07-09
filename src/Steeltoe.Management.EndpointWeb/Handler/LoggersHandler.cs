@@ -14,23 +14,21 @@
 
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Loggers;
+using Steeltoe.Management.Endpoint.Security;
 using System.Collections.Generic;
 using System.Net;
 using System.Web;
-using ANCHttp = Microsoft.AspNetCore.Http; // REVIEW: this usage of an AspNetCore library in a project for system.web apps
 
-namespace Steeltoe.Management.EndpointSysWeb
+namespace Steeltoe.Management.Endpoint.Handler
 {
-    public class LoggersModule : ActuatorModule<LoggersEndpoint, Dictionary<string, object>, LoggersChangeRequest>
+    public class LoggersHandler : ActuatorHandler<LoggersEndpoint, Dictionary<string, object>, LoggersChangeRequest>
     {
-        public LoggersModule(LoggersEndpoint endpoint, ILogger<LoggersModule> logger = null)
+        public LoggersHandler(LoggersEndpoint endpoint, ILogger<LoggersHandler> logger = null)
             : base(endpoint, logger)
         {
-             _endpoint = endpoint;
-             _logger = logger;
         }
 
-        protected override void HandleRequest(HttpContext context)
+        public override void HandleRequest(HttpContext context)
         {
             _logger?.LogTrace("Processing {SteeltoeEndpoint} request", typeof(LoggersEndpoint).Name);
             if (context.Request.HttpMethod == "GET")
@@ -47,14 +45,15 @@ namespace Steeltoe.Management.EndpointSysWeb
             {
                 // POST - change a logger level
                 _logger?.LogDebug("Incoming logger path: {0}", context.Request.Path);
-                var psPath = new ANCHttp.PathString(context.Request.Path);
-                var epPath = new ANCHttp.PathString(_endpoint.Path);
 
-                if (psPath.StartsWithSegments(epPath, out ANCHttp.PathString remaining))
+                var psPath = context.Request.Path;
+                var epPath = _endpoint.Path;
+
+                if (psPath.StartsWithSegments(epPath, out string remaining))
                 {
-                    if (remaining.HasValue)
+                    if (!string.IsNullOrEmpty(remaining))
                     {
-                        string loggerName = remaining.Value.TrimStart('/');
+                        string loggerName = remaining.TrimStart('/');
 
                         var change = ((LoggersEndpoint)_endpoint).DeserializeRequest(context.Request.InputStream);
 

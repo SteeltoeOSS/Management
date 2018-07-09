@@ -13,14 +13,15 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
-using Steeltoe.Management.Endpoint;
-using Steeltoe.Management.Endpoint.Env;
+using Steeltoe.Management.Endpoint.Info;
+using Steeltoe.Management.Endpoint.Security;
+using System.Collections.Generic;
 
-namespace Steeltoe.Management.EndpointSysWeb
+namespace Steeltoe.Management.Endpoint.Handler
 {
-    public class EnvModule : ActuatorModule<EnvEndpoint, EnvironmentDescriptor>
+    public class InfoHandler : ActuatorHandler<InfoEndpoint, Dictionary<string, object>>
     {
-        public EnvModule(IEndpoint<EnvironmentDescriptor> endpoint, ILogger<EnvModule> logger = null)
+        public InfoHandler(InfoEndpoint endpoint, ILogger<InfoHandler> logger = null)
             : base(endpoint, logger)
         {
         }

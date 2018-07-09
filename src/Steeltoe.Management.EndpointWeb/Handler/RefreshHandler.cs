@@ -14,13 +14,14 @@
 
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Refresh;
+using Steeltoe.Management.Endpoint.Security;
 using System.Collections.Generic;
 
-namespace Steeltoe.Management.EndpointSysWeb
+namespace Steeltoe.Management.Endpoint.Handler
 {
-    public class RefreshModule : ActuatorModule<RefreshEndpoint, IList<string>>
+    public class RefreshHandler : ActuatorHandler<RefreshEndpoint, IList<string>>
     {
-        public RefreshModule(RefreshEndpoint endpoint, ILogger logger)
+        public RefreshHandler(RefreshEndpoint endpoint, ILogger<RefreshHandler> logger = null)
             : base(endpoint, logger)
         {
         }

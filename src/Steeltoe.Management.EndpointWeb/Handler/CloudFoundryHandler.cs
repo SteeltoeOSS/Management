@@ -14,17 +14,24 @@
 
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.CloudFoundry;
-using System;
+using Steeltoe.Management.Endpoint.Security;
 using System.Web;
 
-namespace Steeltoe.Management.EndpointSysWeb
+namespace Steeltoe.Management.Endpoint.Handler
 {
-    public class CloudFoundryModule : ActuatorModule<CloudFoundryEndpoint, Links, string>
+    public class CloudFoundryHandler : ActuatorHandler<CloudFoundryEndpoint, Links, string>
     {
-        public CloudFoundryModule(CloudFoundryEndpoint endpoint, ILogger logger)
+        public CloudFoundryHandler(CloudFoundryEndpoint endpoint, ILogger<CloudFoundryHandler> logger = null)
             : base(endpoint, logger)
         {
-            _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
+        }
+
+        public override void HandleRequest(HttpContext context)
+        {
+            _logger?.LogTrace("Processing {SteeltoeEndpoint} request", typeof(CloudFoundryEndpoint));
+            var result = _endpoint.Invoke(GetRequestUri(context.Request));
+            context.Response.Headers.Set("Content-Type", "application/vnd.spring-boot.actuator.v1+json");
+            context.Response.Write(Serialize(result));
         }
 
         protected internal string GetRequestUri(HttpRequest request)
@@ -38,14 +45,6 @@ namespace Steeltoe.Management.EndpointSysWeb
             }
 
             return scheme + "://" + request.Url.Authority + request.Path.ToString();
-        }
-
-        protected override void HandleRequest(HttpContext context)
-        {
-            _logger?.LogTrace("Processing {SteeltoeEndpoint} request", typeof(CloudFoundryEndpoint));
-            var result = _endpoint.Invoke(GetRequestUri(context.Request));
-            context.Response.Headers.Set("Content-Type", "application/vnd.spring-boot.actuator.v1+json");
-            context.Response.Write(Serialize(result));
         }
     }
 }

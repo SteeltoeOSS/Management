@@ -17,10 +17,8 @@ using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Refresh;
 using Steeltoe.Management.EndpointOwin;
-using Steeltoe.Management.EndpointSysWeb;
 using System;
 using System.Collections.Generic;
-using System.Web;
 
 namespace Steeltoe.Management.EndpointAutofac.Actuators
 {
@@ -53,21 +51,21 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
         /// </summary>
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        public static void RegisterRefreshModule(this ContainerBuilder container, IConfiguration config)
-        {
-            if (container == null)
-            {
-                throw new ArgumentNullException(nameof(container));
-            }
+        //public static void RegisterRefreshModule(this ContainerBuilder container, IConfiguration config)
+        //{
+        //    if (container == null)
+        //    {
+        //        throw new ArgumentNullException(nameof(container));
+        //    }
 
-            if (config == null)
-            {
-                throw new ArgumentNullException(nameof(config));
-            }
+        //    if (config == null)
+        //    {
+        //        throw new ArgumentNullException(nameof(config));
+        //    }
 
-            container.RegisterInstance(new RefreshOptions(config)).As<IRefreshOptions>();
-            container.RegisterType<RefreshEndpoint>();
-            container.RegisterType<RefreshModule>().As<IHttpModule>();
-        }
+        //    container.RegisterInstance(new RefreshOptions(config)).As<IRefreshOptions>();
+        //    container.RegisterType<RefreshEndpoint>();
+        //    container.RegisterType<RefreshModule>().As<IHttpModule>();
+        //}
     }
 }

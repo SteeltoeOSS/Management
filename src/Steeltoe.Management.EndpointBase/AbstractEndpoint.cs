@@ -50,7 +50,6 @@ namespace Steeltoe.Management.Endpoint
                 ? requestPath.Equals(Path) && AllowedMethods.Any(m => m.Method.Equals(httpMethod))
                 : requestPath.StartsWith(Path) && AllowedMethods.Any(m => m.Method.Equals(httpMethod));
         }
-
     }
 
 #pragma warning disable SA1402 // File may only contain a single class

@@ -46,7 +46,7 @@
   </ItemGroup>
   
   <ItemGroup>
-    <ProjectReference Include="..\Steeltoe.Management.EndpointSysWeb\Steeltoe.Management.EndpointSysWeb.csproj" />
+    <ProjectReference Include="..\Steeltoe.Management.EndpointWeb\Steeltoe.Management.EndpointWeb.csproj" />
   </ItemGroup>
   
   <ItemGroup>

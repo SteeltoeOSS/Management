@@ -18,11 +18,8 @@ using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Info.Contributor;
 using Steeltoe.Management.EndpointOwin;
-using Steeltoe.Management.EndpointSysWeb;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Web;
 
 namespace Steeltoe.Management.EndpointAutofac.Actuators
 {
@@ -81,20 +78,20 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
         /// </summary>
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        public static void RegisterInfoModule(this ContainerBuilder container, IConfiguration config)
-        {
-            if (container == null)
-            {
-                throw new ArgumentNullException(nameof(container));
-            }
+        //public static void RegisterInfoModule(this ContainerBuilder container, IConfiguration config)
+        //{
+        //    if (container == null)
+        //    {
+        //        throw new ArgumentNullException(nameof(container));
+        //    }
 
-            if (config == null)
-            {
-                throw new ArgumentNullException(nameof(config));
-            }
+        //    if (config == null)
+        //    {
+        //        throw new ArgumentNullException(nameof(config));
+        //    }
 
-            container.RegisterInfoModule(config, new GitInfoContributor(AppDomain.CurrentDomain.BaseDirectory + "git.properties"), new AppSettingsInfoContributor(config));
-        }
+        //    container.RegisterInfoModule(config, new GitInfoContributor(AppDomain.CurrentDomain.BaseDirectory + "git.properties"), new AppSettingsInfoContributor(config));
+        //}
 
         /// <summary>
         /// Register the Info endpoint, HttpModule and options
@@ -102,26 +99,26 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
         /// <param name="contributors">Contributors to application information</param>
-        public static void RegisterInfoModule(this ContainerBuilder container, IConfiguration config, params IInfoContributor[] contributors)
-        {
-            if (container == null)
-            {
-                throw new ArgumentNullException(nameof(container));
-            }
+        //public static void RegisterInfoModule(this ContainerBuilder container, IConfiguration config, params IInfoContributor[] contributors)
+        //{
+        //    if (container == null)
+        //    {
+        //        throw new ArgumentNullException(nameof(container));
+        //    }
 
-            if (config == null)
-            {
-                throw new ArgumentNullException(nameof(config));
-            }
+        //    if (config == null)
+        //    {
+        //        throw new ArgumentNullException(nameof(config));
+        //    }
 
-            foreach (var c in contributors)
-            {
-                container.RegisterInstance(c).As<IInfoContributor>();
-            }
+        //    foreach (var c in contributors)
+        //    {
+        //        container.RegisterInstance(c).As<IInfoContributor>();
+        //    }
 
-            container.RegisterInstance(new InfoOptions(config)).As<IInfoOptions>();
-            container.RegisterType<InfoEndpoint>();
-            container.RegisterType<InfoModule>().As<IHttpModule>();
-        }
+        //    container.RegisterInstance(new InfoOptions(config)).As<IInfoOptions>();
+        //    container.RegisterType<InfoEndpoint>();
+        //    container.RegisterType<InfoModule>().As<IHttpModule>();
+        //}
     }
 }

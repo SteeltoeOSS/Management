@@ -13,27 +13,32 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
-using Steeltoe.Management.Endpoint.Trace;
+using Steeltoe.Common.Diagnostics;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Threading.Tasks;
+using System.Diagnostics;
 using System.Web;
 
-namespace Steeltoe.Management.EndpointOwin.Trace
+namespace Steeltoe.Management.Endpoint.Trace.Observer
 {
-    /// <summary>
-    /// Used to record and report recent HTTP request traces
-    /// </summary>
-    public class WebTraceRepository : ITraceRepository
+    public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
     {
         internal ConcurrentQueue<TraceResult> _queue = new ConcurrentQueue<TraceResult>();
+
+        private const string DIAGNOSTIC_NAME = "Microsoft.AspNet.TelemetryCorrelation";
+        private const string OBSERVER_NAME = "TraceDiagnosticObserver";
+        private const string STOP_EVENT = "Microsoft.AspNet.HttpReqIn.Stop";
+        private const string STOP_EVENT_ACTIVITY_LOST = "Microsoft.AspNet.HttpReqIn.ActivityLost.Stop";
+        private const string STOP_EVENT_ACTIVITY_RESTORED = "Microsoft.AspNet.HttpReqIn.ActivityRestored.Stop";
+
         private static DateTime baseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        private ILogger<WebTraceRepository> _logger;
+        private ILogger<TraceDiagnosticObserver> _logger;
         private ITraceOptions _options;
 
-        public WebTraceRepository(ITraceOptions options, ILogger<WebTraceRepository> logger = null)
+        public TraceDiagnosticObserver(ITraceOptions options, ILogger<TraceDiagnosticObserver> logger = null)
+            : base(OBSERVER_NAME, DIAGNOSTIC_NAME, logger)
         {
             _options = options ?? throw new ArgumentNullException(nameof(options));
             _logger = logger;
@@ -45,21 +50,37 @@ namespace Steeltoe.Management.EndpointOwin.Trace
             return new List<TraceResult>(traces);
         }
 
-        public void RecordTrace(HttpContext context, TimeSpan duration)
+        public override void ProcessEvent(string key, object value)
         {
-            if (context == null)
+            Activity current = null;
+
+            if (key == STOP_EVENT)
+            {
+                current = Activity.Current;
+            }
+            else if (key == STOP_EVENT_ACTIVITY_RESTORED)
+            {
+                current = DiagnosticHelpers.GetProperty<Activity>(value, "Activity");
+            }
+
+            if (current == null)
             {
                 return;
             }
 
-            TraceResult trace = MakeTrace(context, duration);
-            _queue.Enqueue(trace);
+            HttpContext context = HttpContext.Current;
 
-            if (_queue.Count > _options.Capacity)
+            if (context != null)
             {
-                if (!_queue.TryDequeue(out TraceResult discard))
+                TraceResult trace = MakeTrace(context, current.Duration);
+                _queue.Enqueue(trace);
+
+                if (_queue.Count > _options.Capacity)
                 {
-                    _logger?.LogDebug("Stop - Dequeue failed");
+                    if (!_queue.TryDequeue(out TraceResult discard))
+                    {
+                        _logger?.LogDebug("Stop - Dequeue failed");
+                    }
                 }
             }
         }

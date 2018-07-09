@@ -13,14 +13,15 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
-using Steeltoe.Management.Endpoint.Trace;
-using System.Collections.Generic;
+using Steeltoe.Common.HealthChecks;
+using Steeltoe.Management.Endpoint.Health;
+using Steeltoe.Management.Endpoint.Security;
 
-namespace Steeltoe.Management.EndpointSysWeb
+namespace Steeltoe.Management.Endpoint.Handler
 {
-    public class TraceModule : ActuatorModule<TraceEndpoint, List<TraceResult>>
+    public class HealthHandler : ActuatorHandler<HealthEndpoint, HealthCheckResult>
     {
-        public TraceModule(TraceEndpoint endpoint, ILogger logger)
+        public HealthHandler(IEndpoint<HealthCheckResult> endpoint, ILogger<HealthHandler> logger = null)
             : base(endpoint, logger)
         {
         }

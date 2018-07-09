@@ -13,17 +13,22 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
-using Steeltoe.Common.HealthChecks;
-using Steeltoe.Management.Endpoint;
-using Steeltoe.Management.Endpoint.Health;
+using Steeltoe.Management.Endpoint.Security;
+using System.Web;
+using System.Web.Routing;
 
-namespace Steeltoe.Management.EndpointSysWeb
+namespace Steeltoe.Management.Endpoint.Handler
 {
-    public class HealthModule : ActuatorModule<HealthEndpoint, HealthCheckResult>
+    public class MappingsHandler : ActuatorHandler
     {
-        public HealthModule(IEndpoint<HealthCheckResult> endpoint, ILogger<HealthModule> logger = null)
-            : base(endpoint, logger)
+        public MappingsHandler(ILogger<MappingsHandler> logger = null)
+            : base(logger)
         {
+        }
+
+        public override void HandleRequest(HttpContext context)
+        {
+            var routeCollection = RouteTable.Routes;
         }
     }
 }

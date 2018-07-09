@@ -13,19 +13,15 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
-using Steeltoe.Management.Endpoint;
-using Steeltoe.Management.Endpoint.ThreadDump;
-using System;
+using Steeltoe.Management.Endpoint.Security;
+using Steeltoe.Management.Endpoint.Trace;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Steeltoe.Management.EndpointSysWeb
+namespace Steeltoe.Management.Endpoint.Handler
 {
-    public class ThreadDumpModule : ActuatorModule<ThreadDumpEndpoint, List<ThreadInfo>>
+    public class TraceHandler : ActuatorHandler<TraceEndpoint, List<TraceResult>>
     {
-        public ThreadDumpModule(ThreadDumpEndpoint endpoint, ILogger logger)
+        public TraceHandler(TraceEndpoint endpoint, ILogger<TraceHandler> logger = null)
             : base(endpoint, logger)
         {
         }

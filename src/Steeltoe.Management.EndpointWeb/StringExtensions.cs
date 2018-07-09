@@ -13,19 +13,26 @@
 // limitations under the License.
 
 using System;
-using System.Collections.Generic;
-using System.Web;
 
-namespace Steeltoe.Management.EndpointSysWeb
+namespace Steeltoe.Management.Endpoint
 {
-    public static class CloudFoundryModules
+    public static class StringExtensions
     {
-        public static void ActivateCloudFoundryModules(HttpApplication context, IEnumerable<IHttpModule> httpModules)
+        public static bool StartsWithSegments(this string incoming, string other, out string remaining)
         {
-            foreach (var httpModule in httpModules)
+            string value1 = incoming ?? string.Empty;
+            string value2 = other ?? string.Empty;
+            if (value1.StartsWith(value2, StringComparison.OrdinalIgnoreCase))
             {
-                httpModule.Init(context);
+                if (value1.Length == value2.Length || value1[value2.Length] == '/')
+                {
+                    remaining = value1.Substring(value2.Length);
+                    return true;
+                }
             }
+
+            remaining = string.Empty;
+            return false;
         }
     }
 }

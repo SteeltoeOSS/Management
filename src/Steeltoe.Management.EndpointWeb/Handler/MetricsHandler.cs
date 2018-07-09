@@ -14,33 +14,67 @@
 
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Metrics;
+using Steeltoe.Management.Endpoint.Security;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Net;
 using System.Web;
-using ANCHttp = Microsoft.AspNetCore.Http; // REVIEW: this usage of an AspNetCore library in a project for system.web apps
 
-namespace Steeltoe.Management.EndpointSysWeb
+namespace Steeltoe.Management.Endpoint.Handler
 {
-    public class MetricsModule : ActuatorModule<MetricsEndpoint, IMetricsResponse, MetricsRequest>
+    public class MetricsHandler : ActuatorHandler<MetricsEndpoint, IMetricsResponse, MetricsRequest>
     {
-        public MetricsModule(MetricsEndpoint endpoint, ILogger logger)
+        public MetricsHandler(MetricsEndpoint endpoint, ILogger<MetricsHandler> logger = null)
             : base(endpoint, logger)
         {
-            _endpoint = endpoint;
-            _logger = logger;
+        }
+
+        public override void HandleRequest(HttpContext context)
+        {
+            var request = context.Request;
+            var response = context.Response;
+
+            _logger?.LogDebug("Incoming path: {0}", request.Path);
+
+            string metricName = GetMetricName(request);
+            if (!string.IsNullOrEmpty(metricName))
+            {
+                // GET /metrics/{metricName}?tag=key:value&tag=key:value
+                var tags = ParseTags(request.QueryString);
+                var metricRequest = new MetricsRequest(metricName, tags);
+                var serialInfo = HandleRequest(metricRequest);
+
+                if (serialInfo != null)
+                {
+                    response.StatusCode = (int)HttpStatusCode.OK;
+                    context.Response.Write(serialInfo);
+                }
+                else
+                {
+                    response.StatusCode = (int)HttpStatusCode.NotFound;
+                }
+            }
+            else
+            {
+                // GET /metrics
+                var serialInfo = this.HandleRequest(null);
+                _logger?.LogDebug("Returning: {0}", serialInfo);
+                response.Headers.Set("Content-Type", "application/vnd.spring-boot.actuator.v1+json");
+                response.StatusCode = (int)HttpStatusCode.OK;
+                context.Response.Write(serialInfo);
+            }
         }
 
         protected internal string GetMetricName(HttpRequest request)
         {
-            var epPath = new ANCHttp.PathString(_endpoint.Path);
-            var psPath = new ANCHttp.PathString(request.Path);
-            if (psPath.StartsWithSegments(epPath, out ANCHttp.PathString remaining))
+            var epPath = _endpoint.Path;
+            var psPath = request.Path;
+            if (psPath.StartsWithSegments(epPath, out string remaining))
             {
-                if (remaining.HasValue)
+                if (!string.IsNullOrEmpty(remaining))
                 {
-                    return remaining.Value.TrimStart('/');
+                    return remaining.TrimStart('/');
                 }
             }
 
@@ -92,42 +126,6 @@ namespace Steeltoe.Management.EndpointSysWeb
             return str != null && str.Length == 2
                 ? (KeyValuePair<string, string>?)new KeyValuePair<string, string>(str[0], str[1])
                 : null;
-        }
-
-        protected override void HandleRequest(HttpContext context)
-        {
-            var request = context.Request;
-            var response = context.Response;
-
-            _logger?.LogDebug("Incoming path: {0}", request.Path);
-
-            string metricName = GetMetricName(request);
-            if (!string.IsNullOrEmpty(metricName))
-            {
-                // GET /metrics/{metricName}?tag=key:value&tag=key:value
-                var tags = ParseTags(request.QueryString);
-                var metricRequest = new MetricsRequest(metricName, tags);
-                var serialInfo = HandleRequest(metricRequest);
-
-                if (serialInfo != null)
-                {
-                    response.StatusCode = (int)HttpStatusCode.OK;
-                    context.Response.Write(serialInfo);
-                }
-                else
-                {
-                    response.StatusCode = (int)HttpStatusCode.NotFound;
-                }
-            }
-            else
-            {
-                // GET /metrics
-                var serialInfo = this.HandleRequest(null);
-                _logger?.LogDebug("Returning: {0}", serialInfo);
-                response.Headers.Set("Content-Type", "application/vnd.spring-boot.actuator.v1+json");
-                response.StatusCode = (int)HttpStatusCode.OK;
-                context.Response.Write(serialInfo);
-            }
         }
     }
 }

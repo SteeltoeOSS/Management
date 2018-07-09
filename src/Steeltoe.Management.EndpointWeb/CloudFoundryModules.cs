@@ -12,17 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Extensions.Logging;
-using Steeltoe.Management.Endpoint.Info;
+using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
+using System.Web;
 
-namespace Steeltoe.Management.EndpointSysWeb
+namespace Steeltoe.Management.Endpoint
 {
-    public class InfoModule : ActuatorModule<InfoEndpoint, Dictionary<string, object>>
+    public static class CloudFoundryModules
     {
-        public InfoModule(InfoEndpoint endpoint, ILogger<InfoModule> logger)
-            : base(endpoint, logger)
+        public static void ActivateCloudFoundryModules(HttpApplication context, IEnumerable<IHttpModule> httpModules)
         {
+            foreach (var httpModule in httpModules)
+            {
+                httpModule.Init(context);
+            }
         }
     }
 }
