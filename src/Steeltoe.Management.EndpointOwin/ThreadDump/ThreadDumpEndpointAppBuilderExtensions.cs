@@ -31,6 +31,16 @@ namespace Steeltoe.Management.EndpointOwin.ThreadDump
         /// <returns>OWIN <see cref="IAppBuilder" /> with Thread Dump Endpoint added</returns>
         public static IAppBuilder UseThreadDumpEndpointMiddleware(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null)
         {
+            if (builder == null)
+            {
+                throw new System.ArgumentNullException(nameof(builder));
+            }
+
+            if (config == null)
+            {
+                throw new System.ArgumentNullException(nameof(config));
+            }
+
             var options = new ThreadDumpOptions(config);
             var threadDumper = new ThreadDumper(options, loggerFactory?.CreateLogger<ThreadDumper>());
             return builder.UseThreadDumpEndpointMiddleware(options, threadDumper, loggerFactory);
@@ -46,6 +56,21 @@ namespace Steeltoe.Management.EndpointOwin.ThreadDump
         /// <returns>OWIN <see cref="IAppBuilder" /> with Health Endpoint added</returns>
         public static IAppBuilder UseThreadDumpEndpointMiddleware(this IAppBuilder builder, IThreadDumpOptions options, IThreadDumper threadDumper, ILoggerFactory loggerFactory = null)
         {
+            if (builder == null)
+            {
+                throw new System.ArgumentNullException(nameof(builder));
+            }
+
+            if (options == null)
+            {
+                throw new System.ArgumentNullException(nameof(options));
+            }
+
+            if (threadDumper == null)
+            {
+                throw new System.ArgumentNullException(nameof(threadDumper));
+            }
+
             var endpoint = new ThreadDumpEndpoint(options, threadDumper, loggerFactory?.CreateLogger<ThreadDumpEndpoint>());
             var logger = loggerFactory?.CreateLogger<EndpointOwinMiddleware<ThreadDumpEndpoint, List<ThreadInfo>>>();
             return builder.Use<EndpointOwinMiddleware<ThreadDumpEndpoint, List<ThreadInfo>>>(endpoint, logger);

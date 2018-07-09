@@ -19,26 +19,34 @@ using Steeltoe.Management.Endpoint.Test;
 using System;
 using Xunit;
 
-namespace Steeltoe.Management.EndpointOwin.CloudFoundry.Test
+namespace Steeltoe.Management.EndpointOwin.Info.Test
 {
-    public class CloudFoundrySecurityAppBuilderExtensionsTest : BaseTest
+    public class InfoEndpointAppBuilderExtensionsTest : BaseTest
     {
         [Fact]
-        public void UseCloudFoundrySecurityMiddleware_ThrowsIfBuilderNull()
+        public void UseInfoEndpointMiddleware_ThrowsIfBuilderNull()
         {
             IAppBuilder builder = null;
             var config = new ConfigurationBuilder().Build();
-
-            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseCloudFoundrySecurityMiddleware(config));
+            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseInfoEndpointMiddleware(config));
             Assert.Equal("builder", exception.ParamName);
         }
 
         [Fact]
-        public void UseCloudFoundrySecurityMiddleware_ThrowsIfConfigNull()
+        public void UseInfoEndpointMiddleware_ThrowsIfConfigNull()
         {
             IAppBuilder builder = new AppBuilder();
-            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseCloudFoundrySecurityMiddleware(null));
+            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseInfoEndpointMiddleware(null));
             Assert.Equal("config", exception.ParamName);
+        }
+
+        [Fact]
+        public void UseInfoEndpointMiddleware_ThrowsIfContributorsNull()
+        {
+            IAppBuilder builder = new AppBuilder();
+            var config = new ConfigurationBuilder().Build();
+            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseInfoEndpointMiddleware(config, contributors: null));
+            Assert.Equal("contributors", exception.ParamName);
         }
     }
 }

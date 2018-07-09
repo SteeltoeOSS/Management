@@ -12,20 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.Management.Endpoint.CloudFoundry;
-using Xunit;
+using Microsoft.Extensions.Configuration;
+using Owin;
+using Steeltoe.Management.EndpointOwin.Refresh;
+using Steeltoe.Management.EndpointOwin.Test;
+using System.Collections.Generic;
 
-namespace Steeltoe.Management.EndpointBase.Test.CloudFoundry
+namespace Steeltoe.Management.Endpoint.Refresh.Test
 {
-    public class SecurityBaseTest
+    public class Startup
     {
-        [Fact]
-        public void IsCloudFoundryRequest_ReturnsExpected()
+        public void Configuration(IAppBuilder app)
         {
-            var securityBase = new SecurityBase(new CloudFoundryOptions(), null);
+            var builder = new ConfigurationBuilder();
 
-            Assert.True(securityBase.IsCloudFoundryRequest("/"));
-            Assert.True(securityBase.IsCloudFoundryRequest("/badpath"));
+            var appSettings = new Dictionary<string, string>(OwinTestHelpers.Appsettings)
+            {
+            };
+
+            builder.AddInMemoryCollection(appSettings);
+            var config = builder.Build();
+
+            app.UseRefreshEndpointMiddleware(config);
         }
     }
 }

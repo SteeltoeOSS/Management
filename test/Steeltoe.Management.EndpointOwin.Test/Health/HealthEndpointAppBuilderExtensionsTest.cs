@@ -30,21 +30,24 @@ namespace Steeltoe.Management.EndpointOwin.Health.Test
             IAppBuilder builder = null;
             IConfiguration config = new ConfigurationBuilder().Build();
 
-            Assert.Throws<ArgumentNullException>(() => builder.UseHealthEndpointMiddleware(config));
+            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseHealthEndpointMiddleware(config));
+            Assert.Equal("builder", exception.ParamName);
         }
 
         [Fact]
         public void UseHealthEndpointOwinMiddleware_ThrowsIfConfigNull()
         {
             IAppBuilder builder = new AppBuilder();
-            Assert.Throws<ArgumentNullException>(() => builder.UseHealthEndpointMiddleware(config: null));
+            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseHealthEndpointMiddleware(config: null));
+            Assert.Equal("config", exception.ParamName);
         }
 
         [Fact]
         public void UseHealthEndpointOwinMiddleware_ThrowsIfOptionsNull()
         {
             IAppBuilder builder = new AppBuilder();
-            Assert.Throws<ArgumentNullException>(() => builder.UseHealthEndpointMiddleware(options: null));
+            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseHealthEndpointMiddleware(options: null));
+            Assert.Equal("options", exception.ParamName);
         }
 
         [Fact]
@@ -53,7 +56,8 @@ namespace Steeltoe.Management.EndpointOwin.Health.Test
             var builder = new AppBuilder();
             var config = new ConfigurationBuilder().Build();
             var options = new HealthOptions(config);
-            Assert.Throws<ArgumentNullException>(() => builder.UseHealthEndpointMiddleware(options, aggregator: null));
+            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseHealthEndpointMiddleware(options, aggregator: null));
+            Assert.Equal("aggregator", exception.ParamName);
         }
 
         [Fact]
@@ -62,7 +66,8 @@ namespace Steeltoe.Management.EndpointOwin.Health.Test
             var builder = new AppBuilder();
             var config = new ConfigurationBuilder().Build();
             var options = new HealthOptions(config);
-            Assert.Throws<ArgumentNullException>(() => builder.UseHealthEndpointMiddleware(options,  new DefaultHealthAggregator(), contributors: null));
+            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseHealthEndpointMiddleware(options,  new DefaultHealthAggregator(), contributors: null));
+            Assert.Equal("contributors", exception.ParamName);
         }
     }
 }

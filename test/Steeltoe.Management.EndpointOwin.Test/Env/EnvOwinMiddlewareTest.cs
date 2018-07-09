@@ -16,7 +16,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Owin.Testing;
 using Steeltoe.Management.Endpoint.Env;
 using Steeltoe.Management.EndpointOwin.Test;
-using System.IO;
 using System.Net;
 using Xunit;
 
@@ -27,22 +26,18 @@ namespace Steeltoe.Management.EndpointOwin.Env.Test
         [Fact]
         public async void EnvInvoke_ReturnsExpected()
         {
-            var opts = new EnvOptions();
+            // arrange
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(OwinTestHelpers.Appsettings);
             var config = configurationBuilder.Build();
-            var host = new GenericHostingEnvironment()
-            {
-                EnvironmentName = "EnvironmentName"
-            };
-            var ep = new EnvEndpoint(opts, config, host);
+            var ep = new EnvEndpoint(new EnvOptions(), config, new GenericHostingEnvironment() { EnvironmentName = "EnvironmentName" });
             var middle = new EndpointOwinMiddleware<EnvEndpoint, EnvironmentDescriptor>(null, ep);
             var context = OwinTestHelpers.CreateRequest("GET", "/env");
 
-            await middle.Invoke(context);
-            context.Response.Body.Seek(0, SeekOrigin.Begin);
-            var rdr = new StreamReader(context.Response.Body);
-            string json = await rdr.ReadToEndAsync();
+            // act
+            var json = await middle.InvokeAndReadResponse(context);
+
+            // assert
             var expected = "{\"activeProfiles\":[\"EnvironmentName\"],\"propertySources\":[{\"properties\":{\"management:endpoints:sensitive\":{\"value\":\"false\"},\"management:endpoints:path\":{\"value\":\"/cloudfoundryapplication\"},\"management:endpoints:enabled\":{\"value\":\"true\"},\"Logging:LogLevel:Steeltoe\":{\"value\":\"Information\"},\"Logging:LogLevel:Pivotal\":{\"value\":\"Information\"},\"Logging:LogLevel:Default\":{\"value\":\"Warning\"},\"Logging:IncludeScopes\":{\"value\":\"false\"}},\"name\":\"MemoryConfigurationProvider\"}]}";
             Assert.Equal(expected, json);
         }

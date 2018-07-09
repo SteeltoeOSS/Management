@@ -16,6 +16,7 @@ using Microsoft.Owin;
 using Moq;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace Steeltoe.Management.EndpointOwin.Test
 {
@@ -72,5 +73,12 @@ namespace Steeltoe.Management.EndpointOwin.Test
             return context.Object;
         }
 
+        public static async Task<string> InvokeAndReadResponse(this OwinMiddleware middle, IOwinContext context)
+        {
+            await middle.Invoke(context);
+            context.Response.Body.Seek(0, SeekOrigin.Begin);
+            var rdr = new StreamReader(context.Response.Body);
+            return await rdr.ReadToEndAsync();
+        }
     }
 }

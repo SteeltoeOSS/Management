@@ -98,7 +98,7 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
                 container.RegisterType(c).As<IHealthContributor>();
             }
 
-            container.RegisterType<HealthEndpoint>().As<IEndpoint<HealthCheckResult>>();
+            container.RegisterType<HealthEndpoint>();
             container.RegisterType<HealthEndpointOwinMiddleware>();
         }
 

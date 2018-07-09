@@ -33,6 +33,16 @@ namespace Steeltoe.Management.EndpointOwin.Info
         /// <returns>OWIN <see cref="IAppBuilder" /> with Info Endpoint added</returns>
         public static IAppBuilder UseInfoEndpointMiddleware(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null)
         {
+            if (builder == null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
+            if (config == null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
+
             return builder.UseInfoEndpointMiddleware(config, GetDefaultInfoContributors(config, loggerFactory), loggerFactory);
         }
 
@@ -46,6 +56,21 @@ namespace Steeltoe.Management.EndpointOwin.Info
         /// <returns>OWIN <see cref="IAppBuilder" /> with Info Endpoint added</returns>
         public static IAppBuilder UseInfoEndpointMiddleware(this IAppBuilder builder, IConfiguration config, IList<IInfoContributor> contributors, ILoggerFactory loggerFactory = null)
         {
+            if (builder == null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
+            if (config == null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
+
+            if (contributors == null)
+            {
+                throw new ArgumentNullException(nameof(contributors));
+            }
+
             var endpoint = new InfoEndpoint(new InfoOptions(config), contributors, loggerFactory?.CreateLogger<InfoEndpoint>());
             var logger = loggerFactory?.CreateLogger<EndpointOwinMiddleware<InfoEndpoint, Dictionary<string, object>>>();
             return builder.Use<EndpointOwinMiddleware<InfoEndpoint, Dictionary<string, object>>>(endpoint, logger);
@@ -55,7 +80,7 @@ namespace Steeltoe.Management.EndpointOwin.Info
         {
             return new List<IInfoContributor>
                 {
-                    new GitInfoContributor(AppDomain.CurrentDomain.BaseDirectory + "git.properties", loggerFactory?.CreateLogger<GitInfoContributor>()),
+                    new GitInfoContributor(AppDomain.CurrentDomain.BaseDirectory + "\\git.properties", loggerFactory?.CreateLogger<GitInfoContributor>()),
                     new AppSettingsInfoContributor(config)
                 };
         }

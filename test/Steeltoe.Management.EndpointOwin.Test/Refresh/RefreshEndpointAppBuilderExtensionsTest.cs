@@ -19,25 +19,24 @@ using Steeltoe.Management.Endpoint.Test;
 using System;
 using Xunit;
 
-namespace Steeltoe.Management.EndpointOwin.CloudFoundry.Test
+namespace Steeltoe.Management.EndpointOwin.Refresh.Test
 {
-    public class CloudFoundrySecurityAppBuilderExtensionsTest : BaseTest
+    public class RefreshEndpointAppBuilderExtensionsTest : BaseTest
     {
         [Fact]
-        public void UseCloudFoundrySecurityMiddleware_ThrowsIfBuilderNull()
+        public void UseRefreshActuator_ThrowsIfBuilderNull()
         {
             IAppBuilder builder = null;
             var config = new ConfigurationBuilder().Build();
-
-            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseCloudFoundrySecurityMiddleware(config));
+            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseRefreshEndpointMiddleware(config));
             Assert.Equal("builder", exception.ParamName);
         }
 
         [Fact]
-        public void UseCloudFoundrySecurityMiddleware_ThrowsIfConfigNull()
+        public void UseRefreshActuator_ThrowsIfConfigNull()
         {
             IAppBuilder builder = new AppBuilder();
-            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseCloudFoundrySecurityMiddleware(null));
+            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseRefreshEndpointMiddleware(null));
             Assert.Equal("config", exception.ParamName);
         }
     }

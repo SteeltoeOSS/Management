@@ -12,20 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.Management.Endpoint.CloudFoundry;
-using Xunit;
+using Microsoft.Extensions.Logging;
+using Steeltoe.Management.Endpoint.Info;
+using System.Collections.Generic;
 
-namespace Steeltoe.Management.EndpointBase.Test.CloudFoundry
+namespace Steeltoe.Management.EndpointOwin.Info.Test
 {
-    public class SecurityBaseTest
+    internal class TestInfoEndpoint : InfoEndpoint
     {
-        [Fact]
-        public void IsCloudFoundryRequest_ReturnsExpected()
+        public TestInfoEndpoint(IInfoOptions options, IEnumerable<IInfoContributor> contributors, ILogger<InfoEndpoint> logger = null)
+            : base(options, contributors, logger)
         {
-            var securityBase = new SecurityBase(new CloudFoundryOptions(), null);
+        }
 
-            Assert.True(securityBase.IsCloudFoundryRequest("/"));
-            Assert.True(securityBase.IsCloudFoundryRequest("/badpath"));
+        public override Dictionary<string, object> Invoke()
+        {
+            return new Dictionary<string, object>();
         }
     }
 }

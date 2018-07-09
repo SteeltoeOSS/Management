@@ -41,7 +41,6 @@ namespace Steeltoe.Management.Endpoint.Refresh.Test
             ["management:endpoints:path"] = "/cloudfoundryapplication"
         };
 
-
         [Fact]
         public async void HandleRefreshRequestAsync_ReturnsExpected()
         {

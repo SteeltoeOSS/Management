@@ -31,8 +31,23 @@ namespace Steeltoe.Management.EndpointOwin.Loggers
         /// <returns>OWIN <see cref="IAppBuilder" /> with Loggers Endpoint added</returns>
         public static IAppBuilder UseLoggersEndpointMiddleware(this IAppBuilder builder, IConfiguration config, ILoggerProvider loggerProvider, ILoggerFactory loggerFactory = null)
         {
-            var endpoint = new LoggersEndpoint(new LoggersOptions(config), loggerProvider, loggerFactory?.CreateLogger<LoggersEndpoint>());
-            var logger = loggerFactory?.CreateLogger<LoggersEndpointOwinMiddleware>();
+            if (builder == null)
+            {
+                throw new System.ArgumentNullException(nameof(builder));
+            }
+
+            if (config == null)
+            {
+                throw new System.ArgumentNullException(nameof(config));
+            }
+
+            if (loggerProvider == null)
+            {
+                throw new System.ArgumentNullException(nameof(loggerProvider));
+            }
+
+            var logger = loggerFactory?.CreateLogger<LoggersEndpoint>();
+            var endpoint = new LoggersEndpoint(new LoggersOptions(config), loggerProvider, logger);
             return builder.Use<LoggersEndpointOwinMiddleware>(endpoint, logger);
         }
     }
