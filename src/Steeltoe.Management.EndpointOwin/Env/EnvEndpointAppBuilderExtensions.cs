@@ -19,6 +19,8 @@ using Microsoft.Extensions.Logging;
 using Owin;
 using Steeltoe.Management.Endpoint.Env;
 using System;
+using System.Collections.Generic;
+using System.Net.Http;
 
 namespace Steeltoe.Management.EndpointOwin.Env
 {
@@ -80,7 +82,7 @@ namespace Steeltoe.Management.EndpointOwin.Env
 
             var endpoint = new EnvEndpoint(new EnvOptions(config), config, hostingEnvironment, loggerFactory?.CreateLogger<EnvEndpoint>());
             var logger = loggerFactory?.CreateLogger<EndpointOwinMiddleware<EnvEndpoint, EnvironmentDescriptor>>();
-            return builder.Use<EndpointOwinMiddleware<EnvEndpoint, EnvironmentDescriptor>>(endpoint, logger);
+            return builder.Use<EndpointOwinMiddleware<EnvEndpoint, EnvironmentDescriptor>>(endpoint, new List<HttpMethod> { HttpMethod.Get }, true, logger);
         }
     }
 }

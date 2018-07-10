@@ -18,6 +18,7 @@ using Owin;
 using Steeltoe.Management.Endpoint.Trace;
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
 
 namespace Steeltoe.Management.EndpointOwin.Trace
 {
@@ -74,7 +75,7 @@ namespace Steeltoe.Management.EndpointOwin.Trace
             var options = new TraceOptions(config);
             var endpoint = new TraceEndpoint(options, traceRepository, loggerFactory?.CreateLogger<TraceEndpoint>());
             var logger = loggerFactory?.CreateLogger<EndpointOwinMiddleware<TraceEndpoint, List<TraceResult>>>();
-            return builder.Use<EndpointOwinMiddleware<TraceEndpoint, List<TraceResult>>>(endpoint, logger);
+            return builder.Use<EndpointOwinMiddleware<TraceEndpoint, List<TraceResult>>>(endpoint, new List<HttpMethod> { HttpMethod.Get }, true, logger);
         }
     }
 }

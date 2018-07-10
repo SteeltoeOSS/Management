@@ -151,6 +151,24 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             Assert.Equal("{\"name\":\"test.test\",\"measurements\":[{\"statistic\":\"TOTAL\",\"value\":45.0}],\"availableTags\":[{\"tag\":\"a\",\"values\":[\"v1\"]},{\"tag\":\"b\",\"values\":[\"v1\"]},{\"tag\":\"c\",\"values\":[\"v1\"]}]}", json);
         }
 
+        [Fact]
+        public void MetricsEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
+        {
+            var opts = new MetricsOptions();
+            var stats = new OpenCensusStats();
+            var ep = new MetricsEndpoint(opts, stats);
+            var middle = new MetricsEndpointMiddleware(null, ep);
+
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/metrics"));
+            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/metrics"));
+            Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
+            Assert.False(middle.RequestVerbAndPathMatch("POST", "/metrics"));
+            Assert.False(middle.RequestVerbAndPathMatch("DELETE", "/metrics"));
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/metrics/Foo.Bar.Class"));
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/metrics/Foo.Bar.Class?tag=key:value&tag=key1:value1"));
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/metrics?tag=key:value&tag=key1:value1"));
+        }
+
         private HttpContext CreateRequest(string method, string path, string query = null)
         {
             HttpContext context = new DefaultHttpContext

@@ -18,6 +18,7 @@ using Owin;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
 
 namespace Steeltoe.Management.EndpointOwin.ThreadDump
 {
@@ -74,7 +75,7 @@ namespace Steeltoe.Management.EndpointOwin.ThreadDump
 
             var endpoint = new ThreadDumpEndpoint(options, threadDumper, loggerFactory?.CreateLogger<ThreadDumpEndpoint>());
             var logger = loggerFactory?.CreateLogger<EndpointOwinMiddleware<ThreadDumpEndpoint, List<ThreadInfo>>>();
-            return builder.Use<EndpointOwinMiddleware<ThreadDumpEndpoint, List<ThreadInfo>>>(endpoint, logger);
+            return builder.Use<EndpointOwinMiddleware<ThreadDumpEndpoint, List<ThreadInfo>>>(endpoint, new List<HttpMethod> { HttpMethod.Get }, true, logger);
         }
     }
 }

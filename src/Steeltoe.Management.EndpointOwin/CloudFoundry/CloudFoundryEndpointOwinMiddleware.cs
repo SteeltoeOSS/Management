@@ -24,7 +24,7 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
     public class CloudFoundryEndpointOwinMiddleware : EndpointOwinMiddleware<CloudFoundryEndpoint, Links, string>
     {
         public CloudFoundryEndpointOwinMiddleware(OwinMiddleware next, CloudFoundryEndpoint endpoint, ILogger<CloudFoundryEndpointOwinMiddleware> logger = null)
-            : base(next, endpoint, logger)
+            : base(next, endpoint, logger: logger)
         {
             _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
         }

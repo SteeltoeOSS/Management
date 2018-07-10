@@ -80,5 +80,18 @@ namespace Steeltoe.Management.EndpointOwin.Info.Test
                 Assert.True(gitNode.ContainsKey("tags"));
             }
         }
+
+        [Fact]
+        public void InfoEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
+        {
+            var opts = new InfoOptions();
+            var contribs = new List<IInfoContributor>() { new GitInfoContributor() };
+            var ep = new InfoEndpoint(opts, contribs);
+            var middle = new EndpointOwinMiddleware<InfoEndpoint, Dictionary<string, object>>(null, ep);
+
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/info"));
+            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/info"));
+            Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
+        }
     }
 }

@@ -30,7 +30,7 @@ namespace Steeltoe.Management.Endpoint.Refresh.Test
 {
     public class EndpointMiddlewareTest : BaseTest
     {
-        private static Dictionary<string, string> appsettings = new Dictionary<string, string>()
+        private static Dictionary<string, string> appSettings = new Dictionary<string, string>()
         {
             ["Logging:IncludeScopes"] = "false",
             ["Logging:LogLevel:Default"] = "Warning",
@@ -47,7 +47,7 @@ namespace Steeltoe.Management.Endpoint.Refresh.Test
             var opts = new RefreshOptions();
 
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.AddInMemoryCollection(appsettings);
+            configurationBuilder.AddInMemoryCollection(appSettings);
             var config = configurationBuilder.Build();
 
             var ep = new RefreshEndpoint(opts, config);
@@ -69,7 +69,7 @@ namespace Steeltoe.Management.Endpoint.Refresh.Test
             Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", null);
             var builder = new WebHostBuilder()
                 .UseStartup<Startup>()
-                .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appsettings))
+                .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appSettings))
                 .ConfigureLogging((webhostContext, loggingBuilder) =>
                 {
                     loggingBuilder.AddConfiguration(webhostContext.Configuration);
@@ -86,6 +86,21 @@ namespace Steeltoe.Management.Endpoint.Refresh.Test
             }
 
             Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", anc_env);
+        }
+
+        [Fact]
+        public void RefreshEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
+        {
+            var opts = new RefreshOptions();
+            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddInMemoryCollection(appSettings);
+            var config = configurationBuilder.Build();
+            var ep = new RefreshEndpoint(opts, config);
+            var middle = new RefreshEndpointMiddleware(null, ep);
+
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/refresh"));
+            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/refresh"));
+            Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
         }
 
         private HttpContext CreateRequest(string method, string path)

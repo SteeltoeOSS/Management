@@ -19,6 +19,9 @@ using Newtonsoft.Json.Serialization;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Health;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Management.EndpointOwin
@@ -27,23 +30,26 @@ namespace Steeltoe.Management.EndpointOwin
     {
         protected IEndpoint<TResult> _endpoint;
         protected ILogger _logger;
+        protected IEnumerable<HttpMethod> _allowedMethods;
+        protected bool _exactRequestPathMatching;
 
-        public EndpointOwinMiddleware(OwinMiddleware next, ILogger logger = null)
+        public EndpointOwinMiddleware(OwinMiddleware next, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
             : base(next)
         {
+            _allowedMethods = allowedMethods ?? new List<HttpMethod> { HttpMethod.Get };
+            _exactRequestPathMatching = exactRequestPathMatching;
             _logger = logger;
         }
 
-        public EndpointOwinMiddleware(OwinMiddleware next, IEndpoint<TResult> endpoint, ILogger logger = null)
-            : base(next)
+        public EndpointOwinMiddleware(OwinMiddleware next, IEndpoint<TResult> endpoint, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
+            : this(next, allowedMethods, exactRequestPathMatching, logger)
         {
             _endpoint = endpoint;
-            _logger = logger;
         }
 
         public override async Task Invoke(IOwinContext context)
         {
-            if (!_endpoint.RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
+            if (!RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
             {
                 await Next.Invoke(context);
             }
@@ -54,6 +60,13 @@ namespace Steeltoe.Management.EndpointOwin
                 context.Response.Headers.SetValues("Content-Type", new string[] { "application/vnd.spring-boot.actuator.v1+json" });
                 await context.Response.WriteAsync(Serialize(result));
             }
+        }
+
+        public virtual bool RequestVerbAndPathMatch(string httpMethod, string requestPath)
+        {
+            return _exactRequestPathMatching
+                ? requestPath.Equals(_endpoint.Path) && _allowedMethods.Any(m => m.Method.Equals(httpMethod))
+                : requestPath.StartsWith(_endpoint.Path) && _allowedMethods.Any(m => m.Method.Equals(httpMethod));
         }
 
         protected virtual string Serialize<T>(T result)
@@ -83,16 +96,23 @@ namespace Steeltoe.Management.EndpointOwin
     {
         protected new IEndpoint<TResult, TRequest> _endpoint;
 
-        public EndpointOwinMiddleware(OwinMiddleware next, IEndpoint<TResult, TRequest> endpoint, ILogger logger)
-            : base(next, logger)
+        public EndpointOwinMiddleware(OwinMiddleware next, IEndpoint<TResult, TRequest> endpoint, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
+            : base(next, allowedMethods, exactRequestPathMatching, logger)
         {
-            this._endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
+            _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
         }
 
         public virtual string HandleRequest(TRequest arg)
         {
             var result = _endpoint.Invoke(arg);
             return Serialize(result);
+        }
+
+        public override bool RequestVerbAndPathMatch(string httpMethod, string requestPath)
+        {
+            return _exactRequestPathMatching
+                ? requestPath.Equals(_endpoint.Path) && _allowedMethods.Any(m => m.Method.Equals(httpMethod))
+                : requestPath.StartsWith(_endpoint.Path) && _allowedMethods.Any(m => m.Method.Equals(httpMethod));
         }
     }
 #pragma warning restore SA1402 // File may only contain a single class

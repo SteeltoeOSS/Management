@@ -29,7 +29,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
 {
     public class EndpointMiddlewareTest : BaseTest
     {
-        private static Dictionary<string, string> appsettings = new Dictionary<string, string>()
+        private static Dictionary<string, string> appSettings = new Dictionary<string, string>()
         {
             ["Logging:IncludeScopes"] = "false",
             ["Logging:LogLevel:Default"] = "Warning",
@@ -63,7 +63,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         {
             var builder = new WebHostBuilder()
                 .UseStartup<Startup>()
-                .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appsettings))
+                .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appSettings))
                 .ConfigureLogging((webhostContext, loggingBuilder) =>
                 {
                     loggingBuilder.AddConfiguration(webhostContext.Configuration);
@@ -78,6 +78,19 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
                 var json = await result.Content.ReadAsStringAsync();
                Assert.NotNull(json);
             }
+        }
+
+        [Fact]
+        public void TraceEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
+        {
+            var opts = new TraceOptions();
+            TraceDiagnosticObserver obs = new TraceDiagnosticObserver(opts);
+            var ep = new TraceEndpoint(opts, obs);
+            var middle = new TraceEndpointMiddleware(null, ep);
+
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/trace"));
+            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/trace"));
+            Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
         }
 
         private HttpContext CreateRequest(string method, string path)

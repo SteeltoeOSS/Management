@@ -80,5 +80,18 @@ namespace Steeltoe.Management.EndpointOwin.HeapDump.Test
                 }
             }
         }
+
+        [Fact]
+        public void HeapDumpEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
+        {
+            var opts = new HeapDumpOptions();
+            HeapDumper obs = new HeapDumper(opts);
+            var ep = new HeapDumpEndpoint(opts, obs);
+            var middle = new HeapDumpEndpointOwinMiddleware(null, ep);
+
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/heapdump"));
+            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/heapdump"));
+            Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
+        }
     }
 }

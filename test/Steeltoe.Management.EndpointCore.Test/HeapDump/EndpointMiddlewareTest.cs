@@ -30,7 +30,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
 {
     public class EndpointMiddlewareTest : BaseTest
     {
-        private static Dictionary<string, string> appsettings = new Dictionary<string, string>()
+        private static Dictionary<string, string> appSettings = new Dictionary<string, string>()
         {
             ["Logging:IncludeScopes"] = "false",
             ["Logging:LogLevel:Default"] = "Warning",
@@ -74,7 +74,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
             {
                 var builder = new WebHostBuilder()
                 .UseStartup<Startup>()
-                .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appsettings))
+                .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appSettings))
                 .ConfigureLogging((webhostContext, loggingBuilder) =>
                 {
                     loggingBuilder.AddConfiguration(webhostContext.Configuration);
@@ -103,6 +103,19 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
                     File.Delete(tempFile);
                 }
             }
+        }
+
+        [Fact]
+        public void HeapDumpEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
+        {
+            var opts = new HeapDumpOptions();
+            HeapDumper obs = new HeapDumper(opts);
+            var ep = new HeapDumpEndpoint(opts, obs);
+            var middle = new HeapDumpEndpointMiddleware(null, ep);
+
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/heapdump"));
+            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/heapdump"));
+            Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
         }
 
         private HttpContext CreateRequest(string method, string path)

@@ -28,14 +28,14 @@ namespace Steeltoe.Management.EndpointOwin.HeapDump
         protected new HeapDumpEndpoint _endpoint;
 
         public HeapDumpEndpointOwinMiddleware(OwinMiddleware next, HeapDumpEndpoint endpoint, ILogger<HeapDumpEndpointOwinMiddleware> logger = null)
-            : base(next, endpoint, logger)
+            : base(next, endpoint, logger: logger)
         {
             _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
         }
 
         public override async Task Invoke(IOwinContext context)
         {
-            if (!_endpoint.RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
+            if (!RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
             {
                 await Next.Invoke(context);
             }

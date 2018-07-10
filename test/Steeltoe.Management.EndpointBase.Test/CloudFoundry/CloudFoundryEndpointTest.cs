@@ -90,16 +90,5 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             Assert.NotNull(info._links);
             Assert.Empty(info._links);
         }
-
-        [Fact]
-        public void CloudFoundryRequest_PathAndVerbMatching_ReturnsExpected()
-        {
-            var opts = new CloudFoundryOptions();
-            var ep = new CloudFoundryEndpoint(opts);
-
-            Assert.True(ep.RequestVerbAndPathMatch("GET", "/"));
-            Assert.False(ep.RequestVerbAndPathMatch("PUT", "/"));
-            Assert.False(ep.RequestVerbAndPathMatch("GET", "/badpath"));
-        }
     }
 }

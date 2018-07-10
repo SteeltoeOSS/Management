@@ -27,14 +27,14 @@ namespace Steeltoe.Management.EndpointOwin.Metrics
         protected new MetricsEndpoint _endpoint;
 
         public MetricsEndpointOwinMiddleware(OwinMiddleware next, MetricsEndpoint endpoint, ILogger<MetricsEndpointOwinMiddleware> logger = null)
-            : base(next, endpoint, logger)
+            : base(next, endpoint, null, false, logger)
         {
             _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
         }
 
         public override async Task Invoke(IOwinContext context)
         {
-            if (!_endpoint.RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
+            if (!RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
             {
                 await Next.Invoke(context);
             }

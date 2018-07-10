@@ -102,5 +102,21 @@ namespace Steeltoe.Management.EndpointOwin.Loggers.Test
                 Assert.Equal("TRACE", parsedObject.loggers["Steeltoe.Management.Endpoint.Loggers.LoggersEndpoint"].effectiveLevel.ToString());
             }
         }
+
+        [Fact]
+        public void LoggersEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
+        {
+            var opts = new LoggersOptions();
+            var ep = new LoggersEndpoint(opts, null);
+            var middle = new LoggersEndpointOwinMiddleware(null, ep);
+
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/loggers"));
+            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/loggers"));
+            Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
+            Assert.True(middle.RequestVerbAndPathMatch("POST", "/loggers"));
+            Assert.False(middle.RequestVerbAndPathMatch("POST", "/badpath"));
+            Assert.True(middle.RequestVerbAndPathMatch("POST", "/loggers/Foo.Bar.Class"));
+            Assert.False(middle.RequestVerbAndPathMatch("POST", "/badpath/Foo.Bar.Class"));
+        }
     }
 }

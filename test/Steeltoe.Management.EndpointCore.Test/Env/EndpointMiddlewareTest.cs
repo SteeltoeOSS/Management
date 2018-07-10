@@ -31,7 +31,7 @@ namespace Steeltoe.Management.Endpoint.Env.Test
 {
     public class EndpointMiddlewareTest : BaseTest
     {
-        private static Dictionary<string, string> appsettings = new Dictionary<string, string>()
+        private static Dictionary<string, string> appSettings = new Dictionary<string, string>()
         {
             ["Logging:IncludeScopes"] = "false",
             ["Logging:LogLevel:Default"] = "Warning",
@@ -48,7 +48,7 @@ namespace Steeltoe.Management.Endpoint.Env.Test
             var opts = new EnvOptions();
 
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.AddInMemoryCollection(appsettings);
+            configurationBuilder.AddInMemoryCollection(appSettings);
             var config = configurationBuilder.Build();
             var host = new HostingEnvironment()
             {
@@ -74,7 +74,7 @@ namespace Steeltoe.Management.Endpoint.Env.Test
             Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", null);
             var builder = new WebHostBuilder()
             .UseStartup<Startup>()
-            .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appsettings))
+            .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appSettings))
             .ConfigureLogging((webhostContext, loggingBuilder) =>
             {
                 loggingBuilder.AddConfiguration(webhostContext.Configuration);
@@ -91,6 +91,22 @@ namespace Steeltoe.Management.Endpoint.Env.Test
             }
 
             Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", originalEnv);
+        }
+
+        [Fact]
+        public void EnvEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
+        {
+            var opts = new EnvOptions();
+            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddInMemoryCollection(appSettings);
+            var config = configurationBuilder.Build();
+            var host = new HostingEnvironment() { EnvironmentName = "EnvironmentName" };
+            var ep = new EnvEndpoint(opts, config, host);
+            var middle = new EnvEndpointMiddleware(null, ep);
+
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/env"));
+            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/env"));
+            Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
         }
 
         private HttpContext CreateRequest(string method, string path)

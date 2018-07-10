@@ -74,5 +74,17 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry.Test
                 Assert.Equal("{\"type\":\"steeltoe\",\"_links\":{\"self\":{\"href\":\"http://localhost/cloudfoundryapplication\"},\"info\":{\"href\":\"http://localhost/cloudfoundryapplication/info\"}}}", json);
             }
         }
+
+        [Fact]
+        public void CloudFoundryEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
+        {
+            var opts = new CloudFoundryOptions();
+            var ep = new CloudFoundryEndpoint(opts);
+            var middle = new CloudFoundryEndpointOwinMiddleware(null, ep);
+
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/"));
+            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/"));
+            Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
+        }
     }
 }

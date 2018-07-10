@@ -29,7 +29,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
 {
     public class EndpointMiddlewareTest : BaseTest
     {
-        private static Dictionary<string, string> appsettings = new Dictionary<string, string>()
+        private static Dictionary<string, string> appSettings = new Dictionary<string, string>()
         {
             ["Logging:IncludeScopes"] = "false",
             ["Logging:LogLevel:Default"] = "Warning",
@@ -69,7 +69,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
             {
                 var builder = new WebHostBuilder()
                 .UseStartup<Startup>()
-                .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appsettings))
+                .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appSettings))
                 .ConfigureLogging((webhostContext, loggingBuilder) =>
                 {
                     loggingBuilder.AddConfiguration(webhostContext.Configuration);
@@ -88,6 +88,19 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
                     Assert.EndsWith("]", json);
                 }
             }
+        }
+
+        [Fact]
+        public void ThreadDumpEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
+        {
+            var opts = new ThreadDumpOptions();
+            ThreadDumper obs = new ThreadDumper(opts);
+            var ep = new ThreadDumpEndpoint(opts, obs);
+            var middle = new ThreadDumpEndpointMiddleware(null, ep);
+
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/dump"));
+            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/dump"));
+            Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
         }
 
         private HttpContext CreateRequest(string method, string path)

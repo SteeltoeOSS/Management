@@ -12,28 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Steeltoe.Management.Endpoint
+using Microsoft.Extensions.Configuration;
+using Owin;
+using Steeltoe.Management.EndpointOwin.Test;
+using System.Collections.Generic;
+
+namespace Steeltoe.Management.EndpointOwin.Metrics.Test
 {
-    public interface IEndpoint
+    public class Startup
     {
-        string Id { get; }
+        public void Configuration(IAppBuilder app)
+        {
+            var builder = new ConfigurationBuilder();
 
-        bool Enabled { get; }
+            var appSettings = new Dictionary<string, string>(OwinTestHelpers.Appsettings)
+            {
+            };
 
-        bool Sensitive { get; }
+            builder.AddInMemoryCollection(appSettings);
+            var config = builder.Build();
 
-        IEndpointOptions Options { get; }
-
-        string Path { get; }
-    }
-
-    public interface IEndpoint<TResult> : IEndpoint
-    {
-        TResult Invoke();
-    }
-
-    public interface IEndpoint<TResult, TRequest> : IEndpoint
-    {
-        TResult Invoke(TRequest arg);
+            app.UseMetricsEndpointMiddleware(config);
+        }
     }
 }

@@ -106,6 +106,19 @@ namespace Steeltoe.Management.Endpoint.Info.Test
             }
         }
 
+        [Fact]
+        public void InfoEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
+        {
+            var opts = new InfoOptions();
+            var contribs = new List<IInfoContributor>() { new GitInfoContributor() };
+            var ep = new InfoEndpoint(opts, contribs);
+            var middle = new InfoEndpointMiddleware(null, ep);
+
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/info"));
+            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/info"));
+            Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
+        }
+
         private HttpContext CreateRequest(string method, string path)
         {
             HttpContext context = new DefaultHttpContext();
