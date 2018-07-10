@@ -23,7 +23,7 @@ using Xunit;
 
 namespace Steeltoe.Management.EndpointOwin.CloudFoundry.Test
 {
-    public class CloudFoundrySecurityMiddlewareTest : BaseTest
+    public class CloudFoundrySecurityMiddlewareTest : IDisposable
     {
         private readonly SecurityBase _base = new SecurityBase(new CloudFoundryOptions());
 

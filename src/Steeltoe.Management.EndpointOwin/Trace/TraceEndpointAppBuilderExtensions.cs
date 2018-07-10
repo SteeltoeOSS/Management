@@ -16,6 +16,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Owin;
 using Steeltoe.Management.Endpoint.Trace;
+using System;
 using System.Collections.Generic;
 
 namespace Steeltoe.Management.EndpointOwin.Trace
@@ -23,7 +24,30 @@ namespace Steeltoe.Management.EndpointOwin.Trace
     public static class TraceEndpointAppBuilderExtensions
     {
         /// <summary>
-        /// Add Request Trace middleware to OWIN Pipeline
+        /// Add Request capturing middleware to OWIN Pipeline
+        /// </summary>
+        /// <param name="builder">OWIN <see cref="IAppBuilder" /></param>
+        /// <param name="traceRepository">A singleton repository that contains recent application traces</param>
+        /// <param name="loggerFactory">For logging within the middleware</param>
+        /// <returns>OWIN <see cref="IAppBuilder" /> with Trace Endpoint added</returns>
+        public static IAppBuilder UseRequestTracingMiddleware(this IAppBuilder builder, ITraceRepository traceRepository, ILoggerFactory loggerFactory = null)
+        {
+            if (builder == null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
+            if (traceRepository == null)
+            {
+                throw new ArgumentNullException(nameof(traceRepository));
+            }
+
+            var logger = loggerFactory?.CreateLogger<RequestTracingOwinMiddleware>();
+            return builder.Use<RequestTracingOwinMiddleware>(traceRepository, logger);
+        }
+
+        /// <summary>
+        /// Add Request Trace endpoint middleware to OWIN Pipeline
         /// </summary>
         /// <param name="builder">OWIN <see cref="IAppBuilder" /></param>
         /// <param name="config"><see cref="IConfiguration"/> of application for configuring thread dump endpoint</param>
@@ -34,17 +58,17 @@ namespace Steeltoe.Management.EndpointOwin.Trace
         {
             if (builder == null)
             {
-                throw new System.ArgumentNullException(nameof(builder));
+                throw new ArgumentNullException(nameof(builder));
             }
 
             if (config == null)
             {
-                throw new System.ArgumentNullException(nameof(config));
+                throw new ArgumentNullException(nameof(config));
             }
 
             if (traceRepository == null)
             {
-                throw new System.ArgumentNullException(nameof(traceRepository));
+                throw new ArgumentNullException(nameof(traceRepository));
             }
 
             var options = new TraceOptions(config);

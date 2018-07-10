@@ -45,24 +45,24 @@ namespace Steeltoe.Management.EndpointOwin.Trace.Test
             Assert.Null(result);
         }
 
-        //[Fact]
-        //public void GetSessionId_WithSession_ReturnsExpected()
-        //{
-        //    var option = new TraceOptions();
+        ////[Fact]
+        ////public void GetSessionId_WithSession_ReturnsExpected()
+        ////{
+        ////    var option = new TraceOptions();
 
-        //    var traceRepo = new OwinTraceRepository(option);
-        //    var context = OwinTestHelpers.CreateRequest("GET", "/doNotCare");
+        ////    var traceRepo = new OwinTraceRepository(option);
+        ////    var context = OwinTestHelpers.CreateRequest("GET", "/doNotCare");
 
-        //    var session = new TestSession();
-        //    ISessionFeature sessFeature = new SessionFeature
-        //    {
-        //        Session = session
-        //    };
-        //    context.Features.Set<ISessionFeature>(sessFeature);
+        ////    var session = new TestSession();
+        ////    ISessionFeature sessFeature = new SessionFeature
+        ////    {
+        ////        Session = session
+        ////    };
+        ////    context.Features.Set<ISessionFeature>(sessFeature);
 
-        //    var result = traceRepo.GetSessionId(context);
-        //    Assert.Equal("TestSessionId", result);
-        //}
+        ////    var result = traceRepo.GetSessionId(context);
+        ////    Assert.Equal("TestSessionId", result);
+        ////}
 
         [Fact]
         public void GetUserPrincipal_NotAuthenticated_ReturnsExpected()

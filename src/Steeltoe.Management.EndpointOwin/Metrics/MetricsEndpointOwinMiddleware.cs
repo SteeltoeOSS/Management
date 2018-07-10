@@ -26,7 +26,7 @@ namespace Steeltoe.Management.EndpointOwin.Metrics
     {
         protected new MetricsEndpoint _endpoint;
 
-        public MetricsEndpointOwinMiddleware(OwinMiddleware next, MetricsEndpoint endpoint, ILogger<MetricsEndpoint> logger = null)
+        public MetricsEndpointOwinMiddleware(OwinMiddleware next, MetricsEndpoint endpoint, ILogger<MetricsEndpointOwinMiddleware> logger = null)
             : base(next, endpoint, logger)
         {
             _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));

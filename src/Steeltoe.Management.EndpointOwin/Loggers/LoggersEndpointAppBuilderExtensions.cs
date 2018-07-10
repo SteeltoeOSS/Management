@@ -16,6 +16,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Owin;
 using Steeltoe.Management.Endpoint.Loggers;
+using System;
 
 namespace Steeltoe.Management.EndpointOwin.Loggers
 {
@@ -33,21 +34,21 @@ namespace Steeltoe.Management.EndpointOwin.Loggers
         {
             if (builder == null)
             {
-                throw new System.ArgumentNullException(nameof(builder));
+                throw new ArgumentNullException(nameof(builder));
             }
 
             if (config == null)
             {
-                throw new System.ArgumentNullException(nameof(config));
+                throw new ArgumentNullException(nameof(config));
             }
 
             if (loggerProvider == null)
             {
-                throw new System.ArgumentNullException(nameof(loggerProvider));
+                throw new ArgumentNullException(nameof(loggerProvider));
             }
 
-            var logger = loggerFactory?.CreateLogger<LoggersEndpoint>();
-            var endpoint = new LoggersEndpoint(new LoggersOptions(config), loggerProvider, logger);
+            var endpoint = new LoggersEndpoint(new LoggersOptions(config), loggerProvider, loggerFactory?.CreateLogger<LoggersEndpoint>());
+            var logger = loggerFactory?.CreateLogger<LoggersEndpointOwinMiddleware>();
             return builder.Use<LoggersEndpointOwinMiddleware>(endpoint, logger);
         }
     }

@@ -16,6 +16,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Owin;
 using Steeltoe.Management.Endpoint.CloudFoundry;
+using System;
 
 namespace Steeltoe.Management.EndpointOwin.CloudFoundry
 {
@@ -32,12 +33,12 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
         {
             if (builder == null)
             {
-                throw new System.ArgumentNullException(nameof(builder));
+                throw new ArgumentNullException(nameof(builder));
             }
 
             if (config == null)
             {
-                throw new System.ArgumentNullException(nameof(config));
+                throw new ArgumentNullException(nameof(config));
             }
 
             var endpoint = new CloudFoundryEndpoint(new CloudFoundryOptions(config), loggerFactory?.CreateLogger<CloudFoundryEndpoint>());

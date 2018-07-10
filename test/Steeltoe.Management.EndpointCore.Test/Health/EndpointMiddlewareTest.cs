@@ -79,36 +79,64 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             }
         }
 
-        [Fact(Skip = "TODO: This test should now make http requests and check the status there")]
-        public void GetStatusCode_ReturnsExpected()
+        [Fact]
+        public async void GetStatusCode_ReturnsExpected()
         {
-            //var middle = new HealthEndpointMiddleware(null);
+            var builder = new WebHostBuilder()
+               .UseStartup<Startup>()
+               .ConfigureAppConfiguration((context, config) => config.AddInMemoryCollection(appSettings));
 
-            //var health1 = new HealthCheckResult()
-            //{
-            //    Status = HealthStatus.DOWN
-            //};
+            using (var server = new TestServer(builder))
+            {
+                var client = server.CreateClient();
+                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/health");
+                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+                var json = await result.Content.ReadAsStringAsync();
+                Assert.NotNull(json);
+                Assert.Contains("\"status\":\"UP\"", json);
+            }
 
-            //Assert.Equal(503, middle.GetStatusCode(health1));
-            //var health2 = new HealthCheckResult()
-            //{
-            //    Status = HealthStatus.OUT_OF_SERVICE
-            //};
+            builder = new WebHostBuilder()
+               .UseStartup<Startup>()
+               .ConfigureAppConfiguration((context, config) => config.AddInMemoryCollection(new Dictionary<string, string>(appSettings) { ["HealthCheckType"] = "down" }));
 
-            //Assert.Equal(503, middle.GetStatusCode(health2));
-            //var health3 = new HealthCheckResult()
-            //{
-            //    Status = HealthStatus.UP
-            //};
+            using (var server = new TestServer(builder))
+            {
+                var client = server.CreateClient();
+                var downResult = await client.GetAsync("http://localhost/cloudfoundryapplication/health");
+                Assert.Equal(HttpStatusCode.ServiceUnavailable, downResult.StatusCode);
+                var downJson = await downResult.Content.ReadAsStringAsync();
+                Assert.NotNull(downJson);
+                Assert.Contains("\"status\":\"DOWN\"", downJson);
+            }
 
-            //Assert.Equal(200, middle.GetStatusCode(health3));
+            builder = new WebHostBuilder()
+               .UseStartup<Startup>()
+               .ConfigureAppConfiguration((context, config) => config.AddInMemoryCollection(new Dictionary<string, string>(appSettings) { ["HealthCheckType"] = "out" }));
 
-            //var health4 = new HealthCheckResult()
-            //{
-            //    Status = HealthStatus.UNKNOWN
-            //};
+            using (var server = new TestServer(builder))
+            {
+                var client = server.CreateClient();
+                var outResult = await client.GetAsync("http://localhost/cloudfoundryapplication/health");
+                Assert.Equal(HttpStatusCode.ServiceUnavailable, outResult.StatusCode);
+                var outJson = await outResult.Content.ReadAsStringAsync();
+                Assert.NotNull(outJson);
+                Assert.Contains("\"status\":\"OUT_OF_SERVICE\"", outJson);
+            }
 
-            //Assert.Equal(200, middle.GetStatusCode(health4));
+            builder = new WebHostBuilder()
+               .UseStartup<Startup>()
+               .ConfigureAppConfiguration((context, config) => config.AddInMemoryCollection(new Dictionary<string, string>(appSettings) { ["HealthCheckType"] = "unknown" }));
+
+            using (var server = new TestServer(builder))
+            {
+                var client = server.CreateClient();
+                var unknownResult = await client.GetAsync("http://localhost/cloudfoundryapplication/health");
+                Assert.Equal(HttpStatusCode.OK, unknownResult.StatusCode);
+                var unknownJson = await unknownResult.Content.ReadAsStringAsync();
+                Assert.NotNull(unknownJson);
+                Assert.Contains("\"status\":\"UNKNOWN\"", unknownJson);
+            }
         }
 
         private HttpContext CreateRequest(string method, string path)

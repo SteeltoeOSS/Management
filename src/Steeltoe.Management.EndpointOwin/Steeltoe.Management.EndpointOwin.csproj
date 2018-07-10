@@ -16,7 +16,6 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Owin" Version="$(OwinVersion)" />
-    <PackageReference Include="Microsoft.Owin.Cors" Version="$(OwinVersion)" />
     <PackageReference Include="Steeltoe.Common.Http" Version="$(SteeltoeCommonVersion)" />
     <PackageReference Include="StyleCop.Analyzers" Version="$(StyleCopVersion)">
       <PrivateAssets>All</PrivateAssets>

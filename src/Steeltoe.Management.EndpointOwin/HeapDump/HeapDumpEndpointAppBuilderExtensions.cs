@@ -16,12 +16,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Owin;
 using Steeltoe.Management.Endpoint.HeapDump;
+using System;
 
 namespace Steeltoe.Management.EndpointOwin.HeapDump
 {
-    /// <summary>
-    /// TODO: Heap Dump endpoint has permissions issue running local in sample app!
-    /// </summary>
     public static class HeapDumpEndpointAppBuilderExtensions
     {
         /// <summary>
@@ -36,12 +34,12 @@ namespace Steeltoe.Management.EndpointOwin.HeapDump
         {
             if (builder == null)
             {
-                throw new System.ArgumentNullException(nameof(builder));
+                throw new ArgumentNullException(nameof(builder));
             }
 
             if (config == null)
             {
-                throw new System.ArgumentNullException(nameof(config));
+                throw new ArgumentNullException(nameof(config));
             }
 
             var options = new HeapDumpOptions(config);
@@ -61,12 +59,12 @@ namespace Steeltoe.Management.EndpointOwin.HeapDump
         {
             if (options == null)
             {
-                throw new System.ArgumentNullException(nameof(options));
+                throw new ArgumentNullException(nameof(options));
             }
 
             if (heapDumper == null)
             {
-                throw new System.ArgumentNullException(nameof(heapDumper));
+                throw new ArgumentNullException(nameof(heapDumper));
             }
 
             var endpoint = new HeapDumpEndpoint(options, heapDumper, loggerFactory?.CreateLogger<HeapDumpEndpoint>());

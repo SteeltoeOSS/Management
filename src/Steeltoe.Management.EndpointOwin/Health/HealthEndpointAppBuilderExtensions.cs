@@ -32,7 +32,6 @@ namespace Steeltoe.Management.EndpointOwin.Health
         /// <param name="config"><see cref="IConfiguration"/> of application for configuring health endpoint</param>
         /// <param name="loggerFactory">For logging within the middleware</param>
         /// <returns>OWIN <see cref="IAppBuilder" /> with Health Endpoint added</returns>
-        /// <remarks>Not to be used in conjunction with Autofac helper TODO: actual class/method name?</remarks>
         public static IAppBuilder UseHealthEndpointMiddleware(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null)
         {
             if (builder == null)
@@ -55,7 +54,6 @@ namespace Steeltoe.Management.EndpointOwin.Health
         /// <param name="options"><see cref="IHealthOptions"/> for configuring Health endpoint</param>
         /// <param name="loggerFactory">For logging within the middleware</param>
         /// <returns>OWIN <see cref="IAppBuilder" /> with Health Endpoint added</returns>
-        /// <remarks>Not to be used in conjunction with Autofac helper TODO: actual class/method name?</remarks>
         public static IAppBuilder UseHealthEndpointMiddleware(this IAppBuilder builder, IHealthOptions options, ILoggerFactory loggerFactory = null)
         {
             if (builder == null)
@@ -79,7 +77,6 @@ namespace Steeltoe.Management.EndpointOwin.Health
         /// <param name="aggregator"><see cref="IHealthAggregator"/> for determining how to report aggregate health of the application</param>
         /// <param name="loggerFactory">For logging within the middleware</param>
         /// <returns>OWIN <see cref="IAppBuilder" /> with Health Endpoint added</returns>
-        /// <remarks>Not to be used in conjunction with Autofac helper TODO: actual class/method name?</remarks>
         public static IAppBuilder UseHealthEndpointMiddleware(this IAppBuilder builder, IHealthOptions options, IHealthAggregator aggregator, ILoggerFactory loggerFactory = null)
         {
             if (builder == null)
@@ -109,7 +106,6 @@ namespace Steeltoe.Management.EndpointOwin.Health
         /// <param name="contributors">A list of <see cref="IHealthContributor"/> to monitor for determining application health</param>
         /// <param name="loggerFactory">For logging within the middleware</param>
         /// <returns>OWIN <see cref="IAppBuilder" /> with Health Endpoint added</returns>
-        /// <remarks>Not to be used in conjunction with Autofac helper TODO: actual class/method name?</remarks>
         public static IAppBuilder UseHealthEndpointMiddleware(this IAppBuilder builder, IHealthOptions options, IHealthAggregator aggregator, IEnumerable<IHealthContributor> contributors, ILoggerFactory loggerFactory = null)
         {
             if (builder == null)

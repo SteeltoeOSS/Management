@@ -15,7 +15,6 @@
 using Microsoft.Extensions.Configuration;
 using Owin;
 using Steeltoe.Management.EndpointOwin.Test;
-using Steeltoe.Management.EndpointOwin.ThreadDump;
 using System.Collections.Generic;
 
 namespace Steeltoe.Management.EndpointOwin.ThreadDump.Test
@@ -35,6 +34,5 @@ namespace Steeltoe.Management.EndpointOwin.ThreadDump.Test
 
             app.UseThreadDumpEndpointMiddleware(config);
         }
-
     }
 }

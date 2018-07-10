@@ -16,6 +16,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Owin;
 using Steeltoe.Management.Endpoint.ThreadDump;
+using System;
 using System.Collections.Generic;
 
 namespace Steeltoe.Management.EndpointOwin.ThreadDump
@@ -33,12 +34,12 @@ namespace Steeltoe.Management.EndpointOwin.ThreadDump
         {
             if (builder == null)
             {
-                throw new System.ArgumentNullException(nameof(builder));
+                throw new ArgumentNullException(nameof(builder));
             }
 
             if (config == null)
             {
-                throw new System.ArgumentNullException(nameof(config));
+                throw new ArgumentNullException(nameof(config));
             }
 
             var options = new ThreadDumpOptions(config);
@@ -58,17 +59,17 @@ namespace Steeltoe.Management.EndpointOwin.ThreadDump
         {
             if (builder == null)
             {
-                throw new System.ArgumentNullException(nameof(builder));
+                throw new ArgumentNullException(nameof(builder));
             }
 
             if (options == null)
             {
-                throw new System.ArgumentNullException(nameof(options));
+                throw new ArgumentNullException(nameof(options));
             }
 
             if (threadDumper == null)
             {
-                throw new System.ArgumentNullException(nameof(threadDumper));
+                throw new ArgumentNullException(nameof(threadDumper));
             }
 
             var endpoint = new ThreadDumpEndpoint(options, threadDumper, loggerFactory?.CreateLogger<ThreadDumpEndpoint>());

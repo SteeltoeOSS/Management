@@ -23,7 +23,7 @@ namespace Steeltoe.Management.EndpointOwin.Health
 {
     public class HealthEndpointOwinMiddleware : EndpointOwinMiddleware<HealthEndpoint, HealthCheckResult>
     {
-        public HealthEndpointOwinMiddleware(OwinMiddleware next, HealthEndpoint endpoint, ILogger<HealthEndpoint> logger = null)
+        public HealthEndpointOwinMiddleware(OwinMiddleware next, HealthEndpoint endpoint, ILogger<HealthEndpointOwinMiddleware> logger = null)
             : base(next, endpoint, logger)
         {
             _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));

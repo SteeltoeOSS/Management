@@ -26,15 +26,15 @@ namespace Steeltoe.Management.EndpointOwin
     public class EndpointOwinMiddleware<TEndpoint, TResult> : OwinMiddleware
     {
         protected IEndpoint<TResult> _endpoint;
-        protected ILogger<TEndpoint> _logger;
+        protected ILogger _logger;
 
-        public EndpointOwinMiddleware(OwinMiddleware next, ILogger<TEndpoint> logger = null)
+        public EndpointOwinMiddleware(OwinMiddleware next, ILogger logger = null)
             : base(next)
         {
             _logger = logger;
         }
 
-        public EndpointOwinMiddleware(OwinMiddleware next, IEndpoint<TResult> endpoint, ILogger<TEndpoint> logger = null)
+        public EndpointOwinMiddleware(OwinMiddleware next, IEndpoint<TResult> endpoint, ILogger logger = null)
             : base(next)
         {
             _endpoint = endpoint;
@@ -83,7 +83,7 @@ namespace Steeltoe.Management.EndpointOwin
     {
         protected new IEndpoint<TResult, TRequest> _endpoint;
 
-        public EndpointOwinMiddleware(OwinMiddleware next, IEndpoint<TResult, TRequest> endpoint, ILogger<TEndpoint> logger)
+        public EndpointOwinMiddleware(OwinMiddleware next, IEndpoint<TResult, TRequest> endpoint, ILogger logger)
             : base(next, logger)
         {
             this._endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
