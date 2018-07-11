@@ -18,21 +18,22 @@ using Steeltoe.Management.Endpoint.Loggers;
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Management.EndpointOwin.Loggers
 {
     public class LoggersEndpointOwinMiddleware : EndpointOwinMiddleware<LoggersEndpoint, Dictionary<string, object>, LoggersChangeRequest>
     {
-        public LoggersEndpointOwinMiddleware(OwinMiddleware next, LoggersEndpoint endpoint, ILogger<LoggersEndpoint> logger = null)
-            : base(next, endpoint, logger)
+        public LoggersEndpointOwinMiddleware(OwinMiddleware next, LoggersEndpoint endpoint, ILogger<LoggersEndpointOwinMiddleware> logger = null)
+            : base(next, endpoint, new List<HttpMethod> { HttpMethod.Get, HttpMethod.Post }, false, logger)
         {
             _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
         }
 
         public override async Task Invoke(IOwinContext context)
         {
-            if (!_endpoint.RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
+            if (!RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
             {
                 await Next.Invoke(context);
             }

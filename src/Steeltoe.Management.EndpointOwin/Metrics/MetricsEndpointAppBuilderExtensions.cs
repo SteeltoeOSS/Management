@@ -17,6 +17,7 @@ using Microsoft.Extensions.Logging;
 using Owin;
 using Steeltoe.Management.Census.Stats;
 using Steeltoe.Management.Endpoint.Metrics;
+using System;
 
 namespace Steeltoe.Management.EndpointOwin.Metrics
 {
@@ -33,12 +34,12 @@ namespace Steeltoe.Management.EndpointOwin.Metrics
         {
             if (builder == null)
             {
-                throw new System.ArgumentNullException(nameof(builder));
+                throw new ArgumentNullException(nameof(builder));
             }
 
             if (config == null)
             {
-                throw new System.ArgumentNullException(nameof(config));
+                throw new ArgumentNullException(nameof(config));
             }
 
             var stats = new OpenCensusStats();
@@ -57,21 +58,21 @@ namespace Steeltoe.Management.EndpointOwin.Metrics
         {
             if (builder == null)
             {
-                throw new System.ArgumentNullException(nameof(builder));
+                throw new ArgumentNullException(nameof(builder));
             }
 
             if (config == null)
             {
-                throw new System.ArgumentNullException(nameof(config));
+                throw new ArgumentNullException(nameof(config));
             }
 
             if (stats == null)
             {
-                throw new System.ArgumentNullException(nameof(stats));
+                throw new ArgumentNullException(nameof(stats));
             }
 
             var endpoint = new MetricsEndpoint(new MetricsOptions(config), stats, loggerFactory?.CreateLogger<MetricsEndpoint>());
-            var logger = loggerFactory?.CreateLogger<EndpointOwinMiddleware<MetricsEndpoint, MetricsRequest>>();
+            var logger = loggerFactory?.CreateLogger<MetricsEndpointOwinMiddleware>();
             return builder.Use<MetricsEndpointOwinMiddleware>(endpoint, logger);
         }
     }

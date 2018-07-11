@@ -47,17 +47,5 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
                 File.Delete(result);
             }
         }
-
-        [Fact]
-        public void HeapDumpRequest_PathAndVerbMatching_ReturnsExpected()
-        {
-            var opts = new HeapDumpOptions();
-            var obs = new HeapDumper(opts);
-            var ep = new HeapDumpEndpoint(opts, obs);
-
-            Assert.True(ep.RequestVerbAndPathMatch("GET", "/heapdump"));
-            Assert.False(ep.RequestVerbAndPathMatch("PUT", "/heapdump"));
-            Assert.False(ep.RequestVerbAndPathMatch("GET", "/badpath"));
-        }
     }
 }

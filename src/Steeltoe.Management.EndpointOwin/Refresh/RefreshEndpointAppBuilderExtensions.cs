@@ -16,7 +16,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Owin;
 using Steeltoe.Management.Endpoint.Refresh;
+using System;
 using System.Collections.Generic;
+using System.Net.Http;
 
 namespace Steeltoe.Management.EndpointOwin.Refresh
 {
@@ -33,17 +35,17 @@ namespace Steeltoe.Management.EndpointOwin.Refresh
         {
             if (builder == null)
             {
-                throw new System.ArgumentNullException(nameof(builder));
+                throw new ArgumentNullException(nameof(builder));
             }
 
             if (config == null)
             {
-                throw new System.ArgumentNullException(nameof(config));
+                throw new ArgumentNullException(nameof(config));
             }
 
             var endpoint = new RefreshEndpoint(new RefreshOptions(config), config, loggerFactory?.CreateLogger<RefreshEndpoint>());
             var logger = loggerFactory?.CreateLogger<EndpointOwinMiddleware<RefreshEndpoint, IList<string>>>();
-            return builder.Use<EndpointOwinMiddleware<RefreshEndpoint, IList<string>>>(endpoint, logger);
+            return builder.Use<EndpointOwinMiddleware<RefreshEndpoint, IList<string>>>(endpoint, new List<HttpMethod> { HttpMethod.Get }, true, logger);
         }
     }
 }

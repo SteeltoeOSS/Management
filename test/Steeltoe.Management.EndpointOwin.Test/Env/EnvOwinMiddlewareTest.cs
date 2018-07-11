@@ -59,5 +59,20 @@ namespace Steeltoe.Management.EndpointOwin.Env.Test
                 Assert.Equal(expected, json);
             }
         }
+
+        [Fact]
+        public void EnvEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
+        {
+            var opts = new EnvOptions();
+            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var config = configurationBuilder.Build();
+            var host = new GenericHostingEnvironment() { EnvironmentName = "EnvironmentName" };
+            var ep = new EnvEndpoint(opts, config, host);
+            var middle = new EndpointOwinMiddleware<EnvEndpoint, EnvironmentDescriptor>(null, ep);
+
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/env"));
+            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/env"));
+            Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
+        }
     }
 }

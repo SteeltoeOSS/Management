@@ -41,7 +41,7 @@ namespace Steeltoe.Management.EndpointOwin.HeapDump.Test
 
                 HeapDumper obs = new HeapDumper(opts, logger: logger1);
                 var ep = new HeapDumpEndpoint(opts, obs, logger2);
-                var middle = new HeapDumpEndpointOwinMiddleware(null, ep, logger2);
+                var middle = new HeapDumpEndpointOwinMiddleware(null, ep, logger3);
                 var context = OwinTestHelpers.CreateRequest("GET", "/heapdump");
                 await middle.Invoke(context);
                 context.Response.Body.Seek(0, SeekOrigin.Begin);
@@ -79,6 +79,19 @@ namespace Steeltoe.Management.EndpointOwin.HeapDump.Test
                     File.Delete(tempFile);
                 }
             }
+        }
+
+        [Fact]
+        public void HeapDumpEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
+        {
+            var opts = new HeapDumpOptions();
+            HeapDumper obs = new HeapDumper(opts);
+            var ep = new HeapDumpEndpoint(opts, obs);
+            var middle = new HeapDumpEndpointOwinMiddleware(null, ep);
+
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/heapdump"));
+            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/heapdump"));
+            Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
         }
     }
 }

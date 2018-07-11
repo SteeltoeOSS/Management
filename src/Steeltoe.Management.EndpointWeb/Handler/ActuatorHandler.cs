@@ -36,8 +36,6 @@ namespace Steeltoe.Management.Endpoint.Handler
         public ActuatorHandler(ISecurityService securityService, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
         {
             _logger = logger;
-            _allowedMethods = allowedMethods;
-            _exactRequestPathMatching = exactRequestPathMatching;
             _allowedMethods = allowedMethods ?? new List<HttpMethod> { HttpMethod.Get };
             _exactRequestPathMatching = exactRequestPathMatching;
             _securityService = securityService;

@@ -35,6 +35,5 @@ namespace Steeltoe.Management.EndpointOwin.HeapDump.Test
 
             app.UseHeapDumpEndpointMiddleware(config);
         }
-
     }
 }

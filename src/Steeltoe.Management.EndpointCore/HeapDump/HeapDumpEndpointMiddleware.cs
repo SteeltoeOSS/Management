@@ -26,14 +26,14 @@ namespace Steeltoe.Management.Endpoint.HeapDump
         private RequestDelegate _next;
 
         public HeapDumpEndpointMiddleware(RequestDelegate next, HeapDumpEndpoint endpoint, ILogger<HeapDumpEndpointMiddleware> logger = null)
-            : base(endpoint, logger)
+            : base(endpoint, logger: logger)
         {
             _next = next;
         }
 
         public async Task Invoke(HttpContext context)
         {
-            if (endpoint.RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
+            if (RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
             {
                 await HandleHeapDumpRequestAsync(context);
             }
@@ -45,8 +45,8 @@ namespace Steeltoe.Management.Endpoint.HeapDump
 
         protected internal async Task HandleHeapDumpRequestAsync(HttpContext context)
         {
-            var filename = endpoint.Invoke();
-            logger?.LogDebug("Returning: {0}", filename);
+            var filename = _endpoint.Invoke();
+            _logger?.LogDebug("Returning: {0}", filename);
             context.Response.Headers.Add("Content-Type", "application/octet-stream");
 
             if (!File.Exists(filename))

@@ -63,5 +63,18 @@ namespace Steeltoe.Management.EndpointOwin.Trace.Test
                 Assert.Contains("\"content-type\":\"application/vnd.spring-boot.actuator.v1+json\"", json);
             }
         }
+
+        [Fact]
+        public void TraceEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
+        {
+            var opts = new TraceOptions();
+            var obs = new OwinTraceRepository(opts);
+            var ep = new TraceEndpoint(opts, obs);
+            var middle = new EndpointOwinMiddleware<TraceEndpoint, List<TraceResult>>(null, ep);
+
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/trace"));
+            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/trace"));
+            Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
+        }
     }
 }

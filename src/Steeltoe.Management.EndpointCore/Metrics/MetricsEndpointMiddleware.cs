@@ -27,14 +27,14 @@ namespace Steeltoe.Management.Endpoint.Metrics
         private RequestDelegate _next;
 
         public MetricsEndpointMiddleware(RequestDelegate next, MetricsEndpoint endpoint, ILogger<MetricsEndpointMiddleware> logger = null)
-            : base(endpoint, logger)
+            : base(endpoint, null, false, logger)
         {
             _next = next;
         }
 
         public async Task Invoke(HttpContext context)
         {
-            if (endpoint.RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
+            if (RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
             {
                 await HandleMetricsRequestAsync(context);
             }
@@ -46,7 +46,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
 
         public override string HandleRequest(MetricsRequest arg)
         {
-            var result = endpoint.Invoke(arg);
+            var result = _endpoint.Invoke(arg);
             return result == null ? null : Serialize(result);
         }
 
@@ -55,7 +55,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
             HttpRequest request = context.Request;
             HttpResponse response = context.Response;
 
-            logger?.LogDebug("Incoming path: {0}", request.Path.Value);
+            _logger?.LogDebug("Incoming path: {0}", request.Path.Value);
 
             string metricName = GetMetricName(request);
             if (!string.IsNullOrEmpty(metricName))
@@ -79,7 +79,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
             {
                 // GET /metrics
                 var serialInfo = this.HandleRequest(null);
-                logger?.LogDebug("Returning: {0}", serialInfo);
+                _logger?.LogDebug("Returning: {0}", serialInfo);
                 response.Headers.Add("Content-Type", "application/vnd.spring-boot.actuator.v1+json");
                 response.StatusCode = (int)HttpStatusCode.OK;
                 await context.Response.WriteAsync(serialInfo);
@@ -88,7 +88,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
 
         protected internal string GetMetricName(HttpRequest request)
         {
-            PathString epPath = new PathString(endpoint.Path);
+            PathString epPath = new PathString(_endpoint.Path);
             if (request.Path.StartsWithSegments(epPath, out PathString remaining))
             {
                 if (remaining.HasValue)

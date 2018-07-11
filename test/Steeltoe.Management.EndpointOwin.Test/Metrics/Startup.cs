@@ -12,27 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Extensions.Logging;
-using System;
+using Microsoft.Extensions.Configuration;
+using Owin;
+using Steeltoe.Management.EndpointOwin.Test;
+using System.Collections.Generic;
 
-namespace Steeltoe.Management.Endpoint.Test
+namespace Steeltoe.Management.EndpointOwin.Metrics.Test
 {
-    public class BaseTest : IDisposable
+    public class Startup
     {
-        public BaseTest()
+        public void Configuration(IAppBuilder app)
         {
-            ManagementOptions._instance = null;
-        }
+            var builder = new ConfigurationBuilder();
 
-        public void Dispose()
-        {
-            ManagementOptions._instance = null;
-        }
+            var appSettings = new Dictionary<string, string>(OwinTestHelpers.Appsettings)
+            {
+            };
 
-        public ILogger<T> GetLogger<T>()
-        {
-            var lf = new LoggerFactory();
-            return lf.CreateLogger<T>();
+            builder.AddInMemoryCollection(appSettings);
+            var config = builder.Build();
+
+            app.UseMetricsEndpointMiddleware(config);
         }
     }
 }

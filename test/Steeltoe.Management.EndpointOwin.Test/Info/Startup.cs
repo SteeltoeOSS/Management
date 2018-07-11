@@ -44,6 +44,5 @@ namespace Steeltoe.Management.EndpointOwin.Info.Test
 
             app.UseInfoEndpointMiddleware(config);
         }
-
     }
 }

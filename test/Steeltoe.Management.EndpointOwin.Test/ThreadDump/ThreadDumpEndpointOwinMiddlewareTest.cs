@@ -67,5 +67,18 @@ namespace Steeltoe.Management.EndpointOwin.ThreadDump.Test
                 Assert.EndsWith("]", json);
             }
         }
+
+        [Fact]
+        public void ThreadDumpEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
+        {
+            var opts = new ThreadDumpOptions();
+            ThreadDumper obs = new ThreadDumper(opts);
+            var ep = new ThreadDumpEndpoint(opts, obs);
+            var middle = new EndpointOwinMiddleware<ThreadDumpEndpoint, List<ThreadInfo>>(null, ep);
+
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/dump"));
+            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/dump"));
+            Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
+        }
     }
 }

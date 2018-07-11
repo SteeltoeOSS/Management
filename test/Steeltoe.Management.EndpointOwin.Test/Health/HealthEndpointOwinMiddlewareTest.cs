@@ -72,6 +72,19 @@ namespace Steeltoe.Management.EndpointOwin.Health.Test
             }
         }
 
+        [Fact]
+        public void HealthEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
+        {
+            var opts = new HealthOptions();
+            var contribs = new List<IHealthContributor>() { new DiskSpaceContributor() };
+            var ep = new HealthEndpoint(opts, new DefaultHealthAggregator(), contribs);
+            var middle = new HealthEndpointOwinMiddleware(null, ep);
+
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/health"));
+            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/health"));
+            Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
+        }
+
         private async Task<Dictionary<string, object>> AssertHealthResponseAsync(HttpStatusCode expectedHttpStatus, HealthStatus expectedHealthStatus, HttpResponseMessage response)
         {
             Assert.NotNull(response);

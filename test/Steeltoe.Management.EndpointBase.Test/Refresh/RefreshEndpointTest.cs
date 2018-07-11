@@ -62,19 +62,5 @@ namespace Steeltoe.Management.Endpoint.Refresh.Test
             Assert.Contains("management:endpoints:heapdump:sensitive", result);
             Assert.Contains("management:endpoints:cloudfoundry:enabled", result);
         }
-
-        [Fact]
-        public void RefreshRequest_PathAndVerbMatching_ReturnsExpected()
-        {
-            var opts = new RefreshOptions();
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.AddInMemoryCollection(new Dictionary<string, string>());
-            var config = configurationBuilder.Build();
-            var ep = new RefreshEndpoint(opts, config);
-
-            Assert.True(ep.RequestVerbAndPathMatch("GET", "/refresh"));
-            Assert.False(ep.RequestVerbAndPathMatch("PUT", "/refresh"));
-            Assert.False(ep.RequestVerbAndPathMatch("GET", "/badpath"));
-        }
     }
 }

@@ -103,6 +103,18 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             }
         }
 
+        [Fact]
+        public void CloudFoundryEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
+        {
+            var opts = new CloudFoundryOptions();
+            var ep = new CloudFoundryEndpoint(opts);
+            var middle = new CloudFoundryEndpointMiddleware(null, ep);
+
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/"));
+            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/"));
+            Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
+        }
+
         private HttpContext CreateRequest(string method, string path)
         {
             HttpContext context = new DefaultHttpContext();

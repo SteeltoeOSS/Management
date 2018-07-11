@@ -25,14 +25,14 @@ namespace Steeltoe.Management.Endpoint.Trace
         private RequestDelegate _next;
 
         public TraceEndpointMiddleware(RequestDelegate next, TraceEndpoint endpoint, ILogger<TraceEndpointMiddleware> logger = null)
-            : base(endpoint, logger)
+            : base(endpoint, logger: logger)
         {
             _next = next;
         }
 
         public async Task Invoke(HttpContext context)
         {
-            if (endpoint.RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
+            if (RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
             {
                 await HandleTraceRequestAsync(context);
             }
@@ -45,7 +45,7 @@ namespace Steeltoe.Management.Endpoint.Trace
         protected internal async Task HandleTraceRequestAsync(HttpContext context)
         {
             var serialInfo = HandleRequest();
-            logger?.LogDebug("Returning: {0}", serialInfo);
+            _logger?.LogDebug("Returning: {0}", serialInfo);
             context.Response.Headers.Add("Content-Type", "application/vnd.spring-boot.actuator.v1+json");
             await context.Response.WriteAsync(serialInfo);
         }

@@ -17,6 +17,7 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Middleware;
 using System.Collections.Generic;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.Loggers
@@ -26,14 +27,14 @@ namespace Steeltoe.Management.Endpoint.Loggers
         private RequestDelegate _next;
 
         public LoggersEndpointMiddleware(RequestDelegate next, LoggersEndpoint endpoint, ILogger<LoggersEndpointMiddleware> logger = null)
-            : base(endpoint, logger)
+            : base(endpoint, new List<HttpMethod> { HttpMethod.Get, HttpMethod.Post }, false, logger)
         {
             _next = next;
         }
 
         public async Task Invoke(HttpContext context)
         {
-            if (endpoint.RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
+            if (RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
             {
                 await HandleLoggersRequestAsync(context);
             }
@@ -51,19 +52,19 @@ namespace Steeltoe.Management.Endpoint.Loggers
             if (context.Request.Method.Equals("POST"))
             {
                 // POST - change a logger level
-                logger?.LogDebug("Incoming path: {0}", request.Path.Value);
-                PathString epPath = new PathString(endpoint.Path);
+                _logger?.LogDebug("Incoming path: {0}", request.Path.Value);
+                PathString epPath = new PathString(_endpoint.Path);
                 if (request.Path.StartsWithSegments(epPath, out PathString remaining))
                 {
                     if (remaining.HasValue)
                     {
                         string loggerName = remaining.Value.TrimStart('/');
 
-                        var change = ((LoggersEndpoint)endpoint).DeserializeRequest(request.Body);
+                        var change = ((LoggersEndpoint)_endpoint).DeserializeRequest(request.Body);
 
                         change.TryGetValue("configuredLevel", out string level);
 
-                        logger?.LogDebug("Change Request: {0}, {1}", loggerName, level ?? "RESET");
+                        _logger?.LogDebug("Change Request: {0}, {1}", loggerName, level ?? "RESET");
                         if (!string.IsNullOrEmpty(loggerName))
                         {
                             var changeReq = new LoggersChangeRequest(loggerName, level);
@@ -80,7 +81,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
 
             // GET request
             var serialInfo = this.HandleRequest(null);
-            logger?.LogDebug("Returning: {0}", serialInfo);
+            _logger?.LogDebug("Returning: {0}", serialInfo);
             response.Headers.Add("Content-Type", "application/vnd.spring-boot.actuator.v1+json");
             await context.Response.WriteAsync(serialInfo);
         }

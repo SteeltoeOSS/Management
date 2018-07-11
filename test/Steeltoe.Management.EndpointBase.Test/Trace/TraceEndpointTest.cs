@@ -35,17 +35,5 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             Assert.NotNull(result);
             Assert.True(repo.GetTracesCalled);
         }
-
-        [Fact]
-        public void TraceRequest_PathAndVerbMatching_ReturnsExpected()
-        {
-            var opts = new TraceOptions();
-            var obs = new TestTraceRepo();
-            var ep = new TraceEndpoint(opts, obs);
-
-            Assert.True(ep.RequestVerbAndPathMatch("GET", "/trace"));
-            Assert.False(ep.RequestVerbAndPathMatch("PUT", "/trace"));
-            Assert.False(ep.RequestVerbAndPathMatch("GET", "/badpath"));
-        }
     }
 }

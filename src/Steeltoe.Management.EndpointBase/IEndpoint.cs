@@ -12,9 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
-using System.Net.Http;
-
 namespace Steeltoe.Management.Endpoint
 {
     public interface IEndpoint
@@ -28,14 +25,6 @@ namespace Steeltoe.Management.Endpoint
         IEndpointOptions Options { get; }
 
         string Path { get; }
-
-        /// <summary>
-        /// Evaluate the path and verb of an Http request to determine if it should be processed by this endpoint
-        /// </summary>
-        /// <param name="httpMethod">Request Verb (eg: GET, POST, PUT, etc)</param>
-        /// <param name="requestPath">Request path</param>
-        /// <returns>A determination of whether the request was meant for this endpoint</returns>
-        bool RequestVerbAndPathMatch(string httpMethod, string requestPath);
     }
 
     public interface IEndpoint<TResult> : IEndpoint

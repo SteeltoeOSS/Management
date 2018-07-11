@@ -23,15 +23,15 @@ namespace Steeltoe.Management.EndpointOwin.Health
 {
     public class HealthEndpointOwinMiddleware : EndpointOwinMiddleware<HealthEndpoint, HealthCheckResult>
     {
-        public HealthEndpointOwinMiddleware(OwinMiddleware next, HealthEndpoint endpoint, ILogger<HealthEndpoint> logger = null)
-            : base(next, endpoint, logger)
+        public HealthEndpointOwinMiddleware(OwinMiddleware next, HealthEndpoint endpoint, ILogger<HealthEndpointOwinMiddleware> logger = null)
+            : base(next, endpoint, logger: logger)
         {
             _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
         }
 
         public override async Task Invoke(IOwinContext context)
         {
-            if (!_endpoint.RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
+            if (!RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
             {
                 await Next.Invoke(context);
             }

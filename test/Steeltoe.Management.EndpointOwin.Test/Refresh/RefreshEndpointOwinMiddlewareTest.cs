@@ -15,7 +15,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Owin.Testing;
 using Steeltoe.Management.Endpoint.Refresh;
-using Steeltoe.Management.Endpoint.Refresh.Test;
 using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.EndpointOwin.Test;
 using System;
@@ -64,6 +63,21 @@ namespace Steeltoe.Management.EndpointOwin.Refresh.Test
             }
 
             Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", anc_env);
+        }
+
+        [Fact]
+        public void RefreshEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
+        {
+            var opts = new RefreshOptions();
+            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddInMemoryCollection(OwinTestHelpers.Appsettings);
+            var config = configurationBuilder.Build();
+            var ep = new RefreshEndpoint(opts, config);
+            var middle = new EndpointOwinMiddleware<RefreshEndpoint, IList<string>>(null, ep);
+
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/refresh"));
+            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/refresh"));
+            Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
         }
     }
 }

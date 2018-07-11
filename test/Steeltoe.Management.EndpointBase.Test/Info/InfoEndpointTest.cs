@@ -73,17 +73,5 @@ namespace Steeltoe.Management.Endpoint.Info.Test
                 }
             }
         }
-
-        [Fact]
-        public void InfoRequest_PathAndVerbMatching_ReturnsExpected()
-        {
-            var opts = new InfoOptions();
-            var contribs = new List<IInfoContributor>() { new GitInfoContributor() };
-            var ep = new InfoEndpoint(opts, contribs);
-
-            Assert.True(ep.RequestVerbAndPathMatch("GET", "/info"));
-            Assert.False(ep.RequestVerbAndPathMatch("PUT", "/info"));
-            Assert.False(ep.RequestVerbAndPathMatch("GET", "/badpath"));
-        }
     }
 }

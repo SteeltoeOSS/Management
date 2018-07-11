@@ -14,11 +14,10 @@
 
 using Microsoft.Extensions.Configuration;
 using Owin;
-using Steeltoe.Management.EndpointOwin.Refresh;
 using Steeltoe.Management.EndpointOwin.Test;
 using System.Collections.Generic;
 
-namespace Steeltoe.Management.Endpoint.Refresh.Test
+namespace Steeltoe.Management.EndpointOwin.Refresh.Test
 {
     public class Startup
     {

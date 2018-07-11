@@ -14,7 +14,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.Owin.Cors;
 using Owin;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 
@@ -27,10 +26,9 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
         /// </summary>
         /// <param name="builder">Your OWIN <see cref="IAppBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        /// <param name="corsOptions">Provide if you want to set <see cref="CorsOptions"/> other than "AllowAll"</param>
         /// <param name="loggerFactory"><see cref="ILoggerFactory"/> for logging within the middleware</param>
         /// <returns>Your OWIN <see cref="IAppBuilder"/> with Cloud Foundry request security and CORS configured</returns>
-        public static IAppBuilder UseCloudFoundrySecurityMiddleware(this IAppBuilder builder, IConfiguration config, CorsOptions corsOptions = null, ILoggerFactory loggerFactory = null)
+        public static IAppBuilder UseCloudFoundrySecurityMiddleware(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null)
         {
             if (builder == null)
             {
@@ -43,7 +41,6 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
             }
 
             var logger = loggerFactory?.CreateLogger<CloudFoundrySecurityOwinMiddleware>();
-            builder.UseCors(corsOptions ?? CorsOptions.AllowAll);
             return builder.Use<CloudFoundrySecurityOwinMiddleware>(new CloudFoundryOptions(config), logger);
         }
     }

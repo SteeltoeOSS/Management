@@ -86,18 +86,6 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         }
 
         [Fact]
-        public void HealthRequest_PathAndVerbMatching_ReturnsExpected()
-        {
-            var opts = new HealthOptions();
-            var contribs = new List<IHealthContributor>() { new DiskSpaceContributor() };
-            var ep = new HealthEndpoint(opts, new DefaultHealthAggregator(), contribs);
-
-            Assert.True(ep.RequestVerbAndPathMatch("GET", "/health"));
-            Assert.False(ep.RequestVerbAndPathMatch("PUT", "/health"));
-            Assert.False(ep.RequestVerbAndPathMatch("GET", "/badpath"));
-        }
-
-        [Fact]
         public void GetStatusCode_ReturnsExpected()
         {
             var opts = new HealthOptions();
