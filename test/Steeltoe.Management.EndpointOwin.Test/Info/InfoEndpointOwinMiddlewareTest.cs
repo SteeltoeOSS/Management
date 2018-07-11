@@ -31,7 +31,7 @@ namespace Steeltoe.Management.EndpointOwin.Info.Test
         {
             // arrange
             var ep = new TestInfoEndpoint(new InfoOptions(), new List<IInfoContributor>() { new GitInfoContributor() });
-            var middle = new EndpointOwinMiddleware<InfoEndpoint, Dictionary<string, object>>(null, ep);
+            var middle = new EndpointOwinMiddleware<Dictionary<string, object>>(null, ep);
             var context = OwinTestHelpers.CreateRequest("GET", "/info");
 
             // act
@@ -87,7 +87,7 @@ namespace Steeltoe.Management.EndpointOwin.Info.Test
             var opts = new InfoOptions();
             var contribs = new List<IInfoContributor>() { new GitInfoContributor() };
             var ep = new InfoEndpoint(opts, contribs);
-            var middle = new EndpointOwinMiddleware<InfoEndpoint, Dictionary<string, object>>(null, ep);
+            var middle = new EndpointOwinMiddleware<Dictionary<string, object>>(null, ep);
 
             Assert.True(middle.RequestVerbAndPathMatch("GET", "/info"));
             Assert.False(middle.RequestVerbAndPathMatch("PUT", "/info"));

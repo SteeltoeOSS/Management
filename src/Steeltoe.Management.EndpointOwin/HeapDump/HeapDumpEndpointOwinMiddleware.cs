@@ -23,7 +23,7 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Management.EndpointOwin.HeapDump
 {
-    public class HeapDumpEndpointOwinMiddleware : EndpointOwinMiddleware<HeapDumpEndpoint, string>
+    public class HeapDumpEndpointOwinMiddleware : EndpointOwinMiddleware<string>
     {
         protected new HeapDumpEndpoint _endpoint;
 

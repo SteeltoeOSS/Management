@@ -44,8 +44,8 @@ namespace Steeltoe.Management.EndpointOwin.Refresh
             }
 
             var endpoint = new RefreshEndpoint(new RefreshOptions(config), config, loggerFactory?.CreateLogger<RefreshEndpoint>());
-            var logger = loggerFactory?.CreateLogger<EndpointOwinMiddleware<RefreshEndpoint, IList<string>>>();
-            return builder.Use<EndpointOwinMiddleware<RefreshEndpoint, IList<string>>>(endpoint, new List<HttpMethod> { HttpMethod.Get }, true, logger);
+            var logger = loggerFactory?.CreateLogger<EndpointOwinMiddleware<IList<string>>>();
+            return builder.Use<EndpointOwinMiddleware<IList<string>>>(endpoint, new List<HttpMethod> { HttpMethod.Get }, true, logger);
         }
     }
 }

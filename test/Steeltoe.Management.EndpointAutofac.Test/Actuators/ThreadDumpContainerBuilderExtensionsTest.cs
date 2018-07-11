@@ -58,7 +58,7 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators.Test
             Assert.True(container.IsRegistered<IThreadDumpOptions>(), "ThreadDump options are registered");
             Assert.True(container.IsRegistered<IThreadDumper>(), "ThreadDumper is registered");
             Assert.True(container.IsRegistered<IEndpoint<List<ThreadInfo>>>(), "ThreadDump endpoint is registered");
-            Assert.True(container.IsRegistered<EndpointOwinMiddleware<ThreadDumpEndpoint, List<ThreadInfo>>>(), "ThreadDump endpoint middleware is registered");
+            Assert.True(container.IsRegistered<EndpointOwinMiddleware<List<ThreadInfo>>>(), "ThreadDump endpoint middleware is registered");
         }
     }
 }

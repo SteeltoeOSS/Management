@@ -29,7 +29,7 @@ namespace Steeltoe.Management.EndpointOwin.ThreadDump.Test
         {
             // arrange
             var opts = new ThreadDumpOptions();
-            var middle = new EndpointOwinMiddleware<ThreadDumpEndpoint, List<ThreadInfo>>(null, new ThreadDumpEndpoint(opts, new ThreadDumper(opts)));
+            var middle = new EndpointOwinMiddleware<List<ThreadInfo>>(null, new ThreadDumpEndpoint(opts, new ThreadDumper(opts)));
             var context = OwinTestHelpers.CreateRequest("GET", "/dump");
 
             // act
@@ -74,7 +74,7 @@ namespace Steeltoe.Management.EndpointOwin.ThreadDump.Test
             var opts = new ThreadDumpOptions();
             ThreadDumper obs = new ThreadDumper(opts);
             var ep = new ThreadDumpEndpoint(opts, obs);
-            var middle = new EndpointOwinMiddleware<ThreadDumpEndpoint, List<ThreadInfo>>(null, ep);
+            var middle = new EndpointOwinMiddleware<List<ThreadInfo>>(null, ep);
 
             Assert.True(middle.RequestVerbAndPathMatch("GET", "/dump"));
             Assert.False(middle.RequestVerbAndPathMatch("PUT", "/dump"));

@@ -21,7 +21,7 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Management.EndpointOwin.CloudFoundry
 {
-    public class CloudFoundryEndpointOwinMiddleware : EndpointOwinMiddleware<CloudFoundryEndpoint, Links, string>
+    public class CloudFoundryEndpointOwinMiddleware : EndpointOwinMiddleware<Links, string>
     {
         public CloudFoundryEndpointOwinMiddleware(OwinMiddleware next, CloudFoundryEndpoint endpoint, ILogger<CloudFoundryEndpointOwinMiddleware> logger = null)
             : base(next, endpoint, logger: logger)

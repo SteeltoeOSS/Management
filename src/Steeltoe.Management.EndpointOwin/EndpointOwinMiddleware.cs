@@ -26,7 +26,7 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Management.EndpointOwin
 {
-    public class EndpointOwinMiddleware<TEndpoint, TResult> : OwinMiddleware
+    public class EndpointOwinMiddleware<TResult> : OwinMiddleware
     {
         protected IEndpoint<TResult> _endpoint;
         protected ILogger _logger;
@@ -55,7 +55,7 @@ namespace Steeltoe.Management.EndpointOwin
             }
             else
             {
-                _logger?.LogTrace("Processing {SteeltoeEndpoint} request", typeof(TEndpoint));
+                _logger?.LogTrace("Processing {SteeltoeEndpoint} request", _endpoint.GetType());
                 var result = _endpoint.Invoke();
                 context.Response.Headers.SetValues("Content-Type", new string[] { "application/vnd.spring-boot.actuator.v1+json" });
                 await context.Response.WriteAsync(Serialize(result));
@@ -92,7 +92,7 @@ namespace Steeltoe.Management.EndpointOwin
     }
 
 #pragma warning disable SA1402 // File may only contain a single class
-    public class EndpointOwinMiddleware<TEndpoint, TResult, TRequest> : EndpointOwinMiddleware<TEndpoint, TResult>
+    public class EndpointOwinMiddleware<TResult, TRequest> : EndpointOwinMiddleware<TResult>
     {
         protected new IEndpoint<TResult, TRequest> _endpoint;
 

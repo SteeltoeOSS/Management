@@ -58,7 +58,7 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators.Test
             Assert.True(container.IsRegistered<ITraceOptions>(), "Trace options are registered");
             Assert.True(container.IsRegistered<ITraceRepository>(), "ITraceRepository is registered");
             Assert.True(container.IsRegistered<IEndpoint<List<TraceResult>>>(), "Trace endpoint is registered");
-            Assert.True(container.IsRegistered<EndpointOwinMiddleware<TraceEndpoint, List<TraceResult>>>(), "Trace endpoint middleware is registered");
+            Assert.True(container.IsRegistered<EndpointOwinMiddleware<List<TraceResult>>>(), "Trace endpoint middleware is registered");
         }
     }
 }

@@ -70,7 +70,7 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
 
             container.RegisterInstance(new InfoOptions(config)).As<IInfoOptions>();
             container.RegisterType<InfoEndpoint>().As<IEndpoint<Dictionary<string, object>>>();
-            container.RegisterType<EndpointOwinMiddleware<InfoEndpoint, Dictionary<string, object>>>();
+            container.RegisterType<EndpointOwinMiddleware<Dictionary<string, object>>>();
         }
 
         /// <summary>

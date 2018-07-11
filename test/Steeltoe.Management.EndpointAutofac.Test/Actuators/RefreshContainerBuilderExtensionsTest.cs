@@ -57,7 +57,7 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators.Test
             // Assert
             Assert.True(container.IsRegistered<IRefreshOptions>(), "Refresh options are registered");
             Assert.True(container.IsRegistered<IEndpoint<IList<string>>>(), "Refresh endpoint is registered");
-            Assert.True(container.IsRegistered<EndpointOwinMiddleware<RefreshEndpoint, IList<string>>>(), "Refresh endpoint middleware is registered");
+            Assert.True(container.IsRegistered<EndpointOwinMiddleware<IList<string>>>(), "Refresh endpoint middleware is registered");
         }
     }
 }

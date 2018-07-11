@@ -81,8 +81,8 @@ namespace Steeltoe.Management.EndpointOwin.Env
             }
 
             var endpoint = new EnvEndpoint(new EnvOptions(config), config, hostingEnvironment, loggerFactory?.CreateLogger<EnvEndpoint>());
-            var logger = loggerFactory?.CreateLogger<EndpointOwinMiddleware<EnvEndpoint, EnvironmentDescriptor>>();
-            return builder.Use<EndpointOwinMiddleware<EnvEndpoint, EnvironmentDescriptor>>(endpoint, new List<HttpMethod> { HttpMethod.Get }, true, logger);
+            var logger = loggerFactory?.CreateLogger<EndpointOwinMiddleware<EnvironmentDescriptor>>();
+            return builder.Use<EndpointOwinMiddleware<EnvironmentDescriptor>>(endpoint, new List<HttpMethod> { HttpMethod.Get }, true, logger);
         }
     }
 }

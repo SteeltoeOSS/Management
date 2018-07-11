@@ -22,7 +22,7 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Management.EndpointOwin.Metrics
 {
-    public class MetricsEndpointOwinMiddleware : EndpointOwinMiddleware<MetricsEndpoint, IMetricsResponse, MetricsRequest>
+    public class MetricsEndpointOwinMiddleware : EndpointOwinMiddleware<IMetricsResponse, MetricsRequest>
     {
         protected new MetricsEndpoint _endpoint;
 

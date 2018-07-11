@@ -59,7 +59,7 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators.Test
             Assert.True(container.IsRegistered<IEnvOptions>(), "Env options are registered");
             Assert.True(container.IsRegistered<IHostingEnvironment>(), "IHostingEnvironment is registered");
             Assert.True(container.IsRegistered<IEndpoint<EnvironmentDescriptor>>(), "Env endpoint is registered");
-            Assert.True(container.IsRegistered<EndpointOwinMiddleware<EnvEndpoint, EnvironmentDescriptor>>(), "Env endpoint middleware is registered");
+            Assert.True(container.IsRegistered<EndpointOwinMiddleware<EnvironmentDescriptor>>(), "Env endpoint middleware is registered");
         }
 
         ////[Fact]

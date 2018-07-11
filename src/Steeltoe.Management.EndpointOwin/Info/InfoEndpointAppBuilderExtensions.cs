@@ -73,8 +73,8 @@ namespace Steeltoe.Management.EndpointOwin.Info
             }
 
             var endpoint = new InfoEndpoint(new InfoOptions(config), contributors, loggerFactory?.CreateLogger<InfoEndpoint>());
-            var logger = loggerFactory?.CreateLogger<EndpointOwinMiddleware<InfoEndpoint, Dictionary<string, object>>>();
-            return builder.Use<EndpointOwinMiddleware<InfoEndpoint, Dictionary<string, object>>>(endpoint, new List<HttpMethod> { HttpMethod.Get }, true, logger);
+            var logger = loggerFactory?.CreateLogger<EndpointOwinMiddleware<Dictionary<string, object>>>();
+            return builder.Use<EndpointOwinMiddleware<Dictionary<string, object>>>(endpoint, new List<HttpMethod> { HttpMethod.Get }, true, logger);
         }
 
         private static IList<IInfoContributor> GetDefaultInfoContributors(IConfiguration config, ILoggerFactory loggerFactory = null)

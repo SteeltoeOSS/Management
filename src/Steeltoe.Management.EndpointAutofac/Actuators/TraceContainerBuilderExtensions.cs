@@ -69,7 +69,7 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
             // container.RegisterType<HttpEventListener>().As(typeof(ITraceRepository)).SingleInstance();
             container.RegisterType<OwinTraceRepository>().As(typeof(ITraceRepository), typeof(OwinTraceRepository)).SingleInstance();
             container.RegisterType<TraceEndpoint>().As<IEndpoint<List<TraceResult>>>().SingleInstance();
-            container.RegisterType<EndpointOwinMiddleware<TraceEndpoint, List<TraceResult>>>();
+            container.RegisterType<EndpointOwinMiddleware<List<TraceResult>>>();
         }
 
         /// <summary>

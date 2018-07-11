@@ -21,7 +21,7 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Management.EndpointOwin.Health
 {
-    public class HealthEndpointOwinMiddleware : EndpointOwinMiddleware<HealthEndpoint, HealthCheckResult>
+    public class HealthEndpointOwinMiddleware : EndpointOwinMiddleware<HealthCheckResult>
     {
         public HealthEndpointOwinMiddleware(OwinMiddleware next, HealthEndpoint endpoint, ILogger<HealthEndpointOwinMiddleware> logger = null)
             : base(next, endpoint, logger: logger)

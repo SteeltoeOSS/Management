@@ -59,7 +59,7 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators.Test
             Assert.True(container.IsRegistered<IInfoOptions>(), "Info options are registered");
             Assert.True(container.IsRegistered<IInfoContributor>(), "At least one Info contributor registered");
             Assert.True(container.IsRegistered<IEndpoint<Dictionary<string, object>>>(), "Info endpoint is registered");
-            Assert.True(container.IsRegistered<EndpointOwinMiddleware<InfoEndpoint, Dictionary<string, object>>>(), "Env endpoint middleware is registered");
+            Assert.True(container.IsRegistered<EndpointOwinMiddleware<Dictionary<string, object>>>(), "Env endpoint middleware is registered");
         }
 
         ////[Fact]

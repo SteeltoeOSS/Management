@@ -23,7 +23,7 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Management.EndpointOwin.Loggers
 {
-    public class LoggersEndpointOwinMiddleware : EndpointOwinMiddleware<LoggersEndpoint, Dictionary<string, object>, LoggersChangeRequest>
+    public class LoggersEndpointOwinMiddleware : EndpointOwinMiddleware<Dictionary<string, object>, LoggersChangeRequest>
     {
         public LoggersEndpointOwinMiddleware(OwinMiddleware next, LoggersEndpoint endpoint, ILogger<LoggersEndpointOwinMiddleware> logger = null)
             : base(next, endpoint, new List<HttpMethod> { HttpMethod.Get, HttpMethod.Post }, false, logger)

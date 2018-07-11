@@ -74,8 +74,8 @@ namespace Steeltoe.Management.EndpointOwin.ThreadDump
             }
 
             var endpoint = new ThreadDumpEndpoint(options, threadDumper, loggerFactory?.CreateLogger<ThreadDumpEndpoint>());
-            var logger = loggerFactory?.CreateLogger<EndpointOwinMiddleware<ThreadDumpEndpoint, List<ThreadInfo>>>();
-            return builder.Use<EndpointOwinMiddleware<ThreadDumpEndpoint, List<ThreadInfo>>>(endpoint, new List<HttpMethod> { HttpMethod.Get }, true, logger);
+            var logger = loggerFactory?.CreateLogger<EndpointOwinMiddleware<List<ThreadInfo>>>();
+            return builder.Use<EndpointOwinMiddleware<List<ThreadInfo>>>(endpoint, new List<HttpMethod> { HttpMethod.Get }, true, logger);
         }
     }
 }
