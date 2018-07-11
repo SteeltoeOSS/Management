@@ -15,6 +15,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Owin;
+using Steeltoe.Common.Diagnostics;
 using Steeltoe.Management.Endpoint.Trace;
 using System;
 using System.Collections.Generic;
@@ -24,38 +25,16 @@ namespace Steeltoe.Management.EndpointOwin.Trace
 {
     public static class TraceEndpointAppBuilderExtensions
     {
-        /// <summary>
-        /// Add Request capturing middleware to OWIN Pipeline
-        /// </summary>
-        /// <param name="builder">OWIN <see cref="IAppBuilder" /></param>
-        /// <param name="traceRepository">A singleton repository that contains recent application traces</param>
-        /// <param name="loggerFactory">For logging within the middleware</param>
-        /// <returns>OWIN <see cref="IAppBuilder" /> with Trace Endpoint added</returns>
-        public static IAppBuilder UseRequestTracingMiddleware(this IAppBuilder builder, ITraceRepository traceRepository, ILoggerFactory loggerFactory = null)
-        {
-            if (builder == null)
-            {
-                throw new ArgumentNullException(nameof(builder));
-            }
-
-            if (traceRepository == null)
-            {
-                throw new ArgumentNullException(nameof(traceRepository));
-            }
-
-            var logger = loggerFactory?.CreateLogger<RequestTracingOwinMiddleware>();
-            return builder.Use<RequestTracingOwinMiddleware>(traceRepository, logger);
-        }
 
         /// <summary>
         /// Add Request Trace endpoint middleware to OWIN Pipeline
         /// </summary>
         /// <param name="builder">OWIN <see cref="IAppBuilder" /></param>
         /// <param name="config"><see cref="IConfiguration"/> of application for configuring thread dump endpoint</param>
-        /// <param name="traceRepository">A repository that contains recent application traces</param>
+        /// <param name="traceRepository">repository to put traces in</param>
         /// <param name="loggerFactory">For logging within the middleware</param>
         /// <returns>OWIN <see cref="IAppBuilder" /> with Trace Endpoint added</returns>
-        public static IAppBuilder UseTraceEndpointMiddleware(this IAppBuilder builder, IConfiguration config, ITraceRepository traceRepository, ILoggerFactory loggerFactory = null)
+        public static IAppBuilder UseTraceEndpointMiddleware(this IAppBuilder builder, IConfiguration config, ITraceRepository traceRepository = null, ILoggerFactory loggerFactory = null)
         {
             if (builder == null)
             {
@@ -67,12 +46,9 @@ namespace Steeltoe.Management.EndpointOwin.Trace
                 throw new ArgumentNullException(nameof(config));
             }
 
-            if (traceRepository == null)
-            {
-                throw new ArgumentNullException(nameof(traceRepository));
-            }
-
             var options = new TraceOptions(config);
+            traceRepository = traceRepository ?? new TraceDiagnosticObserver(options, loggerFactory?.CreateLogger<TraceDiagnosticObserver>());
+            DiagnosticsManager.Instance.Observers.Add((IDiagnosticObserver)traceRepository);
             var endpoint = new TraceEndpoint(options, traceRepository, loggerFactory?.CreateLogger<TraceEndpoint>());
             var logger = loggerFactory?.CreateLogger<EndpointOwinMiddleware<TraceEndpoint, List<TraceResult>>>();
             return builder.Use<EndpointOwinMiddleware<List<TraceResult>>>(endpoint, new List<HttpMethod> { HttpMethod.Get }, true, logger);

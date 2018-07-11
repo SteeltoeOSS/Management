@@ -13,26 +13,31 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
 using Microsoft.Owin;
+using Steeltoe.Common.Diagnostics;
 using Steeltoe.Management.Endpoint.Trace;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Management.EndpointOwin.Trace
 {
-    /// <summary>
-    /// Used to record and report recent HTTP request traces
-    /// </summary>
-    public class OwinTraceRepository : ITraceRepository
+    public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
     {
+        internal const string STOP_EVENT = "Steeltoe.Owin.Hosting.HttpRequestIn.Stop";
         internal ConcurrentQueue<TraceResult> _queue = new ConcurrentQueue<TraceResult>();
+
+        private const string OBSERVER_NAME = "TraceDiagnosticObserver";
+        private const string DIAGNOSTIC_NAME = "Steeltoe.Owin";
         private static DateTime baseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        private ILogger<OwinTraceRepository> _logger;
+        private ILogger<TraceDiagnosticObserver> _logger;
         private ITraceOptions _options;
 
-        public OwinTraceRepository(ITraceOptions options, ILogger<OwinTraceRepository> logger = null)
+        public TraceDiagnosticObserver(ITraceOptions options, ILogger<TraceDiagnosticObserver> logger = null)
+            : base(OBSERVER_NAME, DIAGNOSTIC_NAME, logger)
         {
             _options = options ?? throw new ArgumentNullException(nameof(options));
             _logger = logger;
@@ -44,21 +49,37 @@ namespace Steeltoe.Management.EndpointOwin.Trace
             return new List<TraceResult>(traces);
         }
 
-        public void RecordTrace(IOwinContext context, TimeSpan duration)
+        public override void ProcessEvent(string key, object value)
         {
-            if (context == null)
+            if (!STOP_EVENT.Equals(key))
             {
                 return;
             }
 
-            TraceResult trace = MakeTrace(context, duration);
-            _queue.Enqueue(trace);
-
-            if (_queue.Count > _options.Capacity)
+            Activity current = Activity.Current;
+            if (current == null)
             {
-                if (!_queue.TryDequeue(out TraceResult discard))
+                return;
+            }
+
+            if (value == null)
+            {
+                return;
+            }
+
+            GetProperty(value, out IOwinContext context);
+
+            if (context != null)
+            {
+                TraceResult trace = MakeTrace(context, current.Duration);
+                _queue.Enqueue(trace);
+
+                if (_queue.Count > _options.Capacity)
                 {
-                    _logger?.LogDebug("Stop - Dequeue failed");
+                    if (!_queue.TryDequeue(out TraceResult discard))
+                    {
+                        _logger?.LogDebug("Stop - Dequeue failed");
+                    }
                 }
             }
         }
@@ -238,6 +259,11 @@ namespace Steeltoe.Management.EndpointOwin.Trace
         {
             return request.MediaType != null &&
                 (request.MediaType.Equals("application/x-www-form-urlencoded", StringComparison.OrdinalIgnoreCase) || request.MediaType.Equals("multipart/form-data", StringComparison.OrdinalIgnoreCase));
+        }
+
+        private void GetProperty(object obj, out IOwinContext context)
+        {
+            context = DiagnosticHelpers.GetProperty<IOwinContext>(obj, "OwinContext");
         }
     }
 }
