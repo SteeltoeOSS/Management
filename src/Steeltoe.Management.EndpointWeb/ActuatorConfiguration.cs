@@ -29,6 +29,7 @@ using Steeltoe.Management.Endpoint.HeapDump;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Info.Contributor;
 using Steeltoe.Management.Endpoint.Loggers;
+using Steeltoe.Management.Endpoint.Mappings;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Metrics.Observer;
 using Steeltoe.Management.Endpoint.Module;
@@ -60,6 +61,7 @@ namespace Steeltoe.Management.Endpoint
             ConfigureInfoEndpoint(configuration, null, loggerFactory);
             ConfigureLoggerEndpoint(configuration, dynamicLogger, loggerFactory);
             ConfigureTraceEndpoint(configuration, null, loggerFactory);
+            ConfigureMappingsEndpoint(configuration, apiExplorer, loggerFactory);
         }
 
         public static void ConfigureAll(IConfiguration configuration, ILoggerProvider dynamicLogger, IApiExplorer apiExplorer = null, ILoggerFactory loggerFactory = null)
@@ -174,6 +176,13 @@ namespace Steeltoe.Management.Endpoint
             DiagnosticsManager.Instance.Sources.Add(clrSource);
             var ep = new MetricsEndpoint(options, OpenCensusStats.Instance, CreateLogger<MetricsEndpoint>(loggerFactory));
             var handler = new MetricsHandler(ep, SecurityService, CreateLogger<MetricsHandler>(loggerFactory));
+            ConfiguredHandlers.Add(handler);
+        }
+
+        public static void ConfigureMappingsEndpoint(IConfiguration configuration, IApiExplorer apiExplorer = null, ILoggerFactory loggerFactory = null)
+        {
+            var options = new MappingsOptions(configuration);
+            var handler = new MappingsHandler(options, SecurityService, apiExplorer, CreateLogger<MappingsHandler>(loggerFactory));
             ConfiguredHandlers.Add(handler);
         }
 
