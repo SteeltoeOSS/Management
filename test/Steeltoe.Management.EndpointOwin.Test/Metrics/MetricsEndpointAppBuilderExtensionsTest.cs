@@ -45,7 +45,7 @@ namespace Steeltoe.Management.EndpointOwin.Metrics.Test
         {
             IAppBuilder builder = new AppBuilder();
             var config = new ConfigurationBuilder().Build();
-            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseMetricsEndpointMiddleware(config, stats: null));
+            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseMetricsEndpointMiddleware(config, stats: null, tags: null));
             Assert.Equal("stats", exception.ParamName);
         }
     }
