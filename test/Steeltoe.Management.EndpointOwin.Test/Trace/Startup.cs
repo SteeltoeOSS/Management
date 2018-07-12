@@ -14,7 +14,8 @@
 
 using Microsoft.Extensions.Configuration;
 using Owin;
-using Steeltoe.Management.Endpoint.Trace;
+using Steeltoe.Common.Diagnostics;
+using Steeltoe.Management.EndpointOwin.Diagnostics;
 using Steeltoe.Management.EndpointOwin.Test;
 using System.Collections.Generic;
 
@@ -22,8 +23,6 @@ namespace Steeltoe.Management.EndpointOwin.Trace.Test
 {
     public class Startup
     {
-        //public static OwinTraceRepository TraceRepository;
-
         public void Configuration(IAppBuilder app)
         {
             var builder = new ConfigurationBuilder();
@@ -35,9 +34,10 @@ namespace Steeltoe.Management.EndpointOwin.Trace.Test
             builder.AddInMemoryCollection(appSettings);
             var config = builder.Build();
 
-            //TraceRepository = new OwinTraceRepository(new TraceOptions(config));
-            //app.Use<RequestTracingOwinMiddleware>(TraceRepository, null);
-           // app.UseTraceEndpointMiddleware(config, TraceRepository);
+            app.UseDiagnosticSourceMiddleware();
+            app.UseTraceEndpointMiddleware(config);
+
+            DiagnosticsManager.Instance.Start();
         }
     }
 }

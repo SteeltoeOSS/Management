@@ -17,7 +17,6 @@ using Newtonsoft.Json;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Health.Contributor;
-using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.EndpointOwin.Test;
 using System.Collections.Generic;
 using System.Net;
@@ -27,7 +26,7 @@ using Xunit;
 
 namespace Steeltoe.Management.EndpointOwin.Health.Test
 {
-    public class HealthEndpointOwinMiddlewareTest : BaseTest
+    public class HealthEndpointOwinMiddlewareTest : OwinBaseTest
     {
         [Fact]
         public async void HealthInvoke_ReturnsExpected()

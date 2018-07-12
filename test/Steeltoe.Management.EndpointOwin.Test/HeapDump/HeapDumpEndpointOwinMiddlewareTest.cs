@@ -15,7 +15,6 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Owin.Testing;
 using Steeltoe.Management.Endpoint.HeapDump;
-using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.EndpointOwin.Test;
 using System;
 using System.IO;
@@ -25,7 +24,7 @@ using Xunit;
 
 namespace Steeltoe.Management.EndpointOwin.HeapDump.Test
 {
-    public class HeapDumpEndpointOwinMiddlewareTest : BaseTest
+    public class HeapDumpEndpointOwinMiddlewareTest : OwinBaseTest
     {
         [Fact]
         public async void HeapDumpInvoke_ReturnsExpected()

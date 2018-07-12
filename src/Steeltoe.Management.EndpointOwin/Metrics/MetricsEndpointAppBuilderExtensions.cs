@@ -74,6 +74,11 @@ namespace Steeltoe.Management.EndpointOwin.Metrics
                 throw new ArgumentNullException(nameof(stats));
             }
 
+            if (tags == null)
+            {
+                throw new ArgumentNullException(nameof(tags));
+            }
+
             var options = new MetricsOptions(config);
 
             var hostObserver = new OwinHostingObserver(options, stats, tags, loggerFactory?.CreateLogger<OwinHostingObserver>());

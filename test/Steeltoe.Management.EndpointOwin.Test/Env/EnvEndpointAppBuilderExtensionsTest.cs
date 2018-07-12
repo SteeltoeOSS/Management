@@ -15,13 +15,13 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Owin.Builder;
 using Owin;
-using Steeltoe.Management.Endpoint.Test;
+using Steeltoe.Management.EndpointOwin.Test;
 using System;
 using Xunit;
 
 namespace Steeltoe.Management.EndpointOwin.Env.Test
 {
-    public class EnvEndpointAppBuilderExtensionsTest : BaseTest
+    public class EnvEndpointAppBuilderExtensionsTest : OwinBaseTest
     {
         [Fact]
         public void UseEnvEndpointOwinMiddleware_ThrowsIfBuilderNull()

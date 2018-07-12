@@ -15,13 +15,14 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Owin.Builder;
 using Owin;
-using Steeltoe.Management.Endpoint.Test;
+using Steeltoe.Management.Endpoint.Metrics;
+using Steeltoe.Management.EndpointOwin.Test;
 using System;
 using Xunit;
 
 namespace Steeltoe.Management.EndpointOwin.Metrics.Test
 {
-    public class MetricsEndpointAppBuilderExtensionsTest : BaseTest
+    public class MetricsEndpointAppBuilderExtensionsTest : OwinBaseTest
     {
         [Fact]
         public void UseMetricsEndpointMiddleware_ThrowsIfBuilderNull()
@@ -47,6 +48,15 @@ namespace Steeltoe.Management.EndpointOwin.Metrics.Test
             var config = new ConfigurationBuilder().Build();
             var exception = Assert.Throws<ArgumentNullException>(() => builder.UseMetricsEndpointMiddleware(config, stats: null, tags: null));
             Assert.Equal("stats", exception.ParamName);
+        }
+
+        [Fact]
+        public void UseMetricsEndpointMiddleware_ThrowsIfTagsNull()
+        {
+            IAppBuilder builder = new AppBuilder();
+            var config = new ConfigurationBuilder().Build();
+            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseMetricsEndpointMiddleware(config, stats: OpenCensusStats.Instance, tags: null));
+            Assert.Equal("tags", exception.ParamName);
         }
     }
 }

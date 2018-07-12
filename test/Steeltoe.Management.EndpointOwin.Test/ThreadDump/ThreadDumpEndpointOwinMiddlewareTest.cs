@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Microsoft.Owin.Testing;
-using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.EndpointOwin.Test;
 using System.Collections.Generic;
@@ -22,7 +21,7 @@ using Xunit;
 
 namespace Steeltoe.Management.EndpointOwin.ThreadDump.Test
 {
-    public class ThreadDumpEndpointOwinMiddlewareTest : BaseTest
+    public class ThreadDumpEndpointOwinMiddlewareTest : OwinBaseTest
     {
         [Fact]
         public async void ThreadDumpInvoke_ReturnsExpected()

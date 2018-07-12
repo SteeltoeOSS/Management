@@ -15,7 +15,6 @@
 using Microsoft.Extensions.Primitives;
 using Microsoft.Owin.Testing;
 using Steeltoe.Management.Endpoint.CloudFoundry;
-using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.EndpointOwin.Test;
 using System;
 using System.Net;

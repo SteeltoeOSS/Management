@@ -15,14 +15,13 @@
 using Microsoft.Owin.Testing;
 using Newtonsoft.Json;
 using Steeltoe.Management.Endpoint.CloudFoundry;
-using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.EndpointOwin.Test;
 using System.Net;
 using Xunit;
 
 namespace Steeltoe.Management.EndpointOwin.CloudFoundry.Test
 {
-    public class CloudFoundryEndpointOwinMiddlewareTest : BaseTest
+    public class CloudFoundryEndpointOwinMiddlewareTest : OwinBaseTest
     {
         [Fact]
         public async void CloudFoundryInvoke_ReturnsExpected()

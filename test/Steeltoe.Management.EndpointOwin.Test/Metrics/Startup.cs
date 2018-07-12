@@ -14,6 +14,8 @@
 
 using Microsoft.Extensions.Configuration;
 using Owin;
+using Steeltoe.Common.Diagnostics;
+using Steeltoe.Management.EndpointOwin.Diagnostics;
 using Steeltoe.Management.EndpointOwin.Test;
 using System.Collections.Generic;
 
@@ -32,7 +34,10 @@ namespace Steeltoe.Management.EndpointOwin.Metrics.Test
             builder.AddInMemoryCollection(appSettings);
             var config = builder.Build();
 
+            app.UseDiagnosticSourceMiddleware();
             app.UseMetricsEndpointMiddleware(config);
+
+            DiagnosticsManager.Instance.Start();
         }
     }
 }
