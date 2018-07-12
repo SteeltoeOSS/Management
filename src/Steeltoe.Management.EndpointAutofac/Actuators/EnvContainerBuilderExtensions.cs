@@ -18,6 +18,7 @@ using Microsoft.Extensions.Hosting;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Env;
 using Steeltoe.Management.EndpointOwin;
+using System;
 
 namespace Steeltoe.Management.EndpointAutofac.Actuators
 {
@@ -33,12 +34,12 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
         {
             if (container == null)
             {
-                throw new System.ArgumentNullException(nameof(container));
+                throw new ArgumentNullException(nameof(container));
             }
 
             if (config == null)
             {
-                throw new System.ArgumentNullException(nameof(config));
+                throw new ArgumentNullException(nameof(config));
             }
 
             container.RegisterInstance(new EnvOptions(config)).As<IEnvOptions>();

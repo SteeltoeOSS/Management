@@ -17,6 +17,7 @@ using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.Diagnostics;
 using Steeltoe.Management.EndpointAutofac.Actuators;
 using System;
+using System.Web.Http.Description;
 
 namespace Steeltoe.Management.EndpointAutofac
 {
@@ -27,16 +28,17 @@ namespace Steeltoe.Management.EndpointAutofac
         /// </summary>
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        public static void RegisterCloudFoundryActuators(this ContainerBuilder container, IConfiguration config)
+        /// <param name="apiExplorer">An <see cref="ApiExplorer" /> that has access to your HttpConfiguration.<para />If not provided, mappings actuator will not be registered</param>
+        public static void RegisterCloudFoundryActuators(this ContainerBuilder container, IConfiguration config, IApiExplorer apiExplorer = null)
         {
             if (container == null)
             {
-                throw new System.ArgumentNullException(nameof(container));
+                throw new ArgumentNullException(nameof(container));
             }
 
             if (config == null)
             {
-                throw new System.ArgumentNullException(nameof(config));
+                throw new ArgumentNullException(nameof(config));
             }
 
             container.RegisterDiagnosticSourceMiddleware();
@@ -47,8 +49,11 @@ namespace Steeltoe.Management.EndpointAutofac
             container.RegisterHeapDumpActuator(config);
             container.RegisterInfoActuator(config);
             container.RegisterLoggersActuator(config);
+            if (apiExplorer != null)
+            {
+                container.RegisterMappingsActuator(config, apiExplorer);
+            }
 
-            // container.RegisterMappingsActuator(config); // not implemented
             container.RegisterMetricsActuator(config);
             //container.RegisterRefreshActuator(config); // not used by Cloud Foundry
             container.RegisterThreadDumpActuator(config);

@@ -19,7 +19,6 @@ using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Env;
 using Steeltoe.Management.EndpointOwin;
 using System;
-using System.Web;
 using Xunit;
 
 namespace Steeltoe.Management.EndpointAutofac.Actuators.Test
