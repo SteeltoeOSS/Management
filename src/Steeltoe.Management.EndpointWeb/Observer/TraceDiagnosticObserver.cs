@@ -62,6 +62,10 @@ namespace Steeltoe.Management.Endpoint.Trace.Observer
             {
                 current = DiagnosticHelpers.GetProperty<Activity>(value, "Activity");
             }
+            else if (key == STOP_EVENT_ACTIVITY_LOST)
+            {
+                current = DiagnosticHelpers.GetProperty<Activity>(value, "activity");
+            }
 
             if (current == null)
             {
@@ -72,7 +76,13 @@ namespace Steeltoe.Management.Endpoint.Trace.Observer
 
             if (context != null)
             {
-                TraceResult trace = MakeTrace(context, current.Duration);
+                TimeSpan duration = current.Duration;
+                if (duration.Ticks == 0)
+                {
+                    duration = DateTime.UtcNow - current.StartTimeUtc;
+                }
+
+                TraceResult trace = MakeTrace(context, duration);
                 _queue.Enqueue(trace);
 
                 if (_queue.Count > _options.Capacity)

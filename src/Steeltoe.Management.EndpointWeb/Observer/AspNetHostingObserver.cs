@@ -75,10 +75,10 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         {
             if (evnt == STOP_EVENT)
             {
-                Logger?.LogTrace("HandleStopEvent start{thread}", Thread.CurrentThread.ManagedThreadId);
+                Logger?.LogTrace("HandleStopEvent start {thread}", Thread.CurrentThread.ManagedThreadId);
 
                 Activity current = Activity.Current;
-                if (current == null)
+                if (current != null)
                 {
                     var context = HttpContext.Current;
 
@@ -90,6 +90,23 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
 
                 Logger?.LogTrace("HandleStopEvent finish {thread}", Thread.CurrentThread.ManagedThreadId);
             }
+            else if (evnt == STOP_EVENT_ACTIVITY_LOST)
+            {
+                Logger?.LogTrace("HandleStopEventLost start {thread}", Thread.CurrentThread.ManagedThreadId);
+
+                Activity current = Activity.Current ?? DiagnosticHelpers.GetProperty<Activity>(arg, "activity");
+                if (current != null)
+                {
+                    var context = HttpContext.Current;
+
+                    if (context != null)
+                    {
+                        HandleStopEvent(current, context);
+                    }
+                }
+
+                Logger?.LogTrace("HandleStopEventLost finish {thread}", Thread.CurrentThread.ManagedThreadId);
+            }
             else if (evnt == STOP_EVENT_ACTIVITY_RESTORED)
             {
                 Logger?.LogTrace("HandleStopEventRestored start{thread}", Thread.CurrentThread.ManagedThreadId);
@@ -97,7 +114,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
                 if (arg != null)
                 {
                     Activity current = DiagnosticHelpers.GetProperty<Activity>(arg, "Activity");
-                    if (current == null)
+                    if (current != null)
                     {
                         var context = HttpContext.Current;
 
@@ -120,12 +137,19 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
                 return;
             }
 
-            if (current.Duration.TotalMilliseconds > 0)
+            // attempt to calculate a duration if a start time is provided
+            TimeSpan duration = current.Duration;
+            if (current.Duration.Ticks == 0)
+            {
+                duration = DateTime.UtcNow - current.StartTimeUtc;
+            }
+
+            if (duration.TotalMilliseconds > 0)
             {
                 ITagContext tagContext = GetTagContext(arg);
                 StatsRecorder
                     .NewMeasureMap()
-                    .Put(responseTimeMeasure, current.Duration.TotalMilliseconds)
+                    .Put(responseTimeMeasure, duration.TotalMilliseconds)
                     .Put(serverCountMeasure, 1)
                     .Record(tagContext);
             }
