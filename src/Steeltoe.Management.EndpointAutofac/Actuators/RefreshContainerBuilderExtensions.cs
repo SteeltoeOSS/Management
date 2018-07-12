@@ -42,8 +42,8 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
             }
 
             container.RegisterInstance(new RefreshOptions(config)).As<IRefreshOptions>();
-            container.RegisterType<RefreshEndpoint>().As<IEndpoint<IList<string>>>();
-            container.RegisterType<EndpointOwinMiddleware<IList<string>>>();
+            container.RegisterType<RefreshEndpoint>().As<IEndpoint<IList<string>>>().SingleInstance();
+            container.RegisterType<EndpointOwinMiddleware<IList<string>>>().SingleInstance();
         }
 
         /// <summary>

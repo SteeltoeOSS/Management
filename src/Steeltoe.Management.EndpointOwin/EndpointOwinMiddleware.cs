@@ -37,6 +37,12 @@ namespace Steeltoe.Management.EndpointOwin
             : base(next)
         {
             _allowedMethods = allowedMethods ?? new List<HttpMethod> { HttpMethod.Get };
+
+            if (_allowedMethods.Count() == 0)
+            {
+                _allowedMethods = new List<HttpMethod> { HttpMethod.Get };
+            }
+
             _exactRequestPathMatching = exactRequestPathMatching;
             _logger = logger;
         }

@@ -50,14 +50,14 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
 
             container.RegisterInstance(new MetricsOptions(config)).As<IMetricsOptions>().SingleInstance();
 
-            container.RegisterType<OwinHostingObserver>().As<IDiagnosticObserver>();
-            container.RegisterType<CLRRuntimeObserver>().As<IDiagnosticObserver>();
+            container.RegisterType<OwinHostingObserver>().As<IDiagnosticObserver>().SingleInstance();
+            container.RegisterType<CLRRuntimeObserver>().As<IDiagnosticObserver>().SingleInstance();
 
             container.RegisterType<OpenCensusStats>().As<IStats>().IfNotRegistered(typeof(IStats)).SingleInstance();
             container.RegisterType<OpenCensusTags>().As<ITags>().IfNotRegistered(typeof(ITags)).SingleInstance();
 
             container.RegisterType<MetricsEndpoint>().SingleInstance();
-            container.RegisterType<MetricsEndpointOwinMiddleware>();
+            container.RegisterType<MetricsEndpointOwinMiddleware>().SingleInstance();
         }
 
         /// <summary>

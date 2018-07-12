@@ -43,8 +43,8 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
 
             container.RegisterInstance(new EnvOptions(config)).As<IEnvOptions>();
             container.RegisterInstance(hostingEnv ?? new GenericHostingEnvironment()).As<IHostingEnvironment>();
-            container.RegisterType<EnvEndpoint>().As<IEndpoint<EnvironmentDescriptor>>();
-            container.RegisterType<EndpointOwinMiddleware<EnvironmentDescriptor>>();
+            container.RegisterType<EnvEndpoint>().As<IEndpoint<EnvironmentDescriptor>>().SingleInstance();
+            container.RegisterType<EndpointOwinMiddleware<EnvironmentDescriptor>>().SingleInstance();
         }
 
         /// <summary>

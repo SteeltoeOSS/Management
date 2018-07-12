@@ -20,8 +20,8 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
             {
                 throw new ArgumentNullException(nameof(container));
             }
- 
-            container.RegisterType<DiagnosticSourceOwinMiddleware>();
+
+            container.RegisterType<DiagnosticSourceOwinMiddleware>().SingleInstance();
         }
     }
 }

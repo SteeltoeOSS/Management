@@ -65,12 +65,12 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
 
             foreach (var c in contributors)
             {
-                container.RegisterInstance(c).As<IInfoContributor>();
+                container.RegisterInstance(c).As<IInfoContributor>().SingleInstance();
             }
 
-            container.RegisterInstance(new InfoOptions(config)).As<IInfoOptions>();
-            container.RegisterType<InfoEndpoint>().As<IEndpoint<Dictionary<string, object>>>();
-            container.RegisterType<EndpointOwinMiddleware<Dictionary<string, object>>>();
+            container.RegisterInstance(new InfoOptions(config)).As<IInfoOptions>().SingleInstance();
+            container.RegisterType<InfoEndpoint>().As<IEndpoint<Dictionary<string, object>>>().SingleInstance();
+            container.RegisterType<EndpointOwinMiddleware<Dictionary<string, object>>>().SingleInstance();
         }
 
         /// <summary>

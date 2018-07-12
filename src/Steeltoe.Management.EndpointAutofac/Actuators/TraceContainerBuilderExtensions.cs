@@ -43,12 +43,12 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
                 throw new ArgumentNullException(nameof(config));
             }
 
-            container.RegisterType<DiagnosticsManager>().As<IDiagnosticsManager>().IfNotRegistered(typeof(IDiagnosticsManager)).SingleInstance();
             container.RegisterInstance(new TraceOptions(config)).As<ITraceOptions>().SingleInstance();
             container.RegisterType<TraceDiagnosticObserver>().As<IDiagnosticObserver>().As<ITraceRepository>().SingleInstance();
+            container.RegisterType<DiagnosticsManager>().As<IDiagnosticsManager>().IfNotRegistered(typeof(IDiagnosticsManager)).SingleInstance();
 
             container.RegisterType<TraceEndpoint>().As<IEndpoint<List<TraceResult>>>().SingleInstance();
-            container.RegisterType<EndpointOwinMiddleware<List<TraceResult>>>();
+            container.RegisterType<EndpointOwinMiddleware<List<TraceResult>>>().SingleInstance();
         }
 
         /// <summary>

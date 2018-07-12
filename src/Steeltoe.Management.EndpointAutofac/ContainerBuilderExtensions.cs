@@ -14,7 +14,9 @@
 
 using Autofac;
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common.Diagnostics;
 using Steeltoe.Management.EndpointAutofac.Actuators;
+using System;
 
 namespace Steeltoe.Management.EndpointAutofac
 {
@@ -40,7 +42,7 @@ namespace Steeltoe.Management.EndpointAutofac
             container.RegisterDiagnosticSourceMiddleware();
             container.RegisterCloudFoundrySecurityActuator(config);
             container.RegisterCloudFoundryActuator(config);
-            container.RegisterEnvActuator(config); // not used by Cloud Foundry
+            //container.RegisterEnvActuator(config); // not used by Cloud Foundry
             container.RegisterHealthActuator(config);
             container.RegisterHeapDumpActuator(config);
             container.RegisterInfoActuator(config);
@@ -48,9 +50,27 @@ namespace Steeltoe.Management.EndpointAutofac
 
             // container.RegisterMappingsActuator(config); // not implemented
             container.RegisterMetricsActuator(config);
-            container.RegisterRefreshActuator(config); // not used by Cloud Foundry
+            //container.RegisterRefreshActuator(config); // not used by Cloud Foundry
             container.RegisterThreadDumpActuator(config);
             container.RegisterTraceActuator(config);
+        }
+
+        /// <summary>
+        /// Obtains the DiagnosticsManager and if it exists, it starts it.  The manager is added to the container
+        /// if metrics or trace actuators are used.
+        /// </summary>
+        /// <param name="container">the autofac container</param>
+        public static void StartActuators(this IContainer container)
+        {
+            if (container == null)
+            {
+                throw new ArgumentNullException(nameof(container));
+            }
+
+            if (container.TryResolve<IDiagnosticsManager>(out IDiagnosticsManager diagManager))
+            {
+                diagManager.Start();
+            }
         }
 
         /// <summary>

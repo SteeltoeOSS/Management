@@ -91,8 +91,8 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
                 aggregator = new DefaultHealthAggregator();
             }
 
-            container.RegisterInstance(new HealthOptions(config)).As<IHealthOptions>();
-            container.RegisterInstance(aggregator).As<IHealthAggregator>();
+            container.RegisterInstance(new HealthOptions(config)).As<IHealthOptions>().SingleInstance();
+            container.RegisterInstance(aggregator).As<IHealthAggregator>().SingleInstance();
             foreach (var c in contributors)
             {
                 container.RegisterType(c).As<IHealthContributor>();

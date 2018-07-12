@@ -44,9 +44,9 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
             container.RegisterInstance(new HeapDumpOptions(config)).As<IHeapDumpOptions>();
 
             // REVIEW: is this path override necessary? Running under IIS Express, the path comes up wrong
-            container.RegisterType<HeapDumper>().As<IHeapDumper>().WithParameter("basePathOverride", GetContentRoot());
-            container.RegisterType<HeapDumpEndpoint>();
-            container.RegisterType<HeapDumpEndpointOwinMiddleware>();
+            container.RegisterType<HeapDumper>().As<IHeapDumper>().WithParameter("basePathOverride", GetContentRoot()).SingleInstance();
+            container.RegisterType<HeapDumpEndpoint>().SingleInstance();
+            container.RegisterType<HeapDumpEndpointOwinMiddleware>().SingleInstance();
         }
 
         /// <summary>

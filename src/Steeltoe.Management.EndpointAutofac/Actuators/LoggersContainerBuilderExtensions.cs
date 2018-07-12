@@ -59,8 +59,8 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
             container.RegisterLogging(config);
             container.RegisterInstance(loggerProvider).As<ILoggerProvider>();
             container.RegisterInstance(new LoggersOptions(config)).As<ILoggersOptions>();
-            container.RegisterType<LoggersEndpoint>();
-            container.RegisterType<LoggersEndpointOwinMiddleware>();
+            container.RegisterType<LoggersEndpoint>().SingleInstance();
+            container.RegisterType<LoggersEndpointOwinMiddleware>().SingleInstance();
         }
 
         /// <summary>
