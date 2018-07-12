@@ -96,7 +96,6 @@ namespace Steeltoe.Management.Endpoint.Handler
             IDictionary<string, IList<MappingDescription>> mappingDescriptions = new Dictionary<string, IList<MappingDescription>>();
             foreach (var desc in apiDescriptors)
             {
-
                 var adesc = desc.ActionDescriptor as ReflectedHttpActionDescriptor;
                 var details = GetRouteDetails(desc);
 
@@ -317,6 +316,7 @@ namespace Steeltoe.Management.Endpoint.Handler
             {
                 return "PUT";
             }
+
             return null;
         }
     }
