@@ -35,8 +35,8 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators.Test
             IConfigurationRoot config = new ConfigurationBuilder().Build();
 
             // Act
-            var ex = Assert.Throws<ArgumentNullException>(() => TraceContainerBuilderExtensions.RegisterTraceMiddleware(containerNull, config));
-            var ex2 = Assert.Throws<ArgumentNullException>(() => TraceContainerBuilderExtensions.RegisterTraceMiddleware(containerBuilder, configNull));
+            var ex = Assert.Throws<ArgumentNullException>(() => TraceContainerBuilderExtensions.RegisterTraceActuator(containerNull, config));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => TraceContainerBuilderExtensions.RegisterTraceActuator(containerBuilder, configNull));
 
             // Assert
             Assert.Equal("container", ex.ParamName);
@@ -51,7 +51,7 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators.Test
             IConfigurationRoot config = new ConfigurationBuilder().Build();
 
             // Act
-            TraceContainerBuilderExtensions.RegisterTraceMiddleware(containerBuilder, config);
+            TraceContainerBuilderExtensions.RegisterTraceActuator(containerBuilder, config);
             var container = containerBuilder.Build();
 
             // Assert

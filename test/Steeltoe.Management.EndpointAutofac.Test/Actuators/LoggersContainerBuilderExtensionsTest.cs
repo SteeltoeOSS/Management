@@ -33,8 +33,8 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators.Test
             IConfigurationRoot config = new ConfigurationBuilder().Build();
 
             // Act
-            var ex = Assert.Throws<ArgumentNullException>(() => LoggersContainerBuilderExtensions.RegisterLoggersMiddleware(containerNull, config));
-            var ex2 = Assert.Throws<ArgumentNullException>(() => LoggersContainerBuilderExtensions.RegisterLoggersMiddleware(containerBuilder, configNull));
+            var ex = Assert.Throws<ArgumentNullException>(() => LoggersContainerBuilderExtensions.RegisterLoggersActuator(containerNull, config));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => LoggersContainerBuilderExtensions.RegisterLoggersActuator(containerBuilder, configNull));
 
             // Assert
             Assert.Equal("container", ex.ParamName);
@@ -49,7 +49,7 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators.Test
             IConfigurationRoot config = new ConfigurationBuilder().Build();
 
             // Act
-            LoggersContainerBuilderExtensions.RegisterLoggersMiddleware(containerBuilder, config);
+            LoggersContainerBuilderExtensions.RegisterLoggersActuator(containerBuilder, config);
             var container = containerBuilder.Build();
 
             // Assert

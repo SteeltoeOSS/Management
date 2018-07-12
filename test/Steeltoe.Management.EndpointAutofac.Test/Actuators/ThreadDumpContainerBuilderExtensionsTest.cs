@@ -35,8 +35,8 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators.Test
             IConfigurationRoot config = new ConfigurationBuilder().Build();
 
             // Act
-            var ex = Assert.Throws<ArgumentNullException>(() => ThreadDumpContainerBuilderExtensions.RegisterThreadDumpMiddleware(containerNull, config));
-            var ex2 = Assert.Throws<ArgumentNullException>(() => ThreadDumpContainerBuilderExtensions.RegisterThreadDumpMiddleware(containerBuilder, configNull));
+            var ex = Assert.Throws<ArgumentNullException>(() => ThreadDumpContainerBuilderExtensions.RegisterThreadDumpActuator(containerNull, config));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => ThreadDumpContainerBuilderExtensions.RegisterThreadDumpActuator(containerBuilder, configNull));
 
             // Assert
             Assert.Equal("container", ex.ParamName);
@@ -51,7 +51,7 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators.Test
             IConfigurationRoot config = new ConfigurationBuilder().Build();
 
             // Act
-            ThreadDumpContainerBuilderExtensions.RegisterThreadDumpMiddleware(containerBuilder, config);
+            ThreadDumpContainerBuilderExtensions.RegisterThreadDumpActuator(containerBuilder, config);
             var container = containerBuilder.Build();
 
             // Assert

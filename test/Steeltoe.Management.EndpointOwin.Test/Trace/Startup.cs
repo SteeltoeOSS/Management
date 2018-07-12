@@ -22,7 +22,7 @@ namespace Steeltoe.Management.EndpointOwin.Trace.Test
 {
     public class Startup
     {
-        public static OwinTraceRepository TraceRepository;
+        //public static OwinTraceRepository TraceRepository;
 
         public void Configuration(IAppBuilder app)
         {
@@ -35,9 +35,9 @@ namespace Steeltoe.Management.EndpointOwin.Trace.Test
             builder.AddInMemoryCollection(appSettings);
             var config = builder.Build();
 
-            TraceRepository = new OwinTraceRepository(new TraceOptions(config));
-            app.Use<RequestTracingOwinMiddleware>(TraceRepository, null);
-            app.UseTraceEndpointMiddleware(config, TraceRepository);
+            //TraceRepository = new OwinTraceRepository(new TraceOptions(config));
+            //app.Use<RequestTracingOwinMiddleware>(TraceRepository, null);
+           // app.UseTraceEndpointMiddleware(config, TraceRepository);
         }
     }
 }

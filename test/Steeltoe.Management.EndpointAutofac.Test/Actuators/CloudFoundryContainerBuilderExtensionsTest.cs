@@ -34,8 +34,8 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators.Test
             IConfigurationRoot config = new ConfigurationBuilder().Build();
 
             // Act
-            var ex = Assert.Throws<ArgumentNullException>(() => CloudFoundryContainerBuilderExtensions.RegisterCloudFoundryMiddleware(containerNull, config));
-            var ex2 = Assert.Throws<ArgumentNullException>(() => CloudFoundryContainerBuilderExtensions.RegisterCloudFoundryMiddleware(containerBuilder, configNull));
+            var ex = Assert.Throws<ArgumentNullException>(() => CloudFoundryContainerBuilderExtensions.RegisterCloudFoundryActuator(containerNull, config));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => CloudFoundryContainerBuilderExtensions.RegisterCloudFoundryActuator(containerBuilder, configNull));
 
             // Assert
             Assert.Equal("container", ex.ParamName);
@@ -50,7 +50,7 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators.Test
             IConfigurationRoot config = new ConfigurationBuilder().Build();
 
             // Act
-            CloudFoundryContainerBuilderExtensions.RegisterCloudFoundryMiddleware(containerBuilder, config);
+            CloudFoundryContainerBuilderExtensions.RegisterCloudFoundryActuator(containerBuilder, config);
             var container = containerBuilder.Build();
 
             // Assert
@@ -69,8 +69,8 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators.Test
             IConfigurationRoot config = new ConfigurationBuilder().Build();
 
             // Act
-            var ex = Assert.Throws<ArgumentNullException>(() => CloudFoundryContainerBuilderExtensions.RegisterCloudFoundrySecurityMiddleware(containerNull, config));
-            var ex2 = Assert.Throws<ArgumentNullException>(() => CloudFoundryContainerBuilderExtensions.RegisterCloudFoundrySecurityMiddleware(containerBuilder, configNull));
+            var ex = Assert.Throws<ArgumentNullException>(() => CloudFoundryContainerBuilderExtensions.RegisterCloudFoundrySecurityActuator(containerNull, config));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => CloudFoundryContainerBuilderExtensions.RegisterCloudFoundrySecurityActuator(containerBuilder, configNull));
 
             // Assert
             Assert.Equal("container", ex.ParamName);
@@ -85,7 +85,7 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators.Test
             IConfigurationRoot config = new ConfigurationBuilder().Build();
 
             // Act
-            CloudFoundryContainerBuilderExtensions.RegisterCloudFoundrySecurityMiddleware(containerBuilder, config);
+            CloudFoundryContainerBuilderExtensions.RegisterCloudFoundrySecurityActuator(containerBuilder, config);
             var container = containerBuilder.Build();
 
             // Assert
