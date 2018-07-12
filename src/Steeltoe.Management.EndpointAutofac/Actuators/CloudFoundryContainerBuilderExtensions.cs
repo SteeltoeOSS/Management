@@ -27,7 +27,7 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
         /// </summary>
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        public static void RegisterCloudFoundryMiddleware(this ContainerBuilder container, IConfiguration config)
+        public static void RegisterCloudFoundryActuator(this ContainerBuilder container, IConfiguration config)
         {
             if (container == null)
             {
@@ -49,7 +49,7 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
         /// </summary>
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        public static void RegisterCloudFoundrySecurityMiddleware(this ContainerBuilder container, IConfiguration config)
+        public static void RegisterCloudFoundrySecurityActuator(this ContainerBuilder container, IConfiguration config)
         {
             if (container == null)
             {

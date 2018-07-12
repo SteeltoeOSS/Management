@@ -29,7 +29,7 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
         /// <param name="hostingEnv">A class describing the app hosting environment - defaults to <see cref="GenericHostingEnvironment"/></param>
-        public static void RegisterEnvMiddleware(this ContainerBuilder container, IConfiguration config, IHostingEnvironment hostingEnv = null)
+        public static void RegisterEnvActuator(this ContainerBuilder container, IConfiguration config, IHostingEnvironment hostingEnv = null)
         {
             if (container == null)
             {

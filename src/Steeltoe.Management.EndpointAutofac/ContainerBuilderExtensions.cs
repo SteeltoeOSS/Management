@@ -25,7 +25,7 @@ namespace Steeltoe.Management.EndpointAutofac
         /// </summary>
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        public static void UseCloudFoundryMiddlewares(this ContainerBuilder container, IConfiguration config)
+        public static void RegisterCloudFoundryActuators(this ContainerBuilder container, IConfiguration config)
         {
             if (container == null)
             {
@@ -37,21 +37,20 @@ namespace Steeltoe.Management.EndpointAutofac
                 throw new System.ArgumentNullException(nameof(config));
             }
 
-            // comment out the next line if experimenting with EndpointOwin\Trace\HttpEventListener
-            container.RegisterTracingMiddleware(config);
-            container.RegisterCloudFoundrySecurityMiddleware(config);
-            container.RegisterCloudFoundryMiddleware(config);
-            container.RegisterEnvMiddleware(config); // not used by Cloud Foundry
-            container.RegisterHealthMiddleware(config);
-            container.RegisterHeapDumpMiddleware(config);
-            container.RegisterInfoMiddleware(config);
-            container.RegisterLoggersMiddleware(config);
+            container.RegisterDiagnosticSourceMiddleware();
+            container.RegisterCloudFoundrySecurityActuator(config);
+            container.RegisterCloudFoundryActuator(config);
+            container.RegisterEnvActuator(config); // not used by Cloud Foundry
+            container.RegisterHealthActuator(config);
+            container.RegisterHeapDumpActuator(config);
+            container.RegisterInfoActuator(config);
+            container.RegisterLoggersActuator(config);
 
             // container.RegisterMappingsActuator(config); // not implemented
-            container.RegisterMetricsMiddleware(config);
-            container.RegisterRefreshMiddleware(config); // not used by Cloud Foundry
-            container.RegisterThreadDumpMiddleware(config);
-            container.RegisterTraceMiddleware(config);
+            container.RegisterMetricsActuator(config);
+            container.RegisterRefreshActuator(config); // not used by Cloud Foundry
+            container.RegisterThreadDumpActuator(config);
+            container.RegisterTraceActuator(config);
         }
 
         /// <summary>

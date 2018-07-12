@@ -34,7 +34,7 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
         /// <param name="loggerProvider">Your pre-existing <see cref="DynamicLoggerProvider"/> will be created if not provided</param>
         /// <param name="loggerFactory">Your pre-existing <see cref="ILoggerFactory"/>. A new <see cref="LoggerFactory"/> will be added if not provided</param>
-        public static void RegisterLoggersMiddleware(this ContainerBuilder container, IConfiguration config, DynamicLoggerProvider loggerProvider = null, ILoggerFactory loggerFactory = null)
+        public static void RegisterLoggersActuator(this ContainerBuilder container, IConfiguration config, DynamicLoggerProvider loggerProvider = null, ILoggerFactory loggerFactory = null)
         {
             if (container == null)
             {

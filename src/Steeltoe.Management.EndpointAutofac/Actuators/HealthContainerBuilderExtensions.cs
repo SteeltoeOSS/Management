@@ -31,7 +31,7 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
         /// </summary>
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        public static void RegisterHealthMiddleware(this ContainerBuilder container, IConfiguration config)
+        public static void RegisterHealthActuator(this ContainerBuilder container, IConfiguration config)
         {
             if (container == null)
             {
@@ -43,7 +43,7 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
                 throw new ArgumentNullException(nameof(config));
             }
 
-            container.RegisterHealthMiddleware(config, new DefaultHealthAggregator(), new Type[] { typeof(DiskSpaceContributor) });
+            container.RegisterHealthActuator(config, new DefaultHealthAggregator(), new Type[] { typeof(DiskSpaceContributor) });
         }
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
         /// <param name="contributors">Types that implement <see cref="IHealthContributor"/></param>
-        public static void RegisterHealthMiddleware(this ContainerBuilder container, IConfiguration config, params Type[] contributors)
+        public static void RegisterHealthActuator(this ContainerBuilder container, IConfiguration config, params Type[] contributors)
         {
             if (container == null)
             {
@@ -64,7 +64,7 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
                 throw new ArgumentNullException(nameof(config));
             }
 
-            container.RegisterHealthMiddleware(config, new DefaultHealthAggregator(), contributors);
+            container.RegisterHealthActuator(config, new DefaultHealthAggregator(), contributors);
         }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
         /// <param name="aggregator">Your <see cref="IHealthAggregator"/></param>
         /// <param name="contributors">Types that implement <see cref="IHealthContributor"/></param>
-        public static void RegisterHealthMiddleware(this ContainerBuilder container, IConfiguration config, IHealthAggregator aggregator, params Type[] contributors)
+        public static void RegisterHealthActuator(this ContainerBuilder container, IConfiguration config, IHealthAggregator aggregator, params Type[] contributors)
         {
             if (container == null)
             {

@@ -29,7 +29,7 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
         /// </summary>
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        public static void RegisterRefreshMiddleware(this ContainerBuilder container, IConfiguration config)
+        public static void RegisterRefreshActuator(this ContainerBuilder container, IConfiguration config)
         {
             if (container == null)
             {

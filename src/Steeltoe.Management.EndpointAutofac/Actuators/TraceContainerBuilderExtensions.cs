@@ -27,31 +27,11 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
     public static class TraceContainerBuilderExtensions
     {
         /// <summary>
-        /// Register a request tracing OWIN middleware
-        /// </summary>
-        /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
-        /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        public static void RegisterTracingMiddleware(this ContainerBuilder container, IConfiguration config)
-        {
-            if (container == null)
-            {
-                throw new ArgumentNullException(nameof(container));
-            }
-
-            if (config == null)
-            {
-                throw new ArgumentNullException(nameof(config));
-            }
-
-            container.RegisterType<RequestTracingOwinMiddleware>();
-        }
-
-        /// <summary>
         /// Register the Trace endpoint, OWIN middleware and options
         /// </summary>
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        public static void RegisterTraceMiddleware(this ContainerBuilder container, IConfiguration config)
+        public static void RegisterTraceActuator(this ContainerBuilder container, IConfiguration config)
         {
             if (container == null)
             {
@@ -63,11 +43,10 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
                 throw new ArgumentNullException(nameof(config));
             }
 
-            container.RegisterType<DiagnosticsManager>().As<IDiagnosticsManager>().SingleInstance();
+            container.RegisterType<DiagnosticsManager>().As<IDiagnosticsManager>().IfNotRegistered(typeof(IDiagnosticsManager)).SingleInstance();
             container.RegisterInstance(new TraceOptions(config)).As<ITraceOptions>().SingleInstance();
+            container.RegisterType<TraceDiagnosticObserver>().As<IDiagnosticObserver>().As<ITraceRepository>().SingleInstance();
 
-            // container.RegisterType<HttpEventListener>().As(typeof(ITraceRepository)).SingleInstance();
-            container.RegisterType<OwinTraceRepository>().As(typeof(ITraceRepository), typeof(OwinTraceRepository)).SingleInstance();
             container.RegisterType<TraceEndpoint>().As<IEndpoint<List<TraceResult>>>().SingleInstance();
             container.RegisterType<EndpointOwinMiddleware<List<TraceResult>>>();
         }

@@ -33,7 +33,7 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
         /// </summary>
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        public static void RegisterMetricsMiddleware(this ContainerBuilder container, IConfiguration config)
+        public static void RegisterMetricsActuator(this ContainerBuilder container, IConfiguration config)
         {
             if (container == null)
             {
@@ -45,17 +45,16 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
                 throw new ArgumentNullException(nameof(config));
             }
 
-            container.RegisterType<DiagnosticsManager>().As<IDiagnosticsManager>().SingleInstance();
-            container.RegisterType<DiagnosticServices>().As<IHostedService>().SingleInstance();
-            container.RegisterType<CLRRuntimeSource>().As<IPolledDiagnosticSource>();
+            container.RegisterType<DiagnosticsManager>().As<IDiagnosticsManager>().IfNotRegistered(typeof(IDiagnosticsManager)).SingleInstance();
+            container.RegisterType<CLRRuntimeSource>().As<IPolledDiagnosticSource>().SingleInstance();
 
             container.RegisterInstance(new MetricsOptions(config)).As<IMetricsOptions>().SingleInstance();
 
-            // TODO: container.RegisterType<AspNetCoreHostingObserver>().As<IDiagnosticObserver>(); <-- in EndpointCore
+            container.RegisterType<OwinHostingObserver>().As<IDiagnosticObserver>();
             container.RegisterType<CLRRuntimeObserver>().As<IDiagnosticObserver>();
 
-            container.RegisterType<OpenCensusStats>().As<IStats>().SingleInstance();
-            container.RegisterType<OpenCensusTags>().As<ITags>().SingleInstance();
+            container.RegisterType<OpenCensusStats>().As<IStats>().IfNotRegistered(typeof(IStats)).SingleInstance();
+            container.RegisterType<OpenCensusTags>().As<ITags>().IfNotRegistered(typeof(ITags)).SingleInstance();
 
             container.RegisterType<MetricsEndpoint>().SingleInstance();
             container.RegisterType<MetricsEndpointOwinMiddleware>();

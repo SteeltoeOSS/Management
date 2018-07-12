@@ -29,7 +29,7 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
         /// </summary>
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        public static void RegisterHeapDumpMiddleware(this ContainerBuilder container, IConfiguration config)
+        public static void RegisterHeapDumpActuator(this ContainerBuilder container, IConfiguration config)
         {
             if (container == null)
             {
@@ -74,7 +74,7 @@ namespace Steeltoe.Management.EndpointAutofac.Actuators
         //    container.RegisterType<HeapDumpModule>().As<IHttpModule>();
         //}
 
-        public static string GetContentRoot()
+        private static string GetContentRoot()
         {
             var basePath = (string)AppDomain.CurrentDomain.GetData("APP_CONTEXT_BASE_DIRECTORY") ?? AppDomain.CurrentDomain.BaseDirectory;
             return Path.GetFullPath(basePath);

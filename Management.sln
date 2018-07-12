@@ -66,6 +66,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.Endpoin
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.EndpointWeb", "src\Steeltoe.Management.EndpointWeb\Steeltoe.Management.EndpointWeb.csproj", "{80CA3842-F0DC-4245-A10F-2C027E4B82F6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudFoundryOwinAutofac", "..\Samples\Management\src\AspDotNet4\CloudFoundryOwinAutofac\CloudFoundryOwinAutofac.csproj", "{E7A7EEEE-ED4C-4DB6-B2E4-E89E7B1BB8E5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -160,6 +162,10 @@ Global
 		{80CA3842-F0DC-4245-A10F-2C027E4B82F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{80CA3842-F0DC-4245-A10F-2C027E4B82F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{80CA3842-F0DC-4245-A10F-2C027E4B82F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E7A7EEEE-ED4C-4DB6-B2E4-E89E7B1BB8E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E7A7EEEE-ED4C-4DB6-B2E4-E89E7B1BB8E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E7A7EEEE-ED4C-4DB6-B2E4-E89E7B1BB8E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E7A7EEEE-ED4C-4DB6-B2E4-E89E7B1BB8E5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
