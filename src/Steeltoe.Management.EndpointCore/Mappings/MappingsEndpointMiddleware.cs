@@ -98,7 +98,7 @@ namespace Steeltoe.Management.Endpoint.Mappings
                 return false;
             }
 
-            PathString path = new PathString(_options.Path);
+            PathString path = new PathString(_options.FullPath);
             return context.Request.Path.Equals(path);
         }
 

@@ -36,7 +36,7 @@ namespace Steeltoe.Management.Endpoint
 
         public virtual IEndpointOptions Options => options;
 
-        public string Path => options.Path;
+        public string Path => options.FullPath;
     }
 
 #pragma warning disable SA1402 // File may only contain a single class

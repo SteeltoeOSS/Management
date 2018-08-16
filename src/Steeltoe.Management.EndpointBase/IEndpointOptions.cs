@@ -32,6 +32,8 @@ namespace Steeltoe.Management.Endpoint
 
         string Path { get; }
 
+        string FullPath { get; }
+
         Permissions RequiredPermissions { get; }
 
         bool IsAccessAllowed(Permissions permissions);

@@ -64,13 +64,13 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
             Assert.True(cloudOpts.Enabled);
             Assert.False(cloudOpts.Sensitive);
             Assert.Equal(string.Empty, cloudOpts.Id);
-            Assert.Equal("/cloudfoundryapplication", cloudOpts.Path);
+            Assert.Equal("/cloudfoundryapplication", cloudOpts.FullPath);
             Assert.True(cloudOpts.ValidateCertificates);
 
             Assert.True(opts.Enabled);
             Assert.True(opts.Sensitive);
             Assert.Equal("dump", opts.Id);
-            Assert.Equal("/cloudfoundryapplication/dump", opts.Path);
+            Assert.Equal("/cloudfoundryapplication/dump", opts.FullPath);
         }
     }
 }

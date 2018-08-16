@@ -49,7 +49,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
 
         public bool IsCloudFoundryRequest(string requestPath)
         {
-            bool startsWith = requestPath.StartsWith(_options.Path);
+            bool startsWith = requestPath.StartsWith(_options.FullPath);
             return startsWith;
         }
 

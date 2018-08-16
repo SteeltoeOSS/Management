@@ -62,13 +62,13 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             Assert.True(cloudOpts.Enabled);
             Assert.False(cloudOpts.Sensitive);
             Assert.Equal(string.Empty, cloudOpts.Id);
-            Assert.Equal("/cloudfoundryapplication", cloudOpts.Path);
+            Assert.Equal("/cloudfoundryapplication", cloudOpts.FullPath);
             Assert.False(cloudOpts.ValidateCertificates);
 
             Assert.True(opts.Enabled);
             Assert.False(opts.Sensitive);
             Assert.Equal("info", opts.Id);
-            Assert.Equal("/cloudfoundryapplication/info", opts.Path);
+            Assert.Equal("/cloudfoundryapplication/info", opts.FullPath);
         }
     }
 }

@@ -105,7 +105,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             var configEndpoints = this._options.Global.EndpointOptions;
             foreach (var ep in configEndpoints)
             {
-                PathString epPath = new PathString(ep.Path);
+                PathString epPath = new PathString(ep.FullPath);
                 if (path.StartsWithSegments(epPath))
                 {
                     return ep;

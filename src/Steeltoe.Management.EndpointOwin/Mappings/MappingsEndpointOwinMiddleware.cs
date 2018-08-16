@@ -57,8 +57,8 @@ namespace Steeltoe.Management.EndpointOwin.Mappings
 
         public override bool RequestVerbAndPathMatch(string httpMethod, string requestPath)
         {
-            _logger?.LogTrace("RequestVerbAndPathMatch {httpMethod}/{requestPath}/{optionsPath} request", httpMethod, requestPath, _options.Path);
-            return requestPath.Equals(_options.Path) && _allowedMethods.Any(m => m.Method.Equals(httpMethod));
+            _logger?.LogTrace("RequestVerbAndPathMatch {httpMethod}/{requestPath}/{optionsPath} request", httpMethod, requestPath, _options.FullPath);
+            return requestPath.Equals(_options.FullPath) && _allowedMethods.Any(m => m.Method.Equals(httpMethod));
         }
 
         protected internal ApplicationMappings GetApplicationMappings()

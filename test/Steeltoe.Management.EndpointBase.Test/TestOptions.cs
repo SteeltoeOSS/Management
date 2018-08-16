@@ -26,7 +26,7 @@ namespace Steeltoe.Management.Endpoint.Test
 
         public IManagementOptions Global { get; set; }
 
-        public string Path { get; set; }
+        public string FullPath { get; set; }
 
         public Permissions RequiredPermissions { get; set; }
 

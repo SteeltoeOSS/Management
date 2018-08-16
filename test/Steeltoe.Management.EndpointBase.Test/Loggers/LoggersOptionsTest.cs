@@ -62,13 +62,13 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
             Assert.True(cloudOpts.Enabled);
             Assert.False(cloudOpts.Sensitive);
             Assert.Equal(string.Empty, cloudOpts.Id);
-            Assert.Equal("/cloudfoundryapplication", cloudOpts.Path);
+            Assert.Equal("/cloudfoundryapplication", cloudOpts.FullPath);
             Assert.True(cloudOpts.ValidateCertificates);
 
             Assert.False(opts.Enabled);
             Assert.True(opts.Sensitive);
             Assert.Equal("loggers", opts.Id);
-            Assert.Equal("/cloudfoundryapplication/loggers", opts.Path);
+            Assert.Equal("/cloudfoundryapplication/loggers", opts.FullPath);
         }
     }
 }
