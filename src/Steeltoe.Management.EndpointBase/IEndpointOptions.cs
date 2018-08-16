@@ -30,8 +30,6 @@ namespace Steeltoe.Management.Endpoint
 
         string Id { get;  }
 
-        string Path { get; }
-
         string FullPath { get; }
 
         Permissions RequiredPermissions { get; }
