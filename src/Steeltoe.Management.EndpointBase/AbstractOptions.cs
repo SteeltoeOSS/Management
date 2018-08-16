@@ -120,22 +120,43 @@ namespace Steeltoe.Management.Endpoint
 
         public virtual string Id { get; set; }
 
-        public virtual string Path
+        public string Path { get; set; } = string.Empty;
+
+        public virtual string FullPath
         {
             get
             {
                 string path = Global.Path;
-                if (string.IsNullOrEmpty(Id))
-                {
-                    return path;
-                }
 
-                if (!path.EndsWith("/"))
+                // No path override -> use ID in path
+                if (string.IsNullOrEmpty(Path))
                 {
-                    path = path + "/";
-                }
+                    if (string.IsNullOrEmpty(Id))
+                    {
+                        return path;
+                    }
 
-                return path + Id;
+                    if (!path.EndsWith("/"))
+                    {
+                        path = path + "/";
+                    }
+
+                    return path + Id;
+                }
+                else
+                {
+                    // Ensure exactly one slash ends up between the prefix and the path
+                    if (path.EndsWith("/") && Path.StartsWith("/"))
+                    {
+                        path = path.Remove(path.Length - 1);
+                    }
+                    else if (!path.EndsWith("/") && !Path.StartsWith("/"))
+                    {
+                        path = path + "/";
+                    }
+
+                    return path + Path;
+                }
             }
         }
 
