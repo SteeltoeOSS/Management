@@ -87,7 +87,7 @@ namespace Steeltoe.Management.Endpoint.Test
             Assert.True(opts.Enabled);
             Assert.False(opts.Sensitive);
             Assert.Equal("infomanagement", opts.Id);
-            Assert.Equal("/management/infomanagement", opts.Path);
+            Assert.Equal("/management/infomanagement", opts.FullPath);
             Assert.Equal(Permissions.NONE, opts.RequiredPermissions);
         }
 
@@ -115,7 +115,62 @@ namespace Steeltoe.Management.Endpoint.Test
             Assert.False(opts.Enabled);
             Assert.True(opts.Sensitive);
             Assert.Equal("infomanagement", opts.Id);
-            Assert.Equal("/management/infomanagement", opts.Path);
+            Assert.Equal("/management/infomanagement", opts.FullPath);
+        }
+
+        [Fact]
+        public void LocalPathWithGlobalPrefixConfigureCorrectly()
+        {
+            var appsettings = new Dictionary<string, string>()
+            {
+                ["management:endpoints:enabled"] = "false",
+                ["management:endpoints:sensitive"] = "true",
+                ["management:endpoints:path"] = "/management",
+                ["management:endpoints:info:path"] = "/info/endpoint",
+                ["management:endpoints:info:id"] = "infomanagement"
+            };
+            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddInMemoryCollection(appsettings);
+            var config = configurationBuilder.Build();
+
+            TestOptions2 opts = new TestOptions2("management:endpoints:info", config);
+
+            Assert.NotNull(opts.Global);
+            Assert.False(opts.Global.Enabled);
+            Assert.True(opts.Global.Sensitive);
+            Assert.Equal("/management", opts.Global.Path);
+
+            Assert.False(opts.Enabled);
+            Assert.True(opts.Sensitive);
+            Assert.Equal("infomanagement", opts.Id);
+            Assert.Equal("/management/info/endpoint", opts.FullPath);
+        }
+
+        [Fact]
+        public void LocalPathWithoutGlobalPrefixConfigureCorrectly()
+        {
+            var appsettings = new Dictionary<string, string>()
+            {
+                ["management:endpoints:enabled"] = "false",
+                ["management:endpoints:sensitive"] = "true",
+                ["management:endpoints:info:path"] = "/info/endpoint",
+                ["management:endpoints:info:id"] = "infomanagement"
+            };
+            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddInMemoryCollection(appsettings);
+            var config = configurationBuilder.Build();
+
+            TestOptions2 opts = new TestOptions2("management:endpoints:info", config);
+
+            Assert.NotNull(opts.Global);
+            Assert.False(opts.Global.Enabled);
+            Assert.True(opts.Global.Sensitive);
+            Assert.Equal("/", opts.Global.Path);
+
+            Assert.False(opts.Enabled);
+            Assert.True(opts.Sensitive);
+            Assert.Equal("infomanagement", opts.Id);
+            Assert.Equal("/info/endpoint", opts.FullPath);
         }
 
         [Fact]
