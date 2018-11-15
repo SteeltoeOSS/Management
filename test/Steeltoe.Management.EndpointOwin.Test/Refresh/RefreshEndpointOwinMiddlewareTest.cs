@@ -33,7 +33,7 @@ namespace Steeltoe.Management.EndpointOwin.Refresh.Test
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(OwinTestHelpers.Appsettings);
             var middle = new EndpointOwinMiddleware<IList<string>>(null, new RefreshEndpoint(new RefreshOptions(), configurationBuilder.Build()));
-            var context = OwinTestHelpers.CreateRequest("GET", "/refresh");
+            var context = OwinTestHelpers.CreateRequest("GET", "/actuator/refresh");
 
             // act
             var json = await middle.InvokeAndReadResponse(context);
@@ -75,9 +75,9 @@ namespace Steeltoe.Management.EndpointOwin.Refresh.Test
             var ep = new RefreshEndpoint(opts, config);
             var middle = new EndpointOwinMiddleware<IList<string>>(null, ep);
 
-            Assert.True(middle.RequestVerbAndPathMatch("GET", "/refresh"));
-            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/refresh"));
-            Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/actuator/refresh"));
+            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/actuator/refresh"));
+            Assert.False(middle.RequestVerbAndPathMatch("GET", "/actuator/badpath"));
         }
     }
 }

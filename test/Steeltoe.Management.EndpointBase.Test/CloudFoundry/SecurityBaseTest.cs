@@ -25,8 +25,8 @@ namespace Steeltoe.Management.EndpointBase.Test.CloudFoundry
         {
             var securityBase = new SecurityBase(new CloudFoundryOptions(), null);
 
-            Assert.True(securityBase.IsCloudFoundryRequest("/"));
-            Assert.True(securityBase.IsCloudFoundryRequest("/badpath"));
+            Assert.True(securityBase.IsCloudFoundryRequest("/cloudfoundryapplication"));
+            Assert.True(securityBase.IsCloudFoundryRequest("/cloudfoundryapplication/badpath"));
         }
     }
 }

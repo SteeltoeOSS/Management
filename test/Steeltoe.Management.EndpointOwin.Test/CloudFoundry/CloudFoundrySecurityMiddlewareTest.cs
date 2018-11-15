@@ -38,7 +38,7 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry.Test
             using (var server = TestServer.Create<StartupWithSecurity>())
             {
                 var client = server.HttpClient;
-                var result = await client.GetAsync("http://localhost/info");
+                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/info");
                 Assert.Equal(HttpStatusCode.ServiceUnavailable, result.StatusCode);
                 var response = await result.Content.ReadAsStringAsync();
                 Assert.Contains(_base.APPLICATION_ID_MISSING_MESSAGE, response);
@@ -48,7 +48,7 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry.Test
             using (var server = TestServer.Create<StartupWithSecurity>())
             {
                 var client = server.HttpClient;
-                var result = await client.GetAsync("http://localhost/info");
+                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/info");
                 Assert.Equal(HttpStatusCode.ServiceUnavailable, result.StatusCode);
                 var response = await result.Content.ReadAsStringAsync();
                 Assert.Contains(_base.CLOUDFOUNDRY_API_MISSING_MESSAGE, response);
@@ -58,7 +58,7 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry.Test
             using (var server = TestServer.Create<StartupWithSecurity>())
             {
                 var client = server.HttpClient;
-                var result = await client.GetAsync("http://localhost/barfoo");
+                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/barfoo");
                 Assert.Equal(HttpStatusCode.ServiceUnavailable, result.StatusCode);
                 var response = await result.Content.ReadAsStringAsync();
                 Assert.Contains(_base.ENDPOINT_NOT_CONFIGURED_MESSAGE, response);
@@ -74,7 +74,7 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry.Test
             using (var server = TestServer.Create<StartupWithSecurity>())
             {
                 var client = server.HttpClient;
-                var result = await client.GetAsync("http://localhost/info");
+                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/info");
                 Assert.Equal(HttpStatusCode.Unauthorized, result.StatusCode);
                 var response = await result.Content.ReadAsStringAsync();
                 Assert.Contains(_base.AUTHORIZATION_HEADER_INVALID, response);

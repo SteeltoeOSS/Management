@@ -114,9 +114,9 @@ namespace Steeltoe.Management.Endpoint.Info.Test
             var ep = new InfoEndpoint(opts, contribs);
             var middle = new InfoEndpointMiddleware(null, ep);
 
-            Assert.True(middle.RequestVerbAndPathMatch("GET", "/info"));
-            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/info"));
-            Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/actuator/info"));
+            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/actuator/info"));
+            Assert.False(middle.RequestVerbAndPathMatch("GET", "/actuator/badpath"));
         }
 
         private HttpContext CreateRequest(string method, string path)

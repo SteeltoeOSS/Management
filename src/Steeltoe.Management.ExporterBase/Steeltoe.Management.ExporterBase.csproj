@@ -23,7 +23,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    
     <PackageReference Include="OpenCensus" Version="$(OpenCensusVersion)" />
+
+   
     <PackageReference Include="Steeltoe.Extensions.Configuration.CloudFoundryBase" Version="$(SteeltoeConfigVersion)" />
     <PackageReference Include="Steeltoe.Common.Http" Version="$(SteeltoeCommonVersion)" />
     <PackageReference Include="StyleCop.Analyzers" Version="$(StyleCopVersion)">

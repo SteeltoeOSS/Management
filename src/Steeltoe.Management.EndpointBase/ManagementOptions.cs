@@ -23,7 +23,7 @@ namespace Steeltoe.Management.Endpoint
     public class ManagementOptions : IManagementOptions
     {
         internal static ManagementOptions _instance;
-        private const string DEFAULT_PATH = "/";
+        private const string DEFAULT_PATH = "/actuator";
         private const string MANAGEMENT_INFO_PREFIX = "management:endpoints";
 
         private bool? _enabled;
@@ -77,6 +77,8 @@ namespace Steeltoe.Management.Endpoint
         }
 
         public string Path { get; set; }
+
+        public string CloudFoundryPath => "/cloudfoundryapplication";
 
         public List<IEndpointOptions> EndpointOptions { get; set; }
 

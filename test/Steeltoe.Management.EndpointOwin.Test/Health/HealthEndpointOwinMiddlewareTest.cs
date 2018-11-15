@@ -37,7 +37,7 @@ namespace Steeltoe.Management.EndpointOwin.Health.Test
             var contribs = new List<IHealthContributor>() { new DiskSpaceContributor() };
             var ep = new TestHealthEndpoint(opts, new DefaultHealthAggregator(), contribs);
             var middle = new HealthEndpointOwinMiddleware(null, ep);
-            var context = OwinTestHelpers.CreateRequest("GET", "/health");
+            var context = OwinTestHelpers.CreateRequest("GET", "/actuator/health");
 
             // act
             var json = await middle.InvokeAndReadResponse(context);
@@ -80,9 +80,9 @@ namespace Steeltoe.Management.EndpointOwin.Health.Test
             var ep = new HealthEndpoint(opts, new DefaultHealthAggregator(), contribs);
             var middle = new HealthEndpointOwinMiddleware(null, ep);
 
-            Assert.True(middle.RequestVerbAndPathMatch("GET", "/health"));
-            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/health"));
-            Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/actuator/health"));
+            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/actuator/health"));
+            Assert.False(middle.RequestVerbAndPathMatch("GET", "/actuator/badpath"));
         }
 
         private async Task<Dictionary<string, object>> AssertHealthResponseAsync(HttpStatusCode expectedHttpStatus, HealthStatus expectedHealthStatus, HttpResponseMessage response)

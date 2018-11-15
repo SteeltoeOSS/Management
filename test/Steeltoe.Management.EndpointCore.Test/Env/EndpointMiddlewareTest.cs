@@ -104,8 +104,8 @@ namespace Steeltoe.Management.Endpoint.Env.Test
             var ep = new EnvEndpoint(opts, config, host);
             var middle = new EnvEndpointMiddleware(null, ep);
 
-            Assert.True(middle.RequestVerbAndPathMatch("GET", "/env"));
-            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/env"));
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/actuator/env"));
+            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/actuator/env"));
             Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
         }
 

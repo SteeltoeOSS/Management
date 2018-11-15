@@ -113,9 +113,9 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
             var ep = new HeapDumpEndpoint(opts, obs);
             var middle = new HeapDumpEndpointMiddleware(null, ep);
 
-            Assert.True(middle.RequestVerbAndPathMatch("GET", "/heapdump"));
-            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/heapdump"));
-            Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/actuator/heapdump"));
+            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/actuator/heapdump"));
+            Assert.False(middle.RequestVerbAndPathMatch("GET", "/actuator/badpath"));
         }
 
         private HttpContext CreateRequest(string method, string path)

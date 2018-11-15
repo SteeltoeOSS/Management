@@ -32,7 +32,7 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry.Test
         {
             // arrange
             var middle = new CloudFoundryEndpointOwinMiddleware(null, new TestCloudFoundryEndpoint(new CloudFoundryOptions()));
-            var context = OwinTestHelpers.CreateRequest("GET", "/");
+            var context = OwinTestHelpers.CreateRequest("GET", "/actuator");
 
             // act
             var json = await middle.InvokeAndReadResponse(context);
@@ -70,9 +70,9 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry.Test
             var ep = new CloudFoundryEndpoint(opts);
             var middle = new CloudFoundryEndpointOwinMiddleware(null, ep);
 
-            Assert.True(middle.RequestVerbAndPathMatch("GET", "/"));
-            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/"));
-            Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/actuator"));
+            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/actuator"));
+            Assert.False(middle.RequestVerbAndPathMatch("GET", "/actuator/badpath"));
         }
     }
 }

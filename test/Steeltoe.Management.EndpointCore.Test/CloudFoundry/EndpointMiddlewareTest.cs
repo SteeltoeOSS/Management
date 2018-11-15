@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Steeltoe.Management.Endpoint.Test;
 using System;
@@ -110,9 +111,9 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             var ep = new CloudFoundryEndpoint(opts);
             var middle = new CloudFoundryEndpointMiddleware(null, ep);
 
-            Assert.True(middle.RequestVerbAndPathMatch("GET", "/"));
-            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/"));
-            Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/actuator"));
+            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/actuator"));
+            Assert.False(middle.RequestVerbAndPathMatch("GET", "/actuator/badpath"));
         }
 
         private HttpContext CreateRequest(string method, string path)

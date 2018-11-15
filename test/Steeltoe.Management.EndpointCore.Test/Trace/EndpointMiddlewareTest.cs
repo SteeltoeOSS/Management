@@ -88,9 +88,9 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             var ep = new TraceEndpoint(opts, obs);
             var middle = new TraceEndpointMiddleware(null, ep);
 
-            Assert.True(middle.RequestVerbAndPathMatch("GET", "/trace"));
-            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/trace"));
-            Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/actuator/trace"));
+            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/actuator/trace"));
+            Assert.False(middle.RequestVerbAndPathMatch("GET", "/actuator/badpath"));
         }
 
         private HttpContext CreateRequest(string method, string path)

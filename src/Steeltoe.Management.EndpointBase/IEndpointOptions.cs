@@ -33,8 +33,6 @@ namespace Steeltoe.Management.Endpoint
 
         List<string> AltIds { get; }
 
-        string Path { get; }
-
         List<string> AltPaths { get; }
 
         Permissions RequiredPermissions { get; }

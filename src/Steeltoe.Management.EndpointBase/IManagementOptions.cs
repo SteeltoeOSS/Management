@@ -27,6 +27,8 @@ namespace Steeltoe.Management.Endpoint
 
         string Path { get; }
 
+        string CloudFoundryPath { get;  }
+
         List<IEndpointOptions> EndpointOptions { get;  }
     }
 }

@@ -46,7 +46,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
             {
                 ["management:endpoints:enabled"] = "false",
                 ["management:endpoints:sensitive"] = "false",
-                ["management:endpoints:path"] = "/cloudfoundryapplication",
+                ["management:endpoints:path"] = "/actuator",
                 ["management:endpoints:loggers:enabled"] = "false",
                 ["management:endpoints:loggers:sensitive"] = "true",
                 ["management:endpoints:heapdump:enabled"] = "true",
@@ -64,13 +64,19 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
             Assert.True(cloudOpts.Enabled);
             Assert.False(cloudOpts.Sensitive);
             Assert.Equal(string.Empty, cloudOpts.Id);
-            Assert.Equal("/cloudfoundryapplication", cloudOpts.Path);
+            Assert.Collection(
+                cloudOpts.AltPaths,
+                path => path.Equals("/cloudfoundryapplication"),
+                path => path.Equals("/actuator"));
             Assert.True(cloudOpts.ValidateCertificates);
 
             Assert.True(opts.Enabled);
             Assert.True(opts.Sensitive);
             Assert.Equal("heapdump", opts.Id);
-            Assert.Equal("/cloudfoundryapplication/heapdump", opts.Path);
+            Assert.Collection(
+                opts.AltPaths, 
+                path => path.Equals("/cloudfoundryapplication/heapdump"),
+                path => path.Equals("/actuator/heapdump"));
         }
     }
 }

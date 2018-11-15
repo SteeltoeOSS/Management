@@ -64,13 +64,17 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
             Assert.True(cloudOpts.Enabled);
             Assert.False(cloudOpts.Sensitive);
             Assert.Equal(string.Empty, cloudOpts.Id);
-            Assert.Equal("/cloudfoundryapplication", cloudOpts.Path);
+           // Assert.Equal("/cloudfoundryapplication", cloudOpts.Path);
+            
+            Assert.Collection(opts.AltPaths, path => path.Equals("/cloudfoundryapplication"));
             Assert.True(cloudOpts.ValidateCertificates);
 
             Assert.True(opts.Enabled);
             Assert.True(opts.Sensitive);
             Assert.Equal("threaddump", opts.Id);
-            Assert.Equal("/cloudfoundryapplication/threaddump", opts.Path);
+            //Assert.Equal("/cloudfoundryapplication/threaddump", opts.Path);
+            
+            Assert.Collection(opts.AltPaths, path => path.Equals("/cloudfoundryapplication/threaddump"));
         }
     }
 }

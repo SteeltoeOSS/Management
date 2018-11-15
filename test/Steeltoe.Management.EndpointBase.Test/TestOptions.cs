@@ -29,6 +29,8 @@ namespace Steeltoe.Management.Endpoint.Test
 
         public string Path { get; set; }
 
+        public string CloudFoundryPath { get; set; }
+
         public Permissions RequiredPermissions { get; set; }
 
         public bool IsEnabled => Enabled.Value;

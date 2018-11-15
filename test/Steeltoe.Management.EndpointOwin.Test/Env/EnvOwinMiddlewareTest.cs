@@ -33,7 +33,7 @@ namespace Steeltoe.Management.EndpointOwin.Env.Test
             var config = configurationBuilder.Build();
             var ep = new EnvEndpoint(new EnvOptions(), config, new GenericHostingEnvironment() { EnvironmentName = "EnvironmentName" });
             var middle = new EndpointOwinMiddleware<EnvironmentDescriptor>(null, ep);
-            var context = OwinTestHelpers.CreateRequest("GET", "/env");
+            var context = OwinTestHelpers.CreateRequest("GET", "/actuator/env");
 
             // act
             var json = await middle.InvokeAndReadResponse(context);
@@ -70,9 +70,9 @@ namespace Steeltoe.Management.EndpointOwin.Env.Test
             var ep = new EnvEndpoint(opts, config, host);
             var middle = new EndpointOwinMiddleware<EnvironmentDescriptor>(null, ep);
 
-            Assert.True(middle.RequestVerbAndPathMatch("GET", "/env"));
-            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/env"));
-            Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/actuator/env"));
+            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/actuator/env"));
+            Assert.False(middle.RequestVerbAndPathMatch("GET", "/actuator/badpath"));
         }
     }
 }

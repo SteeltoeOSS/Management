@@ -56,11 +56,11 @@ namespace Steeltoe.Management.Endpoint.Mappings.Test
             };
             var middle = new MappingsEndpointMiddleware(null, opts);
 
-            var context = CreateRequest("GET", "/mappings");
+            var context = CreateRequest("GET", "/actuator/mappings");
             Assert.True(middle.IsMappingsRequest(context));
-            var context2 = CreateRequest("PUT", "/mappings");
+            var context2 = CreateRequest("PUT", "/actuator/mappings");
             Assert.False(middle.IsMappingsRequest(context2));
-            var context3 = CreateRequest("GET", "/badpath");
+            var context3 = CreateRequest("GET", "/actuator/badpath");
             Assert.False(middle.IsMappingsRequest(context3));
         }
 

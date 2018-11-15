@@ -288,3 +288,9 @@ __pycache__/
 *.xsd.cs
 
 *.vscode
+
+# OSX 
+.DS_Store
+.AppleDouble
+.LSOverride
+

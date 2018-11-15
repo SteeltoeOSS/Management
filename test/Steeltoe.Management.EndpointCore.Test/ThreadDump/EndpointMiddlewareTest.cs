@@ -98,9 +98,9 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
             var ep = new ThreadDumpEndpoint(opts, obs);
             var middle = new ThreadDumpEndpointMiddleware(null, ep);
 
-            Assert.True(middle.RequestVerbAndPathMatch("GET", "/dump"));
-            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/dump"));
-            Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/actuator/dump"));
+            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/actuator/dump"));
+            Assert.False(middle.RequestVerbAndPathMatch("GET", "/actuator/badpath"));
         }
 
         private HttpContext CreateRequest(string method, string path)

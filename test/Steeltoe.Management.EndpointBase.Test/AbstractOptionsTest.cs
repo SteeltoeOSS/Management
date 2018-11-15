@@ -31,7 +31,7 @@ namespace Steeltoe.Management.Endpoint.Test
             Assert.NotNull(opts.Global);
             Assert.False(opts.Global.Enabled.HasValue);
             Assert.False(opts.Global.Sensitive.HasValue);
-            Assert.Equal("/", opts.Global.Path);
+            Assert.Equal("/actuator", opts.Global.Path);
             Assert.Equal(Permissions.UNDEFINED, opts.RequiredPermissions);
         }
 
@@ -87,7 +87,7 @@ namespace Steeltoe.Management.Endpoint.Test
             Assert.True(opts.Enabled);
             Assert.False(opts.Sensitive);
             Assert.Equal("infomanagement", opts.Id);
-            Assert.Equal("/management/infomanagement", opts.Path);
+            Assert.Collection(opts.AltPaths, path => path.Equals("/management/infomanagement"));
             Assert.Equal(Permissions.NONE, opts.RequiredPermissions);
         }
 
@@ -115,7 +115,10 @@ namespace Steeltoe.Management.Endpoint.Test
             Assert.False(opts.Enabled);
             Assert.True(opts.Sensitive);
             Assert.Equal("infomanagement", opts.Id);
-            Assert.Equal("/management/infomanagement", opts.Path);
+            //Assert.Equal("/management/infomanagement", opts.Path);
+            
+            Assert.Collection(opts.AltPaths, path => path.Equals("/management/infomanagement"));
+            
         }
 
         [Fact]

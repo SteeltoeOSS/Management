@@ -31,7 +31,7 @@ namespace Steeltoe.Management.EndpointOwin.Trace.Test
             var opts = new TraceOptions();
             var ep = new TestTraceEndpoint(opts, new TraceDiagnosticObserver(opts));
             var middle = new EndpointOwinMiddleware<List<TraceResult>>(null, ep);
-            var context = OwinTestHelpers.CreateRequest("GET", "/trace");
+            var context = OwinTestHelpers.CreateRequest("GET", "/actuator/trace");
 
             // act
             var json = await middle.InvokeAndReadResponse(context);
@@ -72,9 +72,9 @@ namespace Steeltoe.Management.EndpointOwin.Trace.Test
             var ep = new TraceEndpoint(opts, obs);
             var middle = new EndpointOwinMiddleware<List<TraceResult>>(null, ep);
 
-            Assert.True(middle.RequestVerbAndPathMatch("GET", "/trace"));
-            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/trace"));
-            Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/actuator/trace"));
+            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/actuator/trace"));
+            Assert.False(middle.RequestVerbAndPathMatch("GET", "/actuator/badpath"));
         }
     }
 }

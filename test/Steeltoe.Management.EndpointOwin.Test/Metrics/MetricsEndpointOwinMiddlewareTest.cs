@@ -52,24 +52,24 @@ namespace Steeltoe.Management.EndpointOwin.Metrics.Test
             var ep = new MetricsEndpoint(opts, stats);
             var middle = new MetricsEndpointOwinMiddleware(null, ep);
 
-            var context1 = CreateRequest("GET", "/metrics/Foo.Bar.Class", "foo=key:value");
+            var context1 = CreateRequest("GET", "/actuator/metrics/Foo.Bar.Class", "foo=key:value");
             var result = middle.ParseTags(context1.Request.Query);
             Assert.NotNull(result);
             Assert.Empty(result);
 
-            var context2 = CreateRequest("GET", "/metrics/Foo.Bar.Class", "tag=key:value");
+            var context2 = CreateRequest("GET", "/actuator/metrics/Foo.Bar.Class", "tag=key:value");
             result = middle.ParseTags(context2.Request.Query);
             Assert.NotNull(result);
             Assert.Contains(new KeyValuePair<string, string>("key", "value"), result);
 
-            var context3 = CreateRequest("GET", "/metrics/Foo.Bar.Class", "tag=key:value&foo=key:value&tag=key1:value1");
+            var context3 = CreateRequest("GET", "/actuator/metrics/Foo.Bar.Class", "tag=key:value&foo=key:value&tag=key1:value1");
             result = middle.ParseTags(context3.Request.Query);
             Assert.NotNull(result);
             Assert.Contains(new KeyValuePair<string, string>("key", "value"), result);
             Assert.Contains(new KeyValuePair<string, string>("key1", "value1"), result);
             Assert.Equal(2, result.Count);
 
-            var context4 = CreateRequest("GET", "/metrics/Foo.Bar.Class", "tag=key:value&foo=key:value&tag=key:value");
+            var context4 = CreateRequest("GET", "/actuator/metrics/Foo.Bar.Class", "tag=key:value&foo=key:value&tag=key:value");
             result = middle.ParseTags(context4.Request.Query);
             Assert.NotNull(result);
             Assert.Contains(new KeyValuePair<string, string>("key", "value"), result);
@@ -85,13 +85,13 @@ namespace Steeltoe.Management.EndpointOwin.Metrics.Test
             var ep = new MetricsEndpoint(opts, stats);
             var middle = new MetricsEndpointOwinMiddleware(null, ep);
 
-            var context1 = CreateRequest("GET", "/metrics");
+            var context1 = CreateRequest("GET", "/actuator/actuator/metrics");
             Assert.Null(middle.GetMetricName(context1.Request));
 
-            var context2 = CreateRequest("GET", "/metrics/Foo.Bar.Class");
+            var context2 = CreateRequest("GET", "/actuator/metrics/Foo.Bar.Class");
             Assert.Equal("Foo.Bar.Class", middle.GetMetricName(context2.Request));
 
-            var context3 = CreateRequest("GET", "/metrics", "tag=key:value&tag=key1:value1");
+            var context3 = CreateRequest("GET", "/actuator/metrics", "tag=key:value&tag=key1:value1");
             Assert.Null(middle.GetMetricName(context3.Request));
         }
 
@@ -104,7 +104,7 @@ namespace Steeltoe.Management.EndpointOwin.Metrics.Test
             var ep = new MetricsEndpoint(opts, stats);
             var middle = new MetricsEndpointOwinMiddleware(null, ep);
 
-            var context = CreateRequest("GET", "/metrics");
+            var context = CreateRequest("GET", "/actuator/metrics");
 
             await middle.HandleMetricsRequestAsync(context);
             context.Response.Body.Seek(0, SeekOrigin.Begin);
@@ -122,7 +122,7 @@ namespace Steeltoe.Management.EndpointOwin.Metrics.Test
             var ep = new MetricsEndpoint(opts, stats);
             var middle = new MetricsEndpointOwinMiddleware(null, ep);
 
-            var context = CreateRequest("GET", "/metrics/foo.bar");
+            var context = CreateRequest("GET", "/actuator/metrics/foo.bar");
 
             await middle.HandleMetricsRequestAsync(context);
             Assert.Equal(404, context.Response.StatusCode);
@@ -141,7 +141,7 @@ namespace Steeltoe.Management.EndpointOwin.Metrics.Test
 
             var middle = new MetricsEndpointOwinMiddleware(null, ep);
 
-            var context = CreateRequest("GET", "/metrics/test.test", "?tag=a:v1");
+            var context = CreateRequest("GET", "/actuator/metrics/test.test", "?tag=a:v1");
 
             await middle.HandleMetricsRequestAsync(context);
             Assert.Equal(200, context.Response.StatusCode);
@@ -160,14 +160,14 @@ namespace Steeltoe.Management.EndpointOwin.Metrics.Test
             var ep = new MetricsEndpoint(opts, stats);
             var middle = new MetricsEndpointOwinMiddleware(null, ep);
 
-            Assert.True(middle.RequestVerbAndPathMatch("GET", "/metrics"));
-            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/metrics"));
-            Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
-            Assert.False(middle.RequestVerbAndPathMatch("POST", "/metrics"));
-            Assert.False(middle.RequestVerbAndPathMatch("DELETE", "/metrics"));
-            Assert.True(middle.RequestVerbAndPathMatch("GET", "/metrics/Foo.Bar.Class"));
-            Assert.True(middle.RequestVerbAndPathMatch("GET", "/metrics/Foo.Bar.Class?tag=key:value&tag=key1:value1"));
-            Assert.True(middle.RequestVerbAndPathMatch("GET", "/metrics?tag=key:value&tag=key1:value1"));
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/actuator/metrics"));
+            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/actuator/metrics"));
+            Assert.False(middle.RequestVerbAndPathMatch("GET", "/actuator/badpath"));
+            Assert.False(middle.RequestVerbAndPathMatch("POST", "/actuator/metrics"));
+            Assert.False(middle.RequestVerbAndPathMatch("DELETE", "/actuator/metrics"));
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/actuator/metrics/Foo.Bar.Class"));
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/actuator/metrics/Foo.Bar.Class?tag=key:value&tag=key1:value1"));
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/actuator/metrics?tag=key:value&tag=key1:value1"));
         }
 
         private IOwinContext CreateRequest(string method, string path, string query = null)

@@ -42,7 +42,7 @@ namespace Steeltoe.Management.EndpointOwin.HeapDump.Test
                 HeapDumper obs = new HeapDumper(opts, logger: logger1);
                 var ep = new HeapDumpEndpoint(opts, obs, logger2);
                 var middle = new HeapDumpEndpointOwinMiddleware(null, ep, logger3);
-                var context = OwinTestHelpers.CreateRequest("GET", "/heapdump", GetResponseBodyStream());
+                var context = OwinTestHelpers.CreateRequest("GET", "/actuator/heapdump", GetResponseBodyStream());
                 await middle.Invoke(context);
                 context.Response.Body.Seek(0, SeekOrigin.Begin);
                 byte[] buffer = new byte[1024];
@@ -89,9 +89,9 @@ namespace Steeltoe.Management.EndpointOwin.HeapDump.Test
             var ep = new HeapDumpEndpoint(opts, obs);
             var middle = new HeapDumpEndpointOwinMiddleware(null, ep);
 
-            Assert.True(middle.RequestVerbAndPathMatch("GET", "/heapdump"));
-            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/heapdump"));
-            Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/actuator/heapdump"));
+            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/actuator/heapdump"));
+            Assert.False(middle.RequestVerbAndPathMatch("GET", "/actuator/badpath"));
         }
 
         private Stream GetResponseBodyStream()

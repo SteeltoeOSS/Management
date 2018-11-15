@@ -148,8 +148,8 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             var middle = new HealthEndpointMiddleware(null);
             middle.Endpoint = ep;
 
-            Assert.True(middle.RequestVerbAndPathMatch("GET", "/health"));
-            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/health"));
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/actuator/health"));
+            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/actuator/health"));
             Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
         }
 

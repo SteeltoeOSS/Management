@@ -19,6 +19,7 @@ using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Security;
 using System;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -125,8 +126,7 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
             var configEndpoints = this._options.Global.EndpointOptions;
             foreach (var ep in configEndpoints)
             {
-                PathString epPath = new PathString(ep.Path);
-                if (path.StartsWithSegments(epPath))
+                if (ep.AltPaths.Any(p => path.ToString().EndsWith(p)))
                 {
                     return ep;
                 }

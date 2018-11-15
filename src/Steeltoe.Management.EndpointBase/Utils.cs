@@ -16,6 +16,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
 using System.IO.Compression;
+using System.Reflection.Metadata.Ecma335;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Management.EndpointBase
@@ -93,5 +94,16 @@ namespace Steeltoe.Management.EndpointBase
 
             return null;
         }
+
+        public static string AddPath(this string segment, string other) 
+        {
+            if (string.IsNullOrEmpty(other))
+            {
+                return segment?.TrimEnd('/');
+            }
+            
+            return $"{segment?.TrimEnd('/')}/{other.TrimStart('/')}";
+        }
+
     }
 }

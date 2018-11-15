@@ -51,13 +51,12 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         }
 
         [Fact]
-        public async void CloudFoundrySecurityMiddleware_ReturnsServiceUnavailable()
+        public async void CloudFoundrySecurityMiddleware_ReturnsExpected()
         {
             var appSettings = new Dictionary<string, string>()
             {
                 ["management:endpoints:enabled"] = "true",
                 ["management:endpoints:sensitive"] = "false",
-                ["management:endpoints:path"] = "/",
                 ["management:endpoints:info:enabled"] = "true",
                 ["management:endpoints:info:sensitive"] = "false",
                 ["info:application:name"] = "foobar",
@@ -77,36 +76,8 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             using (var server = new TestServer(builder))
             {
                 var client = server.CreateClient();
-                var result = await client.GetAsync("http://localhost/info");
-                Assert.Equal(HttpStatusCode.ServiceUnavailable, result.StatusCode);
-            }
-
-            var appSettings2 = new Dictionary<string, string>()
-            {
-                ["management:endpoints:enabled"] = "true",
-                ["management:endpoints:sensitive"] = "false",
-                ["management:endpoints:path"] = "/",
-                ["management:endpoints:info:enabled"] = "true",
-                ["management:endpoints:info:sensitive"] = "false",
-                ["info:application:name"] = "foobar",
-                ["info:application:version"] = "1.0.0",
-                ["info:application:date"] = "5/1/2008",
-                ["info:application:time"] = "8:30:52 AM",
-                ["info:NET:type"] = "Core",
-                ["info:NET:version"] = "2.0.0",
-                ["info:NET:ASPNET:type"] = "Core",
-                ["info:NET:ASPNET:version"] = "2.0.0",
-                ["vcap:application:application_id"] = "foobar"
-            };
-
-            var builder2 = new WebHostBuilder().UseStartup<StartupWithSecurity>()
-                .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appSettings2));
-
-            using (var server = new TestServer(builder2))
-            {
-                var client = server.CreateClient();
-                var result = await client.GetAsync("http://localhost/info");
-                Assert.Equal(HttpStatusCode.ServiceUnavailable, result.StatusCode);
+                var result = await client.GetAsync("http://localhost/actuator/info");
+                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             }
 
             var appSettings3 = new Dictionary<string, string>()
@@ -135,7 +106,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             {
                 var client = server.CreateClient();
                 var result = await client.GetAsync("http://localhost/barfoo");
-                Assert.Equal(HttpStatusCode.ServiceUnavailable, result.StatusCode);
+                Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);
             }
         }
 
@@ -168,7 +139,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             using (var server = new TestServer(builder))
             {
                 var client = server.CreateClient();
-                var result = await client.GetAsync("http://localhost/info");
+                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/info");
                 Assert.Equal(HttpStatusCode.Unauthorized, result.StatusCode);
             }
         }

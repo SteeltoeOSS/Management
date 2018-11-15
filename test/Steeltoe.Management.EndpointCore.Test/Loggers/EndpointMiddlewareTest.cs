@@ -152,13 +152,13 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
             var ep = new LoggersEndpoint(opts, (IDynamicLoggerProvider)null);
             var middle = new LoggersEndpointMiddleware(null, ep);
 
-            Assert.True(middle.RequestVerbAndPathMatch("GET", "/loggers"));
-            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/loggers"));
-            Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
-            Assert.True(middle.RequestVerbAndPathMatch("POST", "/loggers"));
-            Assert.False(middle.RequestVerbAndPathMatch("POST", "/badpath"));
-            Assert.True(middle.RequestVerbAndPathMatch("POST", "/loggers/Foo.Bar.Class"));
-            Assert.False(middle.RequestVerbAndPathMatch("POST", "/badpath/Foo.Bar.Class"));
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/actuator/loggers"));
+            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/actuator/loggers"));
+            Assert.False(middle.RequestVerbAndPathMatch("GET", "/actuator/badpath"));
+            Assert.True(middle.RequestVerbAndPathMatch("POST", "/actuator/loggers"));
+            Assert.False(middle.RequestVerbAndPathMatch("POST", "/actuator/badpath"));
+            Assert.True(middle.RequestVerbAndPathMatch("POST", "/actuator/loggers/Foo.Bar.Class"));
+            Assert.False(middle.RequestVerbAndPathMatch("POST", "/actuator/badpath/Foo.Bar.Class"));
         }
 
         [Fact]

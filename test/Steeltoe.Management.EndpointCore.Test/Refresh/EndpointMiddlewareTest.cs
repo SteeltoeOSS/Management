@@ -98,9 +98,9 @@ namespace Steeltoe.Management.Endpoint.Refresh.Test
             var ep = new RefreshEndpoint(opts, config);
             var middle = new RefreshEndpointMiddleware(null, ep);
 
-            Assert.True(middle.RequestVerbAndPathMatch("GET", "/refresh"));
-            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/refresh"));
-            Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/actuator/refresh"));
+            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/actuator/refresh"));
+            Assert.False(middle.RequestVerbAndPathMatch("GET", "/actuator/badpath"));
         }
 
         private HttpContext CreateRequest(string method, string path)

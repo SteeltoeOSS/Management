@@ -23,6 +23,7 @@ using Microsoft.AspNetCore.Routing.Constraints;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Middleware;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.Mappings
@@ -98,8 +99,10 @@ namespace Steeltoe.Management.Endpoint.Mappings
                 return false;
             }
 
-            PathString path = new PathString(_options.Path);
-            return context.Request.Path.Equals(path);
+           // PathString path = new PathString(_options.Path);
+            // TODO : verify mappings
+            return // context.Request.Path.Equals(path) || context.Request.Path.Equals(_options.CloudFoundryPath);
+                _options.AltPaths.Any(p => context.Request.Path.Equals(p));
         }
 
         protected internal IDictionary<string, IList<MappingDescription>> GetMappingDescriptions(ApiDescriptionProviderContext apiContext)

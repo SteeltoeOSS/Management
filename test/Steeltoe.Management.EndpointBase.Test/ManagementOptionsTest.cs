@@ -27,7 +27,7 @@ namespace Steeltoe.Management.Endpoint.Test
             ManagementOptions opts = ManagementOptions.GetInstance();
             Assert.False(opts.Enabled.HasValue);
             Assert.False(opts.Sensitive.HasValue);
-            Assert.Equal("/", opts.Path);
+            Assert.Equal("/actuator", opts.Path);
         }
 
         [Fact]

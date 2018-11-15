@@ -18,6 +18,7 @@ using Microsoft.Extensions.Primitives;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Security;
 using System;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -41,6 +42,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
         public async Task Invoke(HttpContext context)
         {
             _logger.LogDebug("Invoke({0})", context.Request.Path.Value);
+            _logger.LogDebug("CloudFoundrySecurityMiddleware invoke {0} {1} {2}", Platform.IsCloudFoundry, _options.IsEnabled, _base.IsCloudFoundryRequest(context.Request.Path));
 
             if (Platform.IsCloudFoundry && _options.IsEnabled && _helper.IsCloudFoundryRequest(context.Request.Path))
             {
@@ -72,11 +74,13 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
                 var sr = await GetPermissions(context);
                 if (sr.Code != HttpStatusCode.OK)
                 {
-                    await _helper.ReturnError(context, sr);
+                    _logger.LogDebug("CloudFoundrySecurityMiddleware failed  permissions {0}", sr.Code);
+		    await _helper.ReturnError(context, sr);
                     return;
                 }
 
                 var permissions = sr.Permissions;
+                _logger.LogDebug("CloudFoundrySecurityMiddleware  permissions  access allowed{0}", target.IsAccessAllowed(permissions));
                 if (!target.IsAccessAllowed(permissions))
                 {
                     await _helper.ReturnError(
@@ -114,11 +118,13 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             var configEndpoints = this._options.Global.EndpointOptions;
             foreach (var ep in configEndpoints)
             {
-                PathString epPath = new PathString(ep.Path);
-                if (path.StartsWithSegments(epPath))
+               
+                 foreach (var p in ep.AltPaths)
                 {
-                    return ep;
+                    if (path.StartsWithSegments(new PathString(p)))
+                        return ep;
                 }
+
             }
 
             return null;
