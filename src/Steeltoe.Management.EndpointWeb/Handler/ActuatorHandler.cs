@@ -114,8 +114,9 @@ namespace Steeltoe.Management.Endpoint.Handler
 
         public virtual bool PathMatches(bool exactMatch, List<string> endpointPaths, string requestPath)
         {
-            return exactMatch ? endpointPaths.Any(ep => requestPath.Equals(ep))
-                 : endpointPaths.Any(ep => requestPath.StartsWith(ep));
+            return exactMatch
+                ? endpointPaths.Any(ep => requestPath.Equals(ep))
+                : endpointPaths.Any(ep => requestPath.StartsWith(ep));
         }
 
         public async override Task<bool> IsAccessAllowed(HttpContext context)

@@ -71,8 +71,9 @@ namespace Steeltoe.Management.Endpoint.Middleware
 
         public virtual bool PathMatches(bool exactMatch, List<string> endpointPaths, string requestPath)
         {
-            return exactMatch ? endpointPaths.Any(ep => requestPath.Equals(ep))
-                 : endpointPaths.Any(ep => requestPath.StartsWith(ep));
+            return exactMatch
+                ? endpointPaths.Any(ep => requestPath.Equals(ep))
+                : endpointPaths.Any(ep => requestPath.StartsWith(ep));
         }
 
         protected virtual string Serialize(TResult result)
