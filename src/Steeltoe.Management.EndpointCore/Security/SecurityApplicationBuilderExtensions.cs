@@ -12,28 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Extensions.Configuration;
+using System;
+using Microsoft.AspNetCore.Builder;
+using Steeltoe.Management.Endpoint.Security;
 
-namespace Steeltoe.Management.Endpoint.Loggers
+namespace Steeltoe.Management.EndpointCore.Security
 {
-    public class LoggersOptions : AbstractOptions, ILoggersOptions
+    public static class SecurityApplicationBuilderExtensions
     {
-        private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:loggers";
-
-        public LoggersOptions()
-            : base()
+       
+        /// <summary>
+        /// Add Security Middleware for protecting sensitive endpoints
+        /// </summary>
+        /// <param name="builder">Your application builder</param>
+        public static void UseEndpointSecurity(this IApplicationBuilder builder)
         {
-            Id = "loggers";
-        }
-
-        public LoggersOptions(IConfiguration config)
-            : base(MANAGEMENT_INFO_PREFIX, config)
-        {
-            if (string.IsNullOrEmpty(Id))
+            if (builder == null)
             {
-                Id = "loggers";
+                throw new ArgumentNullException(nameof(builder));
             }
-        }
 
+            builder.UseMiddleware<SecurityMiddleware>();
+        }
     }
 }

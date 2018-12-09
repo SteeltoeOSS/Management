@@ -42,6 +42,5 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
             }
         }
 
-        protected override bool DefaultSensitive => true;
     }
 }

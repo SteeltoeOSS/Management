@@ -12,14 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Net;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
+using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Middleware;
-using System.Threading.Tasks;
+using Steeltoe.Management.Endpoint.Security;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry
 {
+    /// <summary>
+    /// CloudFoundry endpoint is the hypermedia A “discovery page” is added with links to all the endpoints that are enabled.
+    /// When deployed to CloudFoundry this endpoint is used for apps manager integration when <see cref="CloudFoundrySecurityMiddleware"/> is added.
+    /// </summary>
     public class CloudFoundryEndpointMiddleware : EndpointMiddleware<Links, string>
     {
         private ICloudFoundryOptions _options;

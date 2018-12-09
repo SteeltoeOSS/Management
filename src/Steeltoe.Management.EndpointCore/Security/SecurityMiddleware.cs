@@ -15,22 +15,22 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
-using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using System;
 using System.Net;
 using System.Threading.Tasks;
+using Steeltoe.Management.Endpoint;
 
-namespace Steeltoe.Management.Endpoint.CloudFoundry
+namespace Steeltoe.Management.EndpointCore.Security
 {
-    public class CloudFoundrySecurityMiddleware
+    public class SecurityMiddleware
     {
         private RequestDelegate _next;
-        private ILogger<CloudFoundrySecurityMiddleware> _logger;
+        private ILogger<SecurityMiddleware> _logger;
         private ICloudFoundryOptions _options;
         private SecurityBase _base;
 
-        public CloudFoundrySecurityMiddleware(RequestDelegate next, ICloudFoundryOptions options, ILogger<CloudFoundrySecurityMiddleware> logger)
+        public SecurityMiddleware(RequestDelegate next, ICloudFoundryOptions options, ILogger<SecurityMiddleware> logger)
         {
             _next = next;
             _logger = logger;
@@ -42,38 +42,27 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
         {
             _logger.LogDebug("Invoke({0})", context.Request.Path.Value);
 
-            if (Platform.IsCloudFoundry && _options.IsEnabled && _base.IsCloudFoundryRequest(context.Request.Path))
+            
+            
+            if (_base.IsCloudFoundryRequest(context.Request.Path))
             {
-                if (string.IsNullOrEmpty(_options.ApplicationId))
-                {
-                    await ReturnError(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, _base.APPLICATION_ID_MISSING_MESSAGE));
-                    return;
-                }
-
-                if (string.IsNullOrEmpty(_options.CloudFoundryApi))
-                {
-                    await ReturnError(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, _base.CLOUDFOUNDRY_API_MISSING_MESSAGE));
-                    return;
-                }
-
                 IEndpointOptions target = FindTargetEndpoint(context.Request.Path);
                 if (target == null)
                 {
-                    await ReturnError(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, _base.ENDPOINT_NOT_CONFIGURED_MESSAGE));
+                    await ReturnError(context,
+                        new SecurityResult(HttpStatusCode.ServiceUnavailable, _base.ENDPOINT_NOT_CONFIGURED_MESSAGE));
                     return;
                 }
 
-                var sr = await GetPermissions(context);
-                if (sr.Code != HttpStatusCode.OK)
-                {
-                    await ReturnError(context, sr);
-                    return;
-                }
+                Console.WriteLine(
+                    "Security \n Path:{0} \n Enabled:{1} \n Sensitive: {2} \n isCloudFoundryRequest: {3} \n ",
+                    context.Request.Path, target.IsEnabled, target.IsSensitive,
+                    _base.IsCloudFoundryRequest(context.Request.Path));
 
-                var permissions = sr.Permissions;
-                if (!target.IsAccessAllowed(permissions))
+                if (target.IsEnabled && target.IsSensitive && !context.User.Identity.IsAuthenticated)
                 {
-                    await ReturnError(context, new SecurityResult(HttpStatusCode.Forbidden, _base.ACCESS_DENIED_MESSAGE));
+                    await ReturnError(context,
+                        new SecurityResult(HttpStatusCode.Unauthorized, _base.ACCESS_DENIED_MESSAGE));
                     return;
                 }
             }
@@ -81,25 +70,6 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             await _next(context);
         }
 
-        internal string GetAccessToken(HttpRequest request)
-        {
-            if (request.Headers.TryGetValue(_base.AUTHORIZATION_HEADER, out StringValues headerVal))
-            {
-                string header = headerVal.ToString();
-                if (header.StartsWith(_base.BEARER, StringComparison.OrdinalIgnoreCase))
-                {
-                    return header.Substring(_base.BEARER.Length + 1);
-                }
-            }
-
-            return null;
-        }
-
-        internal async Task<SecurityResult> GetPermissions(HttpContext context)
-        {
-            string token = GetAccessToken(context.Request);
-            return await _base.GetPermissionsAsync(token);
-        }
 
         private IEndpointOptions FindTargetEndpoint(PathString path)
         {
@@ -107,7 +77,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             foreach (var ep in configEndpoints)
             {
                 PathString epPath = new PathString(ep.Path);
-                if (path.StartsWithSegments(epPath))
+               if ( path.Value == ep.Path)
                 {
                     return ep;
                 }
@@ -116,6 +86,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             return null;
         }
 
+        //TODO: Move to common place
         private async Task ReturnError(HttpContext context, SecurityResult error)
         {
             LogError(context, error);
@@ -123,7 +94,8 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             context.Response.StatusCode = (int)error.Code;
             await context.Response.WriteAsync(_base.Serialize(error));
         }
-
+        
+        //TODO: Move to common place
         private void LogError(HttpContext context, SecurityResult error)
         {
             _logger.LogError("Actuator Security Error: {0} - {1}", error.Code, error.Message);

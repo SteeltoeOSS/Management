@@ -42,6 +42,5 @@ namespace Steeltoe.Management.Endpoint.Refresh
             }
         }
 
-        protected override bool DefaultSensitive => true;
     }
 }
