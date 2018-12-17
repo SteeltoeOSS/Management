@@ -12,34 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.Management.Endpoint.Security;
-using System.Collections.Generic;
-using System.Security.Claims;
+using Microsoft.Extensions.Configuration;
+using Owin;
 
-namespace Steeltoe.Management.Endpoint
+namespace Steeltoe.Management.Endpoint.Security.Test
 {
-    public interface IEndpointOptions
+    public class SecureStartup : Startup
     {
-        bool IsEnabled { get; }
-
-        bool IsSensitive { get; }
-
-        bool? Enabled { get; }
-
-        bool? Sensitive { get;  }
-
-        IManagementOptions Global { get; }
-
-        string Id { get;  }
-
-        List<string> AltIds { get; }
-
-        string Path { get; }
-
-        List<string> AltPaths { get; }
-
-        Permissions RequiredPermissions { get; }
-
-        bool IsAccessAllowed(Permissions permissions);
+        public override void Configuration(IAppBuilder app)
+        {
+            app.Use<AuthenticationTestMiddleware>();
+            base.Configuration(app);
+        }
     }
 }

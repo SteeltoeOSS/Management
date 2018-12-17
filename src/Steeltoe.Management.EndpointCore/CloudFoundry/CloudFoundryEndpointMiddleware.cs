@@ -12,14 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Net;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
-using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Middleware;
-using Steeltoe.Management.Endpoint.Security;
+using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry
 {

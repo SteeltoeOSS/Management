@@ -12,37 +12,35 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.Owin;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Middleware;
-using Steeltoe.Management.EndpointBase.Security;
 using System;
 using System.Net;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.Security
 {
-    public class SecurityMiddleware
+    public class SecurityMiddleware : OwinMiddleware
     {
-        private RequestDelegate _next;
         private ILogger<SecurityMiddleware> _logger;
         private ICloudFoundryOptions _options;
         private SecurityHelper _helper;
 
-        public SecurityMiddleware(RequestDelegate next, ICloudFoundryOptions options, ILogger<SecurityMiddleware> logger)
+        public SecurityMiddleware(OwinMiddleware next, ICloudFoundryOptions options, ILogger<SecurityMiddleware> logger)
+            : base(next)
         {
-            _next = next;
             _logger = logger;
             _options = options;
             _helper = new SecurityHelper(options, logger);
         }
 
-        public async Task Invoke(HttpContext context)
+        public override async Task Invoke(IOwinContext context)
         {
-            _logger.LogDebug("Invoke({0})", context.Request.Path.Value);
+            _logger?.LogDebug("Invoke({0})", context.Request.Path.Value);
 
-            if (_helper.IsCloudFoundryRequest(context.Request.Path) && _options.IsEnabled)
+            if (_helper.IsCloudFoundryRequest(context.Request.Path.Value) && _options.IsEnabled)
             {
                 IEndpointOptions target = FindTargetEndpoint(context.Request.Path);
                 if (target == null)
@@ -63,14 +61,14 @@ namespace Steeltoe.Management.Endpoint.Security
                 }
             }
 
-            await _next(context);
+            await Next.Invoke(context);
         }
 
-        private bool HasSensitiveClaim(HttpContext context)
+        private bool HasSensitiveClaim(IOwinContext context)
         {
             var claim = _options.Global.SensitiveClaim;
-            var user = context.User;
-            return user.Identity.IsAuthenticated && user.HasClaim(claim.Type, claim.Value);
+            var user = context.Authentication.User;
+            return user != null && user.HasClaim(claim.Type, claim.Value);
         }
 
         private IEndpointOptions FindTargetEndpoint(PathString path)

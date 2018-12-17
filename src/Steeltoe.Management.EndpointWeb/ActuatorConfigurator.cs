@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNet.TelemetryCorrelation;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
@@ -55,6 +54,7 @@ namespace Steeltoe.Management.Endpoint
         public static void UseCloudFoundryActuators(IConfiguration configuration, ILoggerProvider dynamicLogger, IEnumerable<IHealthContributor> healthContributors = null, IApiExplorer apiExplorer = null, ILoggerFactory loggerFactory = null)
         {
             UseCloudFoundrySecurity(configuration, null, loggerFactory);
+            UseEndpointSecurity(configuration, null, loggerFactory);
             UseCloudFoundryActuator(configuration, loggerFactory);
             UseHealthActuator(configuration, null, healthContributors, loggerFactory);
             UseHeapDumpActuator(configuration, null, loggerFactory);
@@ -75,13 +75,18 @@ namespace Steeltoe.Management.Endpoint
 
         public static void ConfigureModules()
         {
-            DynamicModuleUtility.RegisterModule(typeof(TelemetryCorrelationHttpModule));
+           // DynamicModuleUtility.RegisterModule(typeof(TelemetryCorrelationHttpModule));
             DynamicModuleUtility.RegisterModule(typeof(ActuatorModule));
         }
 
         public static void UseCloudFoundrySecurity(IConfiguration configuration, ISecurityService securityService = null, ILoggerFactory loggerFactory = null)
         {
             SecurityService = securityService ?? new CloudFoundrySecurity(new CloudFoundryOptions(configuration), CreateLogger<CloudFoundrySecurity>(loggerFactory));
+        }
+
+        public static void UseEndpointSecurity(IConfiguration configuration, ISecurityService securityService = null, ILoggerFactory loggerFactory = null)
+        {
+            SecurityService = securityService ?? new EndpointSecurity(new CloudFoundryOptions(configuration), CreateLogger<EndpointSecurity>(loggerFactory));
         }
 
         public static void UseCloudFoundryActuator(IConfiguration configuration, ILoggerFactory loggerFactory = null)

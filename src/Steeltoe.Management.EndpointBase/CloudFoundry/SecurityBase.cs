@@ -22,6 +22,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Security;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry
@@ -39,12 +40,14 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
         public readonly string BEARER = "bearer";
         public readonly string READ_SENSITIVE_DATA = "read_sensitive_data";
         private ICloudFoundryOptions _options;
-        private ILogger _logger;
+        private ILogger logger;
+
+        protected ILogger Logger { get => logger; set => logger = value; }
 
         public SecurityBase(ICloudFoundryOptions options, ILogger logger = null)
         {
             _options = options;
-            _logger = logger;
+            Logger = logger;
         }
 
         public bool IsCloudFoundryRequest(string requestPath)
@@ -61,7 +64,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             }
             catch (Exception e)
             {
-                _logger?.LogError("Serialization Exception: {0}", e);
+                Logger?.LogError("Serialization Exception: {0}", e);
             }
 
             return string.Empty;
@@ -86,7 +89,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
                 out RemoteCertificateValidationCallback prevValidator);
             try
             {
-                _logger.LogDebug("GetPermissions({0}, {1})", checkPermissionsUri, token);
+                Logger.LogDebug("GetPermissions({0}, {1})", checkPermissionsUri, token);
 
                 using (var client = HttpClientHelper.GetHttpClient(_options.ValidateCertificates, DEFAULT_GETPERMISSIONS_TIMEOUT))
                 {
@@ -94,7 +97,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
                     {
                         if (response.StatusCode != HttpStatusCode.OK)
                         {
-                            _logger?.LogInformation(
+                            Logger?.LogInformation(
                                 "Cloud Foundry returned status: {HttpStatus} while obtaining permissions from: {PermissionsUri}",
                                 response.StatusCode,
                                 checkPermissionsUri);
@@ -110,7 +113,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             }
             catch (Exception e)
             {
-                _logger?.LogError("Cloud Foundry returned exception: {SecurityException} while obtaining permissions from: {PermissionsUri}", e, checkPermissionsUri);
+                Logger?.LogError("Cloud Foundry returned exception: {SecurityException} while obtaining permissions from: {PermissionsUri}", e, checkPermissionsUri);
                 return new SecurityResult(HttpStatusCode.ServiceUnavailable, CLOUDFOUNDRY_NOT_REACHABLE_MESSAGE);
             }
             finally
@@ -128,7 +131,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             {
                 json = await response.Content.ReadAsStringAsync();
 
-                _logger?.LogDebug("GetPermisions returned json: {0}", json);
+                Logger?.LogDebug("GetPermisions returned json: {0}", json);
 
                 var result = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
 
@@ -140,10 +143,10 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             }
             catch (Exception e)
             {
-                _logger?.LogError("Exception {0} extracting permissions from {1}", e, json);
+                Logger?.LogError("Exception {0} extracting permissions from {1}", e, json);
             }
 
-            _logger?.LogDebug("GetPermisions returning: {0}", permissions);
+            Logger?.LogDebug("GetPermisions returning: {0}", permissions);
             return permissions;
         }
     }

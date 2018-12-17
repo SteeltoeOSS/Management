@@ -12,7 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Owin;
+using Steeltoe.Management.Endpoint.CloudFoundry;
 using System;
 
 namespace Steeltoe.Management.Endpoint.Security
@@ -23,14 +26,22 @@ namespace Steeltoe.Management.Endpoint.Security
         /// Add Security Middleware for protecting sensitive endpoints
         /// </summary>
         /// <param name="builder">Your application builder</param>
-        public static void UseEndpointSecurity(this IApplicationBuilder builder)
+        /// <param name="config">Configuration</param>
+        /// <param name="loggerFactory">Logger Factory</param>
+        public static void UseEndpointSecurity(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null)
         {
             if (builder == null)
             {
                 throw new ArgumentNullException(nameof(builder));
             }
 
-            builder.UseMiddleware<SecurityMiddleware>();
+            if (config == null)
+            {
+                throw new System.ArgumentNullException(nameof(config));
+            }
+
+            var logger = loggerFactory?.CreateLogger<SecurityMiddleware>();
+            builder.Use<SecurityMiddleware>(new CloudFoundryOptions(config), logger);
         }
     }
 }

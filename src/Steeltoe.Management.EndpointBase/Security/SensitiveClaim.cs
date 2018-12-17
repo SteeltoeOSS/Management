@@ -12,34 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.Management.Endpoint.Security;
-using System.Collections.Generic;
-using System.Security.Claims;
-
-namespace Steeltoe.Management.Endpoint
+namespace Steeltoe.Management.EndpointBase.Security
 {
-    public interface IEndpointOptions
+    public class SensitiveClaim
     {
-        bool IsEnabled { get; }
+        public string Type { get; set; }
 
-        bool IsSensitive { get; }
-
-        bool? Enabled { get; }
-
-        bool? Sensitive { get;  }
-
-        IManagementOptions Global { get; }
-
-        string Id { get;  }
-
-        List<string> AltIds { get; }
-
-        string Path { get; }
-
-        List<string> AltPaths { get; }
-
-        Permissions RequiredPermissions { get; }
-
-        bool IsAccessAllowed(Permissions permissions);
+        public string Value { get; set; }
     }
 }
