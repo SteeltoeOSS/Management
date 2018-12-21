@@ -26,7 +26,7 @@ namespace Steeltoe.Management.Endpoint.Security.Test
 
         public override void Configure(IApplicationBuilder app)
         {
-            app.UseMiddleware<AuthenticationTestMiddleware>();
+            app.UseMiddleware<SetsUserInContextForTestsMiddleware>();
             base.Configure(app);
         }
     }

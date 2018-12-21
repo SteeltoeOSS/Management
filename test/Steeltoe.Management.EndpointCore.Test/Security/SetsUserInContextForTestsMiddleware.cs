@@ -13,22 +13,22 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
 using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.Security.Test
 {
-    internal class AuthenticationTestMiddleware
+    /// <summary>
+    /// Adds a fake claim for Testing Authenticate test cases.
+    /// </summary>
+    internal class SetsUserInContextForTestsMiddleware
     {
         public const string TestFakeAuthentication = "TestFakeAuthentication";
         public const string TestingHeader = "X-Test-Header";
 
         private readonly RequestDelegate _next;
 
-        public AuthenticationTestMiddleware(RequestDelegate next)
+        public SetsUserInContextForTestsMiddleware(RequestDelegate next)
         {
             _next = next;
         }

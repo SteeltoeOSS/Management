@@ -16,20 +16,15 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.Test;
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Net;
-using System.Net.Http;
-using System.Text;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Steeltoe.Management.Endpoint.Security.Test
 {
     public class SecurityMiddlewareTest : BaseTest
     {
-       [Fact]
+        [Fact]
         public async void SecurityMiddleWare_ReturnsOKWhenNotSensitive()
         {
             var builder = GetBuilder<Startup>(new Dictionary<string, string>()
@@ -44,8 +39,12 @@ namespace Steeltoe.Management.Endpoint.Security.Test
                 var result = await client.GetAsync("http://localhost/info");
                 Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             }
+        }
 
-            builder = GetBuilder<SecureStartup>(new Dictionary<string, string>()
+        [Fact]
+        public async void SecurityMiddleWare_ReturnsOKWhenNotSensitiveWhenAuthenticated()
+        {
+            var builder = GetBuilder<Startup>(new Dictionary<string, string>()
             {
                 ["management:endpoints:enabled"] = "true",
                 ["management:endpoints:info:sensitive"] = "false"
@@ -75,6 +74,40 @@ namespace Steeltoe.Management.Endpoint.Security.Test
                 var client = server.CreateClient();
                 var result = await client.GetAsync("http://localhost/info");
                 Assert.Equal(HttpStatusCode.Unauthorized, result.StatusCode);
+            }
+        }
+
+        [Fact]
+        public async void SecurityMiddleWareCloudFoundry_ReturnsUnauthorizedWhenSensitive()
+        {
+            var builder = GetBuilder<Startup>(new Dictionary<string, string>()
+            {
+                ["management:endpoints:enabled"] = "true",
+                ["management:endpoints:sensitive"] = "true"
+            });
+
+            using (var server = new TestServer(builder))
+            {
+                var client = server.CreateClient();
+                var result = await client.GetAsync("http://localhost/info");
+                Assert.Equal(HttpStatusCode.Unauthorized, result.StatusCode);
+            }
+        }
+
+        [Fact]
+        public async void SecurityMiddleWareCloudFoundry_ReturnsOKWhenNOTSensitive()
+        {
+            var builder = GetBuilder<Startup>(new Dictionary<string, string>()
+            {
+                ["management:endpoints:enabled"] = "true",
+                ["management:endpoints:sensitive"] = "false"
+            });
+
+            using (var server = new TestServer(builder))
+            {
+                var client = server.CreateClient();
+                var result = await client.GetAsync("http://localhost/info");
+                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             }
         }
 

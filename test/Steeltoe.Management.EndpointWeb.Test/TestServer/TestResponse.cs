@@ -12,18 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Extensions.Logging;
-using Steeltoe.Management.Endpoint.Security;
-using Steeltoe.Management.Endpoint.Trace;
-using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Net;
 
-namespace Steeltoe.Management.Endpoint.Handler
+namespace Steeltoe.Management.EndpointWeb.Test
 {
-    public class TraceHandler : ActuatorHandler<TraceEndpoint, List<TraceResult>>
+    [System.Serializable]
+    public class TestResponse
     {
-        public TraceHandler(TraceEndpoint endpoint, List<ISecurityService> securityServices, ILogger<TraceHandler> logger = null)
-            : base(endpoint, securityServices, null, true, logger)
+        public TestResponse(string content, HttpStatusCode statusCode, NameValueCollection headers)
         {
+            Content = content;
+            StatusCode = statusCode;
+            Headers = headers;
         }
+
+        public string Content { get; set; }
+
+        public HttpStatusCode StatusCode { get; set; }
+
+        public NameValueCollection Headers { get; set; }
     }
 }

@@ -22,7 +22,6 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Security;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry
@@ -40,9 +39,8 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
         public readonly string BEARER = "bearer";
         public readonly string READ_SENSITIVE_DATA = "read_sensitive_data";
         private ICloudFoundryOptions _options;
-        private ILogger logger;
 
-        protected ILogger Logger { get => logger; set => logger = value; }
+        protected ILogger Logger { get; set; }
 
         public SecurityBase(ICloudFoundryOptions options, ILogger logger = null)
         {
