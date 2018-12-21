@@ -33,7 +33,7 @@ namespace Steeltoe.Management.Endpoint.Security
             _logger = logger;
         }
 
-        public async Task ReturnError(HttpContext context, SecurityResult error)
+        public async Task ReturnError(HttpContextBase context, SecurityResult error)
         {
             LogError(context, error);
             context.Response.Headers.Set("Content-Type", "application/json;charset=UTF-8");
@@ -41,7 +41,7 @@ namespace Steeltoe.Management.Endpoint.Security
             await context.Response.Output.WriteAsync(Serialize(error));
         }
 
-        public void LogError(HttpContext context, SecurityResult error)
+        public void LogError(HttpContextBase context, SecurityResult error)
         {
             _logger?.LogError("Actuator Security Error: {ErrorCode} - {ErrorMessage}", error.Code, error.Message);
             if (_logger?.IsEnabled(LogLevel.Trace) == true)

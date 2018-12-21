@@ -12,18 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Extensions.Logging;
-using Steeltoe.Management.Endpoint.Security;
-using Steeltoe.Management.Endpoint.Trace;
+using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Web;
 
-namespace Steeltoe.Management.Endpoint.Handler
+namespace Steeltoe.Management.Endpoint.Security
 {
-    public class TraceHandler : ActuatorHandler<TraceEndpoint, List<TraceResult>>
+    public static class SecurityServiceExtension
     {
-        public TraceHandler(TraceEndpoint endpoint, List<ISecurityService> securityServices, ILogger<TraceHandler> logger = null)
-            : base(endpoint, securityServices, null, true, logger)
+        public static async Task<bool> IsAccessAllowed(this IEnumerable<ISecurityService> securityChecks, HttpContextBase context, IEndpointOptions options)
         {
+            IEnumerable<Task<bool>> allTasks = securityChecks.Select(service => service.IsAccessAllowed(context, options));
+            bool[] returnValues = await Task.WhenAll(allTasks);
+            return returnValues.All(isAccessAllowed => isAccessAllowed == true);
         }
     }
 }

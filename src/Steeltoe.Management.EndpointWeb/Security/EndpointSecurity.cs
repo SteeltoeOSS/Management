@@ -36,22 +36,18 @@ namespace Steeltoe.Management.Endpoint.Security
             _helper = new SecurityHelper(options, logger);
         }
 
-        public async Task<bool> IsAccessAllowed(HttpContext context, IEndpointOptions target)
+        public async Task<bool> IsAccessAllowed(HttpContextBase context, IEndpointOptions target)
         {
            if (_helper.IsCloudFoundryRequest(context.Request.Path) && _options.IsEnabled)
             {
-                _logger?.LogTrace("Beginning Cloud Foundry Security Processing");
-
-                if (context.Request.HttpMethod == "OPTIONS")
-                {
-                    return true;
-                }
+                _logger?.LogTrace("Beginning Endpoint Security Processing");
 
                 var origin = context.Request.Headers.Get("Origin");
                 context.Response.Headers.Set("Access-Control-Allow-Origin", origin ?? "*");
 
                 if (target.IsSensitive && !HasSensitiveClaim(context))
                 {
+                    _logger?.LogTrace("Access denied! Target was marked sensitive, but did not have claim {0}", _options.Global.SensitiveClaim);
                     await _helper.ReturnError(context, new SecurityResult(HttpStatusCode.Forbidden, _helper.ACCESS_DENIED_MESSAGE));
                     return false;
                 }
@@ -62,7 +58,7 @@ namespace Steeltoe.Management.Endpoint.Security
             return true;
         }
 
-        private bool HasSensitiveClaim(HttpContext context)
+        private bool HasSensitiveClaim(HttpContextBase context)
         {
             var claim = _options.Global.SensitiveClaim;
             var user = context.User;
