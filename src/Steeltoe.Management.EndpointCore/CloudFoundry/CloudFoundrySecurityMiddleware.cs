@@ -42,8 +42,6 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
         public async Task Invoke(HttpContext context)
         {
             _logger.LogDebug("Invoke({0})", context.Request.Path.Value);
-            _logger.LogDebug("CloudFoundrySecurityMiddleware invoke {0} {1} {2}", Platform.IsCloudFoundry, _options.IsEnabled, _base.IsCloudFoundryRequest(context.Request.Path));
-
             if (Platform.IsCloudFoundry && _options.IsEnabled && _helper.IsCloudFoundryRequest(context.Request.Path))
             {
                 if (string.IsNullOrEmpty(_options.ApplicationId))
@@ -74,8 +72,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
                 var sr = await GetPermissions(context);
                 if (sr.Code != HttpStatusCode.OK)
                 {
-                    _logger.LogDebug("CloudFoundrySecurityMiddleware failed  permissions {0}", sr.Code);
-		    await _helper.ReturnError(context, sr);
+                    await _helper.ReturnError(context, sr);
                     return;
                 }
 
@@ -131,3 +128,4 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
         }
     }
 }
+
