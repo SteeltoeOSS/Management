@@ -36,9 +36,9 @@ namespace Steeltoe.Management.Endpoint.Handler
 
         public override bool RequestVerbAndPathMatch(string httpMethod, string requestPath)
         {
-            _logger?.LogTrace("RequestVerbAndPathMatch {httpMethod}/{requestPath}/{optionsPath} request", httpMethod, requestPath, _options.AltPaths);
-            
-            return _options.AltPaths.Any(requestPath.StartsWith) && _allowedMethods.Any(m => m.Method.Equals(httpMethod));
+            _logger?.LogTrace("RequestVerbAndPathMatch {httpMethod}/{requestPath}/{optionsPath} request", httpMethod, requestPath, string.Join(",", _options.Paths));
+
+            return _options.Paths.Any(requestPath.StartsWith) && _allowedMethods.Any(m => m.Method.Equals(httpMethod));
         }
 
         public override void HandleRequest(HttpContextBase context)

@@ -86,17 +86,13 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             Assert.True(cloudOpts.Enabled);
             Assert.False(cloudOpts.Sensitive);
             Assert.Equal(string.Empty, cloudOpts.Id);
-            //Assert.Equal("/cloudfoundryapplication", cloudOpts.Path);
-            
-            Assert.Collection(cloudOpts.AltPaths, path => path.Equals("/cloudfoundryapplication"));
+            Assert.Collection(cloudOpts.Paths, path => path.Equals("/cloudfoundryapplication"));
             Assert.True(cloudOpts.ValidateCertificates);
 
             Assert.True(opts.Enabled);
             Assert.True(opts.Sensitive);
             Assert.Equal("trace", opts.Id);
-            //Assert.Equal("/cloudfoundryapplication/trace", opts.Path);
-            
-            Assert.Collection(opts.AltPaths, path => path.Equals("/cloudfoundryapplication/trace"));
+            Assert.Collection(opts.Paths, path => path.Equals("/cloudfoundryapplication/trace"));
             Assert.Equal(1000, opts.Capacity);
             Assert.False(opts.AddTimeTaken);
             Assert.False(opts.AddRequestHeaders);

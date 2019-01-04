@@ -14,10 +14,10 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.Security;
+using Steeltoe.Management.EndpointBase;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Steeltoe.Management.EndpointBase;
 
 namespace Steeltoe.Management.Endpoint
 {
@@ -122,46 +122,25 @@ namespace Steeltoe.Management.Endpoint
         public virtual IManagementOptions Global { get; set; }
 
         public virtual string Id { get; set; }
-        
+
         public List<string> AltIds { get; set; }
 
-//        public virtual string Path
-//        {
-//            get
-//            {
-//                string path = Global.Path;
-//                if (string.IsNullOrEmpty(Id))
-//                {
-//                    return path;
-//                }
-//
-//                if (!path.EndsWith("/"))
-//                {
-//                    path = path + "/";
-//                }
-//
-//                return path + Id;
-//            }
-//        }
-
-
-        public virtual List<string> AltPaths
+        public virtual List<string> Paths
         {
             get
             {
-                var ids = new List<string> {Id};
-                AltIds?.ForEach(id => ids.Add(id));
+                var basePaths = new List<string> { Global.Path, Global.CloudFoundryPath };
+                var ids = new List<string>(AltIds ?? new List<string>()) { Id };
+
                 // Return a path for each combination of path and Id
-                var paths =  new List<string> {Global.Path, Global.CloudFoundryPath}
-                        .SelectMany(
-                             x => ids,
-                            (p, id) => p.AddPath(id))
-                        .ToList();
-                return paths; 
+                var paths = basePaths.SelectMany(
+                        x => ids,
+                        (p, id) => p.AddPath(id))
+                    .Distinct().ToList();
+                return paths;
             }
         }
 
-       
         public Permissions RequiredPermissions { get; set; } = Permissions.UNDEFINED;
 
         public virtual bool IsAccessAllowed(Permissions permissions)

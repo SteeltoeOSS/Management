@@ -35,8 +35,8 @@ namespace Steeltoe.Management.Endpoint
         public virtual bool Sensitive => options.Sensitive.Value;
 
         public virtual IEndpointOptions Options => options;
-        
-        public List<string> Paths => new List<string>(options.AltPaths);
+
+        public List<string> Paths => new List<string>(options.Paths);
     }
 
 #pragma warning disable SA1402 // File may only contain a single class

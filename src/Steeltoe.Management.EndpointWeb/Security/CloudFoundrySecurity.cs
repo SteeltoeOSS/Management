@@ -38,7 +38,7 @@ namespace Steeltoe.Management.Endpoint.Security
         public async Task<bool> IsAccessAllowed(HttpContextBase context, IEndpointOptions target)
         {
             // if running on Cloud Foundry, security is enabled, the path starts with /cloudfoundryapplication...
-            if (Platform.IsCloudFoundry && _options.IsEnabled)
+            if (Platform.IsCloudFoundry && _options.IsEnabled && _base.IsCloudFoundryRequest(context.Request.Path))
             {
                 _logger?.LogTrace("Beginning Cloud Foundry Security Processing");
 

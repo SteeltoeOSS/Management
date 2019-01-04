@@ -38,8 +38,9 @@ namespace Steeltoe.Management.Endpoint.Security
 
         public async Task<bool> IsAccessAllowed(HttpContextBase context, IEndpointOptions target)
         {
-           if (_helper.IsCloudFoundryRequest(context.Request.Path) && _options.IsEnabled)
-            {
+           // If its in cloudfoundry, is not a cloud foundry request && isEnabled
+           if (Platform.IsCloudFoundry && !_helper.IsCloudFoundryRequest(context.Request.Path) && _options.IsEnabled)
+           {
                 _logger?.LogTrace("Beginning Endpoint Security Processing");
 
                 var origin = context.Request.Headers.Get("Origin");

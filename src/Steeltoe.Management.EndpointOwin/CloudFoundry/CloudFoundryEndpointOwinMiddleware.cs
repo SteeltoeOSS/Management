@@ -31,7 +31,7 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
 
         public override async Task Invoke(IOwinContext context)
         {
-            if (!IsCloudFoundryRequest(context))
+            if (!RequestAndPathMatch(context))
             {
                 await Next.Invoke(context);
             }
@@ -56,7 +56,7 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
             return scheme + "://" + request.Host.ToString() + request.Path.ToString();
         }
 
-        private bool IsCloudFoundryRequest(IOwinContext context)
+        private bool RequestAndPathMatch(IOwinContext context)
         {
             var methodMatch = context.Request.Method == "GET";
             var pathMatch = _endpoint.Paths.Any(ep => ep.Equals(context.Request.Path.Value));

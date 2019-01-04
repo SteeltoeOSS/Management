@@ -124,15 +124,7 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
         private IEndpointOptions FindTargetEndpoint(PathString path)
         {
             var configEndpoints = this._options.Global.EndpointOptions;
-            foreach (var ep in configEndpoints)
-            {
-                if (ep.AltPaths.Any(p => path.ToString().EndsWith(p)))
-                {
-                    return ep;
-                }
-            }
-
-            return null;
+            return configEndpoints.FirstOrDefault(ep => ep.Paths.Any(p => p.Equals(path.Value)));
         }
     }
 }

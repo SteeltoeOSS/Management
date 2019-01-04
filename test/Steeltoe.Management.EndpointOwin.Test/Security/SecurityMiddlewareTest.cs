@@ -54,6 +54,7 @@ namespace Steeltoe.Management.Endpoint.Security.Test
         {
             Environment.SetEnvironmentVariable("management__endpoints__enabled", "true");
             Environment.SetEnvironmentVariable("management__endpoints__info__sensitive", "true");
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", "somestuff");
 
             using (var server = TestServer.Create<SecureStartup>())
             {

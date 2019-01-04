@@ -77,7 +77,7 @@ namespace Steeltoe.Management.Endpoint.Test
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
-            TestOptions2 opts = new TestOptions2("management:endpoints:info", config);
+            var opts = new TestOptions2("management:endpoints:info", config);
 
             Assert.NotNull(opts.Global);
             Assert.False(opts.Global.Enabled);
@@ -87,7 +87,10 @@ namespace Steeltoe.Management.Endpoint.Test
             Assert.True(opts.Enabled);
             Assert.False(opts.Sensitive);
             Assert.Equal("infomanagement", opts.Id);
-            Assert.Collection(opts.AltPaths, path => path.Equals("/management/infomanagement"));
+            Assert.Collection(
+                opts.Paths,
+                path => path.Equals("/management/infomanagement"),
+                path => path.Equals("/cloudfoundryapplication/infomanagement"));
             Assert.Equal(Permissions.NONE, opts.RequiredPermissions);
         }
 
@@ -101,11 +104,12 @@ namespace Steeltoe.Management.Endpoint.Test
                 ["management:endpoints:path"] = "/management",
                 ["management:endpoints:info:id"] = "infomanagement"
             };
+
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
-            TestOptions2 opts = new TestOptions2("management:endpoints:info", config);
+            var opts = new TestOptions2("management:endpoints:info", config);
 
             Assert.NotNull(opts.Global);
             Assert.False(opts.Global.Enabled);
@@ -115,10 +119,11 @@ namespace Steeltoe.Management.Endpoint.Test
             Assert.False(opts.Enabled);
             Assert.True(opts.Sensitive);
             Assert.Equal("infomanagement", opts.Id);
-            //Assert.Equal("/management/infomanagement", opts.Path);
-            
-            Assert.Collection(opts.AltPaths, path => path.Equals("/management/infomanagement"));
-            
+
+            Assert.Collection(
+                opts.Paths,
+                path => path.Equals("/management/infomanagement"),
+                path => path.Equals("/cloudfoundryapplication/infomanagement"));
         }
 
         [Fact]

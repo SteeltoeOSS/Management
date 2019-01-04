@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Net;
 using Xunit;
 
@@ -19,6 +20,11 @@ namespace Steeltoe.Management.EndpointWeb.Test
 {
     public class SensitiveEndpointTests
     {
+        public SensitiveEndpointTests()
+        {
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", "somestuff");
+        }
+
         private Settings _defaultSettings = DefaultTestSettingsConfig.DefaultSettings;
 
         [Fact]

@@ -42,6 +42,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
         public async Task Invoke(HttpContext context)
         {
             _logger.LogDebug("Invoke({0})", context.Request.Path.Value);
+
             if (Platform.IsCloudFoundry && _options.IsEnabled && _helper.IsCloudFoundryRequest(context.Request.Path))
             {
                 if (string.IsNullOrEmpty(_options.ApplicationId))
@@ -113,19 +114,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
         private IEndpointOptions FindTargetEndpoint(PathString path)
         {
             var configEndpoints = this._options.Global.EndpointOptions;
-            foreach (var ep in configEndpoints)
-            {
-               
-                 foreach (var p in ep.AltPaths)
-                {
-                    if (path.StartsWithSegments(new PathString(p)))
-                        return ep;
-                }
-
-            }
-
-            return null;
+            return configEndpoints.FirstOrDefault(ep => ep.Paths.Any(p => p.Equals(path.Value)));
         }
     }
 }
-

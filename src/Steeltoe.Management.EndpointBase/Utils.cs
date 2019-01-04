@@ -95,15 +95,14 @@ namespace Steeltoe.Management.EndpointBase
             return null;
         }
 
-        public static string AddPath(this string segment, string other) 
+        public static string AddPath(this string segment, string other)
         {
             if (string.IsNullOrEmpty(other))
             {
                 return segment?.TrimEnd('/');
             }
-            
+
             return $"{segment?.TrimEnd('/')}/{other.TrimStart('/')}";
         }
-
     }
 }

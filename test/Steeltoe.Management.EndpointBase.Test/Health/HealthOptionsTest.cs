@@ -66,7 +66,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             Assert.False(cloudOpts.Sensitive);
             Assert.Equal(string.Empty, cloudOpts.Id);
             Assert.Collection(
-                cloudOpts.AltPaths,
+                cloudOpts.Paths,
                 path => path.Equals("/cloudfoundryapplication"),
                 path => path.Equals("/actuator"));
             Assert.True(cloudOpts.ValidateCertificates);
@@ -75,7 +75,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             Assert.False(opts.Sensitive);
             Assert.Equal("health", opts.Id);
             Assert.Collection(
-                opts.AltPaths, 
+                opts.Paths,
                 path => path.Equals("/cloudfoundryapplication/health"),
                 path => path.Equals("/actuator/health"));
             Assert.Equal(Permissions.NONE, opts.RequiredPermissions);

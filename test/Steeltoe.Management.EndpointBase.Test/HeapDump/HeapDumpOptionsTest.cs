@@ -65,7 +65,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
             Assert.False(cloudOpts.Sensitive);
             Assert.Equal(string.Empty, cloudOpts.Id);
             Assert.Collection(
-                cloudOpts.AltPaths,
+                cloudOpts.Paths,
                 path => path.Equals("/cloudfoundryapplication"),
                 path => path.Equals("/actuator"));
             Assert.True(cloudOpts.ValidateCertificates);
@@ -74,7 +74,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
             Assert.True(opts.Sensitive);
             Assert.Equal("heapdump", opts.Id);
             Assert.Collection(
-                opts.AltPaths, 
+                opts.Paths,
                 path => path.Equals("/cloudfoundryapplication/heapdump"),
                 path => path.Equals("/actuator/heapdump"));
         }

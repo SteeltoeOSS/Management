@@ -102,7 +102,7 @@ namespace Steeltoe.Management.Endpoint.Mappings
            // PathString path = new PathString(_options.Path);
             // TODO : verify mappings
             return // context.Request.Path.Equals(path) || context.Request.Path.Equals(_options.CloudFoundryPath);
-                _options.AltPaths.Any(p => context.Request.Path.Equals(p));
+                _options.Paths.Any(p => context.Request.Path.Equals(p));
         }
 
         protected internal IDictionary<string, IList<MappingDescription>> GetMappingDescriptions(ApiDescriptionProviderContext apiContext)

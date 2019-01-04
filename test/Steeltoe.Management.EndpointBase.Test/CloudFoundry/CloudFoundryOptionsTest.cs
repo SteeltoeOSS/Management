@@ -63,7 +63,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             Assert.False(cloudOpts.Sensitive);
             Assert.Equal(string.Empty, cloudOpts.Id);
             Assert.Collection(
-                cloudOpts.AltPaths, 
+                cloudOpts.Paths,
                 path => path.Equals("/cloudfoundryapplication"),
                 path => path.Equals("/actuator"));
             Assert.False(cloudOpts.ValidateCertificates);
@@ -72,11 +72,9 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             Assert.False(opts.Sensitive);
             Assert.Equal("info", opts.Id);
             Assert.Collection(
-                opts.AltPaths, 
+                opts.Paths,
                 path => path.Equals("/cloudfoundryapplication/info"),
                 path => path.Equals("/actuator/info"));
-
-
         }
     }
 }

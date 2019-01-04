@@ -14,10 +14,9 @@
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.CloudFoundry;
-using Steeltoe.Management.Endpoint.Middleware;
-using Steeltoe.Management.EndpointBase.Security;
-using System;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -42,7 +41,8 @@ namespace Steeltoe.Management.Endpoint.Security
         {
             _logger.LogDebug("Invoke({0})", context.Request.Path.Value);
 
-            if (_helper.IsCloudFoundryRequest(context.Request.Path) && _options.IsEnabled)
+            // is in cloudfoundry, is not a cloud foundry request && isEnabled
+            if (Platform.IsCloudFoundry && _options.IsEnabled && !_helper.IsCloudFoundryRequest(context.Request.Path.Value))
             {
                 IEndpointOptions target = FindTargetEndpoint(context.Request.Path);
                 if (target == null)
@@ -76,16 +76,7 @@ namespace Steeltoe.Management.Endpoint.Security
         private IEndpointOptions FindTargetEndpoint(PathString path)
         {
             var configEndpoints = this._options.Global.EndpointOptions;
-            foreach (var ep in configEndpoints)
-            {
-                PathString epPath = new PathString(ep.Path);
-               if (path.Value == ep.Path)
-                {
-                    return ep;
-                }
-            }
-
-            return null;
+            return configEndpoints.FirstOrDefault(ep => ep.Paths.Any(p => p.Equals(path.Value)));
         }
     }
 }

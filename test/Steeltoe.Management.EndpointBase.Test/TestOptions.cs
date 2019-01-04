@@ -39,7 +39,7 @@ namespace Steeltoe.Management.Endpoint.Test
 
         public List<string> AltIds => throw new System.NotImplementedException();
 
-        public List<string> AltPaths => throw new System.NotImplementedException();
+        public List<string> Paths => throw new System.NotImplementedException();
 
         public bool IsAccessAllowed(Permissions permissions)
         {

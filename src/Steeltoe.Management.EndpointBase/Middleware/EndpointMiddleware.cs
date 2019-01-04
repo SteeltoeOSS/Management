@@ -64,7 +64,6 @@ namespace Steeltoe.Management.Endpoint.Middleware
 
         public virtual bool RequestVerbAndPathMatch(string httpMethod, string requestPath)
         {
-
             return PathMatches(_exactRequestPathMatching, _endpoint.Paths, requestPath)
                  && _endpoint.Enabled
                  && _allowedMethods.Any(m => m.Method.Equals(httpMethod));
