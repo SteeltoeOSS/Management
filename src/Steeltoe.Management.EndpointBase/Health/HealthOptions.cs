@@ -14,6 +14,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.Security;
+using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint.Health
 {
@@ -34,6 +35,11 @@ namespace Steeltoe.Management.Endpoint.Health
             if (string.IsNullOrEmpty(Id))
             {
                 Id = "health";
+            }
+            // Make health endpoint available for Cloud Foundry integration
+            else 
+            {
+                AltIds = new List<string> {"health"};
             }
 
             if (RequiredPermissions == Permissions.UNDEFINED)

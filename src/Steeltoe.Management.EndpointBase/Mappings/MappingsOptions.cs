@@ -14,6 +14,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.Security;
+using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint.Mappings
 {
@@ -34,6 +35,11 @@ namespace Steeltoe.Management.Endpoint.Mappings
             if (string.IsNullOrEmpty(Id))
             {
                 Id = "mappings";
+            } 
+            // Make mappings endpoint available for Cloud Foundry integration
+            else 
+            {
+                AltIds = new List<string> { "mappings" };
             }
 
             if (RequiredPermissions == Permissions.UNDEFINED)

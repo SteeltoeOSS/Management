@@ -44,16 +44,9 @@ namespace Steeltoe.Management.Endpoint.Security
             // is in cloudfoundry, is not a cloud foundry request && isEnabled
             if (Platform.IsCloudFoundry && _options.IsEnabled && !_helper.IsCloudFoundryRequest(context.Request.Path.Value))
             {
-                IEndpointOptions target = FindTargetEndpoint(context.Request.Path);
-                if (target == null)
-                {
-                    await _helper.ReturnError(
-                        context,
-                        new SecurityResult(HttpStatusCode.ServiceUnavailable, _helper.ENDPOINT_NOT_CONFIGURED_MESSAGE));
-                    return;
-                }
+                var target = FindTargetEndpoint(context.Request.Path);
 
-                if (target.IsSensitive && !HasSensitiveClaim(context))
+                if (target != null && target.IsSensitive && !HasSensitiveClaim(context))
                 {
                     await _helper.ReturnError(
                         context,
@@ -75,7 +68,7 @@ namespace Steeltoe.Management.Endpoint.Security
 
         private IEndpointOptions FindTargetEndpoint(PathString path)
         {
-            var configEndpoints = this._options.Global.EndpointOptions;
+            var configEndpoints = _options.Global.EndpointOptions;
             return configEndpoints.FirstOrDefault(ep => ep.Paths.Any(p => p.Equals(path.Value)));
         }
     }

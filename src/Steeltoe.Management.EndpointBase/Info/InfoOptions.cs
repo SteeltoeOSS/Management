@@ -14,6 +14,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.Security;
+using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint.Info
 {
@@ -35,6 +36,12 @@ namespace Steeltoe.Management.Endpoint.Info
             {
                 Id = "info";
             }
+            // Make info endpoint available for Cloud Foundry integration
+            else 
+            {
+                AltIds = new List<string> {"info"};
+            }
+
 
             if (RequiredPermissions == Permissions.UNDEFINED)
             {

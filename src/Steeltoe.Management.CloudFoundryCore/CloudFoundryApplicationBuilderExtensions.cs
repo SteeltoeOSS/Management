@@ -22,6 +22,7 @@ using Steeltoe.Management.Endpoint.Mappings;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
 using System;
+using Steeltoe.Management.Endpoint.Security;
 
 namespace Steeltoe.Management.CloudFoundry
 {
@@ -41,6 +42,7 @@ namespace Steeltoe.Management.CloudFoundry
             });
 
             app.UseCloudFoundrySecurity();
+            app.UseEndpointSecurity();
             app.UseCloudFoundryActuator();
 
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)

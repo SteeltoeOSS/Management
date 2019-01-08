@@ -14,6 +14,7 @@
 
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry
 {
@@ -57,18 +58,24 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
                 }
                 else
                 {
-                    if (!string.IsNullOrEmpty(opt.Id) && !links._links.ContainsKey(opt.Id))
+                    var ids = new List<string> {opt.Id};
+                    opt.AltIds?.ForEach(id => ids.Add(id));
+                    ids.ForEach(id =>
                     {
-                        links._links.Add(opt.Id, new Link(baseUrl + "/" + opt.Id));
-                    }
-                    else if (links._links.ContainsKey(opt.Id))
-                    {
-                        _logger?.LogWarning("Duplicate endpoint id detected: {DuplicateEndpointId}", opt.Id);
-                    }
+                        if (!links._links.ContainsKey(id))
+                        {
+                            links._links.Add(id, new Link(baseUrl + "/" + id));
+                        }
+                        else
+                        {
+                            _logger?.LogWarning("Duplicate endpoint id detected: {DuplicateEndpointId}", id);
+                        }
+                    });
                 }
             }
 
             return links;
         }
+        
     }
 }

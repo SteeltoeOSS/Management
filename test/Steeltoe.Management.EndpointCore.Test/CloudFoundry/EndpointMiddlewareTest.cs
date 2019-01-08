@@ -22,7 +22,10 @@ using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
@@ -103,6 +106,58 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
                 Assert.Equal("{\"type\":\"steeltoe\",\"_links\":{\"self\":{\"href\":\"http://localhost/cloudfoundryapplication\"},\"info\":{\"href\":\"http://localhost/cloudfoundryapplication/info\"}}}", json);
             }
         }
+        
+        [Fact]
+        public async void CloudFoundryEndpointMiddleware_RespondsToCloudFoundryPathWhenNotConfigured()
+        {
+            // arrange a server and client
+            var builder = new WebHostBuilder()
+                .UseStartup<Startup>();
+            
+            using (var server = new TestServer(builder))
+            {
+                var client = server.CreateClient();
+
+                // send the request
+                var result = await client.GetAsync("http://localhost/cloudfoundryapplication");
+                var json = await result.Content.ReadAsStringAsync();
+
+                // assert
+                Assert.Equal("{\"type\":\"steeltoe\",\"_links\":{\"self\":{\"href\":\"http://localhost/cloudfoundryapplication\"},\"info\":{\"href\":\"http://localhost/cloudfoundryapplication/info\"}}}", json);
+            }
+        }
+        
+        [Theory]
+        [InlineData("/cloudfoundryapplication/info")]
+        [InlineData("/actuator/myinfo")]
+        [InlineData("/cloudfoundryapplication/health")]
+        [InlineData("/actuator/myhealth")]
+        [InlineData("/cloudfoundryapplication/mappings")]
+        [InlineData("/actuator/mymappings")]
+        public async void CloudFoundryEndpointMiddleware_RespectsAllExpectedPaths(string path)
+        {
+            var appSettings = new Dictionary<string, string>()
+            {
+                ["management:endpoints:info:id"] = "myinfo",
+                ["management:endpoints:health:id"] = "myhealth",
+                ["management:endpoints:mappings:id"] = "mymappings"
+            };
+            
+            // arrange a server and client
+            var builder = new WebHostBuilder()
+                .UseStartup<StartupCloudFoundryActuators>()
+                .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appSettings));
+
+            using (var server = new TestServer(builder))
+            {
+                var client = server.CreateClient();
+
+                // send the request
+                var result = await client.GetAsync("http://localhost" + path);
+                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+            }
+        }
+       
 
         [Fact]
         public void CloudFoundryEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
