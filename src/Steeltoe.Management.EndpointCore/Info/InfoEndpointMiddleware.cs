@@ -24,6 +24,12 @@ namespace Steeltoe.Management.Endpoint.Info
     {
         private RequestDelegate _next;
 
+        public InfoEndpointMiddleware(RequestDelegate next, InfoEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<InfoEndpointMiddleware> logger = null)
+        : base(endpoint, logger: logger)
+        {
+            _next = next;
+        }
+
         public InfoEndpointMiddleware(RequestDelegate next, InfoEndpoint endpoint, ILogger<InfoEndpointMiddleware> logger = null)
             : base(endpoint, logger: logger)
         {

@@ -33,7 +33,8 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
                 throw new ArgumentNullException(nameof(config));
             }
 
-            services.TryAddSingleton<ICloudFoundryOptions>(new CloudFoundryOptions(config));
+            //services.TryAddSingleton<ICloudFoundryOptions>(new CloudFoundryOptions(config));
+
             services.TryAddSingleton<CloudFoundryEndpoint>();
         }
     }

@@ -14,6 +14,8 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.HeapDump;
@@ -30,6 +32,9 @@ namespace Steeltoe.Management.CloudFoundry
     {
         public static void AddCloudFoundryActuators(this IServiceCollection services, IConfiguration config)
         {
+            var managmentOptions = new CloudFoundryManagementOptions(config);
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(managmentOptions));
+
             services.AddCors();
             services.AddCloudFoundryActuator(config);
 
@@ -39,7 +44,7 @@ namespace Steeltoe.Management.CloudFoundry
                 services.AddHeapDumpActuator(config);
             }
 
-            services.AddInfoActuator(config);
+            services.AddInfoActuator(config, typeof(CloudFoundryManagementOptions));
             services.AddHealthActuator(config);
             services.AddLoggersActuator(config);
             services.AddTraceActuator(config);

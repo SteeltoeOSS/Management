@@ -28,6 +28,13 @@ namespace Steeltoe.Management.Endpoint.Info
             RequiredPermissions = Permissions.RESTRICTED;
         }
 
+        //public InfoOptions(IConfiguration config, IManagementOptions managementOptions)
+        //    : this(config)
+        //{
+        //    // Global = managementOptions;
+        //    // managementOptions.EndpointOptions.Add(this);
+        //}
+
         public InfoOptions(IConfiguration config)
             : base(MANAGEMENT_INFO_PREFIX, config)
         {

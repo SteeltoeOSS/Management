@@ -28,13 +28,13 @@ namespace Steeltoe.Management.Endpoint
         private bool? _enabled;
         private bool? _sensitive;
 
-        internal ManagementOptions()
+        public ManagementOptions()
         {
             Path = DEFAULT_PATH;
             EndpointOptions = new List<IEndpointOptions>();
         }
 
-        internal ManagementOptions(IConfiguration config)
+        public ManagementOptions(IConfiguration config)
             : this()
         {
             if (config == null)

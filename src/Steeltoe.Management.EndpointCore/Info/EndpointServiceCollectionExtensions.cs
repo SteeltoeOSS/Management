@@ -18,6 +18,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Management.Endpoint.Info.Contributor;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Steeltoe.Management.Endpoint.Info
 {
@@ -41,6 +42,11 @@ namespace Steeltoe.Management.Endpoint.Info
         /// <param name="contributors">Contributors to application information</param>
         public static void AddInfoActuator(this IServiceCollection services, IConfiguration config, params IInfoContributor[] contributors)
         {
+            services.AddInfoActuator(config, typeof(ActuatorManagementOptions), contributors);
+        }
+
+        public static void AddInfoActuator(this IServiceCollection services, IConfiguration config, Type mgmtOptionsType, params IInfoContributor[] contributors)
+        {
             if (services == null)
             {
                 throw new ArgumentNullException(nameof(services));
@@ -51,7 +57,18 @@ namespace Steeltoe.Management.Endpoint.Info
                 throw new ArgumentNullException(nameof(config));
             }
 
-            services.TryAddSingleton<IInfoOptions>(new InfoOptions(config));
+            services.TryAddSingleton<IInfoOptions>(provider =>
+            {
+                provider.Configure(name, (option) =>
+                {
+
+                }
+                var mgmtOptions = provider.GetServices<IManagementOptions>().Where((o) => o.GetType() == mgmtOptionsType).Select(o => o).Single();
+                var opts = new InfoOptions(config);
+                mgmtOptions.EndpointOptions.Add(opts);
+                return opts;
+            });
+
             AddContributors(services, contributors);
             services.TryAddSingleton<InfoEndpoint>();
         }
