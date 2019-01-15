@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Steeltoe.Management.Endpoint.Security;
+using System;
 
 namespace Steeltoe.Management.Endpoint
 {
@@ -26,6 +27,7 @@ namespace Steeltoe.Management.Endpoint
 
         bool? Sensitive { get;  }
 
+        [Obsolete]
         IManagementOptions Global { get; }
 
         string Id { get;  }

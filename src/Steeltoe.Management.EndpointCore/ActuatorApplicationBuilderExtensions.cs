@@ -17,7 +17,7 @@ namespace Steeltoe.Management.Endpoint
             //});
 
             //app.UseAcuatorSecurity();
-            //app.UseActuatorActuator();
+            //app.UseDiscoveryActuator();
 
             //app.UseInfoActuator();
             //app.UseHealthActuator();

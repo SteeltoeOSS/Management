@@ -59,12 +59,8 @@ namespace Steeltoe.Management.Endpoint.Info
 
             services.TryAddSingleton<IInfoOptions>(provider =>
             {
-                provider.Configure(name, (option) =>
-                {
-
-                }
                 var mgmtOptions = provider.GetServices<IManagementOptions>().Where((o) => o.GetType() == mgmtOptionsType).Select(o => o).Single();
-                var opts = new InfoOptions(config);
+                var opts = new InfoEndpointOptions(config);
                 mgmtOptions.EndpointOptions.Add(opts);
                 return opts;
             });

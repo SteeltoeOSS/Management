@@ -19,6 +19,7 @@ using System.Diagnostics;
 
 namespace Steeltoe.Management.Endpoint
 {
+    [Obsolete]
     public class ManagementOptions : IManagementOptions
     {
         internal static ManagementOptions _instance;

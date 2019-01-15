@@ -14,26 +14,20 @@
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
+using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Middleware;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Management.Endpoint.Info
+namespace Steeltoe.Management.Endpoint.Discovery
 {
-    public class InfoEndpointMiddleware : EndpointMiddleware<Dictionary<string, object>>
+    public class ActuatorDiscoveryEndpointMiddleware : EndpointMiddleware<Links, string>
     {
         private RequestDelegate _next;
 
-        public InfoEndpointMiddleware(RequestDelegate next, InfoEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<InfoEndpointMiddleware> logger = null)
+        public ActuatorDiscoveryEndpointMiddleware(RequestDelegate next, ActuatorDiscoveryEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<ActuatorDiscoveryEndpointMiddleware> logger = null)
             : base(endpoint, mgmtOptions, logger: logger)
-        {
-            _next = next;
-        }
-
-        [Obsolete]
-        public InfoEndpointMiddleware(RequestDelegate next, InfoEndpoint endpoint, ILogger<InfoEndpointMiddleware> logger = null)
-            : base(endpoint, logger: logger)
         {
             _next = next;
         }
@@ -42,7 +36,7 @@ namespace Steeltoe.Management.Endpoint.Info
         {
             if (RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
             {
-                await HandleInfoRequestAsync(context);
+                await HandleCloudFoundryRequestAsync(context);
             }
             else
             {
@@ -50,12 +44,24 @@ namespace Steeltoe.Management.Endpoint.Info
             }
         }
 
-        protected internal async Task HandleInfoRequestAsync(HttpContext context)
+        protected internal async Task HandleCloudFoundryRequestAsync(HttpContext context)
         {
-            var serialInfo = HandleRequest();
+            var serialInfo = HandleRequest(GetRequestUri(context.Request));
             _logger?.LogDebug("Returning: {0}", serialInfo);
-            context.Response.Headers.Add("Content-Type", "application/vnd.spring-boot.actuator.v1+json");
+            context.Response.Headers.Add("Content-Type", "application/json;charset=UTF-8");
             await context.Response.WriteAsync(serialInfo);
+        }
+
+        protected internal string GetRequestUri(HttpRequest request)
+        {
+            string scheme = request.Scheme;
+
+            if (request.Headers.TryGetValue("X-Forwarded-Proto", out StringValues headerScheme))
+            {
+                scheme = headerScheme.ToString();
+            }
+
+            return scheme + "://" + request.Host.ToString() + request.Path.ToString();
         }
     }
 }

@@ -13,34 +13,22 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
-using Steeltoe.Management.Endpoint.Discovery;
+using Steeltoe.Management.Endpoint.CloudFoundry;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Steeltoe.Management.Endpoint.CloudFoundry
+namespace Steeltoe.Management.Endpoint.Discovery
 {
-    public class CloudFoundryEndpoint : AbstractEndpoint<Links, string>
+    public class ActuatorDiscoveryEndpoint : AbstractEndpoint<Links, string>
     {
-        private ILogger<CloudFoundryEndpoint> _logger;
+        private ILogger<ActuatorDiscoveryEndpoint> _logger;
         private IManagementOptions _mgmtOption;
 
-        public CloudFoundryEndpoint(ICloudFoundryOptions options, IEnumerable<IManagementOptions> mgmtOptions, ILogger<CloudFoundryEndpoint> logger = null)
+        public ActuatorDiscoveryEndpoint(ICloudFoundryOptions options, IEnumerable<IManagementOptions> mgmtOptions, ILogger<ActuatorDiscoveryEndpoint> logger = null)
         : base(options)
         {
-            _mgmtOption = mgmtOptions.OfType<CloudFoundryManagementOptions>().Single();
-            _logger = logger;
-        }
-
-        [Obsolete]
-        public CloudFoundryEndpoint(ICloudFoundryOptions options, ILogger<CloudFoundryEndpoint> logger = null)
-            : base(options)
-        {
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
-
+            _mgmtOption = mgmtOptions.OfType<ActuatorManagementOptions>().Single();
             _logger = logger;
         }
 

@@ -14,9 +14,11 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.Security;
+using System;
 
 namespace Steeltoe.Management.Endpoint.Info
 {
+    [Obsolete]
     public class InfoOptions : AbstractOptions, IInfoOptions
     {
         private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:info";
@@ -27,13 +29,6 @@ namespace Steeltoe.Management.Endpoint.Info
             Id = "info";
             RequiredPermissions = Permissions.RESTRICTED;
         }
-
-        //public InfoOptions(IConfiguration config, IManagementOptions managementOptions)
-        //    : this(config)
-        //{
-        //    // Global = managementOptions;
-        //    // managementOptions.EndpointOptions.Add(this);
-        //}
 
         public InfoOptions(IConfiguration config)
             : base(MANAGEMENT_INFO_PREFIX, config)
