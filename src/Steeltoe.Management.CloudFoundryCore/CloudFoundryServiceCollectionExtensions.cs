@@ -32,6 +32,16 @@ namespace Steeltoe.Management.CloudFoundry
     {
         public static void AddCloudFoundryActuators(this IServiceCollection services, IConfiguration config)
         {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            if (config == null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
+
             var managmentOptions = new CloudFoundryManagementOptions(config);
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(managmentOptions));
 
@@ -44,7 +54,7 @@ namespace Steeltoe.Management.CloudFoundry
                 services.AddHeapDumpActuator(config);
             }
 
-            services.AddInfoActuator(config, typeof(CloudFoundryManagementOptions));
+            services.AddInfoActuator(config);
             services.AddHealthActuator(config);
             services.AddLoggersActuator(config);
             services.AddTraceActuator(config);

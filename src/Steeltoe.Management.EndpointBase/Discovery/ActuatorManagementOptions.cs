@@ -9,10 +9,14 @@ namespace Steeltoe.Management.Endpoint.Discovery
     {
         private const string DEFAULT_ACTUATOR_PATH = "/actuator";
 
+        public ActuatorManagementOptions()
+        {
+            Path = DEFAULT_ACTUATOR_PATH;
+        }
+
         public ActuatorManagementOptions(IConfiguration config)
             : base(config)
         {
-            Path = DEFAULT_ACTUATOR_PATH;
         }
     }
 }

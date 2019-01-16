@@ -35,6 +35,19 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
 
             //services.TryAddSingleton<ICloudFoundryOptions>(new CloudFoundryOptions(config));
 
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new CloudFoundryManagementOptions(config)));
+
+            services.TryAddSingleton<ICloudFoundryOptions>(provider =>
+            {
+                var mgmtOptions = provider.GetServices<IManagementOptions>();
+                var opts = new CloudFoundryEndpointOptions(config);
+                foreach (var mgmt in mgmtOptions)
+                {
+                    mgmt.EndpointOptions.Add(opts);
+                }
+                return opts;
+            });
+
             services.TryAddSingleton<CloudFoundryEndpoint>();
         }
     }

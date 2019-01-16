@@ -28,7 +28,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
         public CloudFoundryEndpoint(ICloudFoundryOptions options, IEnumerable<IManagementOptions> mgmtOptions, ILogger<CloudFoundryEndpoint> logger = null)
         : base(options)
         {
-            _mgmtOption = mgmtOptions.OfType<CloudFoundryManagementOptions>().Single();
+            _mgmtOption = mgmtOptions.OfType<CloudFoundryManagementOptions>().SingleOrDefault();
             _logger = logger;
         }
 
@@ -48,8 +48,49 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
 
         public override Links Invoke(string baseUrl)
         {
-            DiscoveryService discoveryService = new DiscoveryService(_mgmtOption, _logger);
-            return discoveryService.Invoke(baseUrl);
+            if (_mgmtOption != null)
+            {
+                DiscoveryService discoveryService = new DiscoveryService(_mgmtOption, options, _logger);
+                return discoveryService.Invoke(baseUrl);
+            }
+
+            // TODO: The below code will be removed in 3.0
+            else
+            {
+                var endpointOptions = Options.Global.EndpointOptions;
+                var links = new Links();
+
+                if (!Options.Enabled.Value)
+                {
+                    return links;
+                }
+
+                foreach (var opt in endpointOptions)
+                {
+                    if (!opt.Enabled.Value)
+                    {
+                        continue;
+                    }
+
+                    if (opt == Options)
+                    {
+                        links._links.Add("self", new Link(baseUrl));
+                    }
+                    else
+                    {
+                        if (!string.IsNullOrEmpty(opt.Id) && !links._links.ContainsKey(opt.Id))
+                        {
+                            links._links.Add(opt.Id, new Link(baseUrl + "/" + opt.Id));
+                        }
+                        else if (links._links.ContainsKey(opt.Id))
+                        {
+                            _logger?.LogWarning("Duplicate endpoint id detected: {DuplicateEndpointId}", opt.Id);
+                        }
+                    }
+                }
+
+                return links;
+            }
         }
     }
 }

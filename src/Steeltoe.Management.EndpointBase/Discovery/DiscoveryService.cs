@@ -21,17 +21,19 @@ namespace Steeltoe.Management.Endpoint.Discovery
     public class DiscoveryService
     {
         private ILogger _logger;
-        private IManagementOptions _options;
+        private IManagementOptions _mgmtOptions;
+        private IEndpointOptions _options;
 
-        public DiscoveryService(IManagementOptions options, ILogger logger = null)
+        public DiscoveryService(IManagementOptions mgmtOptions, IEndpointOptions discoveryOptions, ILogger logger = null)
         {
             _logger = logger;
-            _options = options ?? throw new ArgumentNullException(nameof(options));
+            _mgmtOptions = mgmtOptions ?? throw new ArgumentNullException(nameof(mgmtOptions));
+            _options = discoveryOptions ?? throw new ArgumentNullException(nameof(discoveryOptions));
         }
 
         public Links Invoke(string baseUrl)
         {
-            var endpointOptions = _options.EndpointOptions;
+            var endpointOptions = _mgmtOptions.EndpointOptions;
             var links = new Links();
 
             if (!_options.Enabled.Value)
@@ -54,7 +56,7 @@ namespace Steeltoe.Management.Endpoint.Discovery
                 {
                     if (!string.IsNullOrEmpty(opt.Id) && !links._links.ContainsKey(opt.Id))
                     {
-                        links._links.Add(opt.Id, new Link(baseUrl + "/" + opt.Id));
+                        links._links.Add(opt.Id, new Link(baseUrl + "/" + opt.Path));
                     }
                     else if (links._links.ContainsKey(opt.Id))
                     {

@@ -15,6 +15,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Steeltoe.Management.Endpoint.Discovery;
 using Steeltoe.Management.Endpoint.Info.Contributor;
 using System;
 using System.Collections.Generic;
@@ -40,12 +41,24 @@ namespace Steeltoe.Management.Endpoint.Info
         /// <param name="services">Service collection to add info to</param>
         /// <param name="config">Application configuration (this actuator looks for a settings starting with management:endpoints:info)</param>
         /// <param name="contributors">Contributors to application information</param>
-        public static void AddInfoActuator(this IServiceCollection services, IConfiguration config, params IInfoContributor[] contributors)
-        {
-            services.AddInfoActuator(config, typeof(ActuatorManagementOptions), contributors);
-        }
+        //public static void AddInfoActuator(this IServiceCollection services, IConfiguration config, params IInfoContributor[] contributors)
+        //{
+        //    if (services == null)
+        //    {
+        //        throw new ArgumentNullException(nameof(services));
+        //    }
 
-        public static void AddInfoActuator(this IServiceCollection services, IConfiguration config, Type mgmtOptionsType, params IInfoContributor[] contributors)
+        //    if (config == null)
+        //    {
+        //        throw new ArgumentNullException(nameof(config));
+        //    }
+
+        //    services.TryAddSingleton<IInfoOptions>(new InfoOptions(config));
+        //    AddContributors(services, contributors);
+        //    services.TryAddSingleton<InfoEndpoint>();
+        //}
+
+        public static void AddInfoActuator(this IServiceCollection services, IConfiguration config, params IInfoContributor[] contributors)
         {
             if (services == null)
             {
@@ -57,11 +70,16 @@ namespace Steeltoe.Management.Endpoint.Info
                 throw new ArgumentNullException(nameof(config));
             }
 
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
+
             services.TryAddSingleton<IInfoOptions>(provider =>
             {
-                var mgmtOptions = provider.GetServices<IManagementOptions>().Where((o) => o.GetType() == mgmtOptionsType).Select(o => o).Single();
+                var mgmtOptions = provider.GetServices<IManagementOptions>();
                 var opts = new InfoEndpointOptions(config);
-                mgmtOptions.EndpointOptions.Add(opts);
+                foreach (var mgmt in mgmtOptions)
+                {
+                    mgmt.EndpointOptions.Add(opts);
+                }
                 return opts;
             });
 

@@ -25,7 +25,7 @@ namespace Steeltoe.Management.Endpoint.Discovery
         private ILogger<ActuatorDiscoveryEndpoint> _logger;
         private IManagementOptions _mgmtOption;
 
-        public ActuatorDiscoveryEndpoint(ICloudFoundryOptions options, IEnumerable<IManagementOptions> mgmtOptions, ILogger<ActuatorDiscoveryEndpoint> logger = null)
+        public ActuatorDiscoveryEndpoint(IActuatorDiscoveryOptions options, IEnumerable<IManagementOptions> mgmtOptions, ILogger<ActuatorDiscoveryEndpoint> logger = null)
         : base(options)
         {
             _mgmtOption = mgmtOptions.OfType<ActuatorManagementOptions>().Single();
@@ -36,7 +36,7 @@ namespace Steeltoe.Management.Endpoint.Discovery
 
         public override Links Invoke(string baseUrl)
         {
-            DiscoveryService discoveryService = new DiscoveryService(_mgmtOption, _logger);
+            DiscoveryService discoveryService = new DiscoveryService(_mgmtOption, options, _logger);
             return discoveryService.Invoke(baseUrl);
         }
     }

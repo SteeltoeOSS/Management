@@ -115,7 +115,7 @@ namespace Steeltoe.Management.Endpoint
 
         public Permissions RequiredPermissions { get; set; } = Permissions.UNDEFINED;
 
-        public IManagementOptions Global => throw new NotImplementedException();
+        public IManagementOptions Global { get; set; }
 
         public virtual bool IsAccessAllowed(Permissions permissions)
         {

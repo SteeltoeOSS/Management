@@ -29,7 +29,7 @@ namespace Steeltoe.Management.Endpoint.Middleware
         protected ILogger _logger;
         protected IEnumerable<HttpMethod> _allowedMethods;
         protected bool _exactRequestPathMatching;
-        protected IEnumerable<IManagementOptions> _mgmtOptions;
+        protected IList<IManagementOptions> _mgmtOptions;
 
         [Obsolete]
         public EndpointMiddleware(IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
@@ -50,8 +50,16 @@ namespace Steeltoe.Management.Endpoint.Middleware
         {
             _allowedMethods = allowedMethods ?? new List<HttpMethod> { HttpMethod.Get };
             _exactRequestPathMatching = exactRequestPathMatching;
-            _mgmtOptions = mgmtOptions ?? throw new ArgumentNullException(nameof(mgmtOptions));
             _logger = logger;
+
+            if (mgmtOptions == null)
+            {
+                throw new ArgumentNullException(nameof(mgmtOptions));
+            }
+
+            var mOptions = mgmtOptions.ToList();
+            _mgmtOptions = mOptions.Count > 0 ? mOptions : null;
+
         }
 
         public EndpointMiddleware(IEndpoint<TResult> endpoint, IEnumerable<IManagementOptions> mgmtOptions, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
@@ -60,7 +68,14 @@ namespace Steeltoe.Management.Endpoint.Middleware
             _exactRequestPathMatching = exactRequestPathMatching;
             _logger = logger;
             _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
-            _mgmtOptions = mgmtOptions ?? throw new ArgumentNullException(nameof(mgmtOptions));
+
+            if (mgmtOptions == null)
+            {
+                throw new ArgumentNullException(nameof(mgmtOptions));
+            }
+
+            var mOptions = mgmtOptions.ToList();
+            _mgmtOptions = mOptions.Count > 0 ? mOptions : null;
         }
 
         internal IEndpoint<TResult> Endpoint
@@ -124,44 +139,79 @@ namespace Steeltoe.Management.Endpoint.Middleware
         {
             matchingMgmtContext = null;
 
-            //if (_mgmtOptions == null)
-            //{
-            //    return requestPath.Equals(_endpoint.Path);
-            //}
-            //else
-            //{
-            //    TODO: make endpoint path from endpoint and each mgmtOptions and check, return matching mgmt context
-            //}
-            return false;
+            if (_mgmtOptions == null)
+            {
+                return requestPath.Equals(_endpoint.Path);
+            }
+            else
+            {
+                foreach (var context in _mgmtOptions)
+                {
+                    var contextPath = context.Path;
+                    if (!contextPath.EndsWith("/") && !string.IsNullOrEmpty(_endpoint.Path))
+                    {
+                        contextPath += "/";
+                    }
+
+                    var fullPath = contextPath + _endpoint.Path;
+                    if (requestPath.Equals(fullPath))
+                    {
+                        matchingMgmtContext = context;
+                        return true;
+                    }
+                }
+
+                return false;
+            }
         }
 
         protected virtual bool RequestPathStartWith(string requestPath, out IManagementOptions matchingMgmtContext)
         {
             matchingMgmtContext = null;
 
-            //if (_mgmtOptions == null)
-            //{
-            //    return requestPath.StartsWith(_endpoint.Path);
-            //}
-            //else
-            //{
-            //    TODO: make endpoint path from endpoint and each mgmtOptions and check, return matching mgmt context
-            //}
+            if (_mgmtOptions == null)
+            {
+                return requestPath.StartsWith(_endpoint.Path);
+            }
+            else
+            {
+                foreach (var context in _mgmtOptions)
+                {
+                    var contextPath = context.Path;
+                    if (!contextPath.EndsWith("/") && !string.IsNullOrEmpty(_endpoint.Path))
+                    {
+                        contextPath += "/";
+                    }
 
-            return false;
+                    var fullPath = contextPath + _endpoint.Path;
+                    if (requestPath.StartsWith(fullPath))
+                    {
+                        matchingMgmtContext = context;
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
         }
 
         protected virtual bool IsEnabled(IManagementOptions mgmtContext)
         {
-            //if (_mgmtOptions == null)
-            //{
-            //    return _endpoint.Enabled;
-            //}
-            //else
-            //{
-            //    TODO: Check endpoint enabled and mgmtContext enabled
-            //}
-            return false;
+            if (mgmtContext == null)
+            {
+                return _endpoint.Enabled;
+            }
+            else
+            {
+                // TODO: Not sure this logic is correct!
+                if (_endpoint.Enabled)
+                {
+                    return true;
+                }
+
+                return mgmtContext.Enabled.Value;
+            }
         }
     }
 
@@ -206,6 +256,84 @@ namespace Steeltoe.Management.Endpoint.Middleware
                   && _allowedMethods.Any(m => m.Method.Equals(httpMethod));
         }
 
+        protected override bool RequestPathMatch(string requestPath, out IManagementOptions matchingMgmtContext)
+        {
+            matchingMgmtContext = null;
+
+            if (_mgmtOptions == null)
+            {
+                return requestPath.Equals(_endpoint.Path);
+            }
+            else
+            {
+                foreach (var context in _mgmtOptions)
+                {
+                    var contextPath = context.Path;
+                    if (!contextPath.EndsWith("/") && !string.IsNullOrEmpty(_endpoint.Path))
+                    {
+                        contextPath += "/";
+                    }
+
+                    var fullPath = contextPath + _endpoint.Path;
+                    if (requestPath.Equals(fullPath))
+                    {
+                        matchingMgmtContext = context;
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+        }
+
+        protected override bool RequestPathStartWith(string requestPath, out IManagementOptions matchingMgmtContext)
+        {
+            matchingMgmtContext = null;
+
+            if (_mgmtOptions == null)
+            {
+                return requestPath.StartsWith(_endpoint.Path);
+            }
+            else
+            {
+                foreach (var context in _mgmtOptions)
+                {
+                    var contextPath = context.Path;
+                    if (!contextPath.EndsWith("/") && !string.IsNullOrEmpty(_endpoint.Path))
+                    {
+                        contextPath += "/";
+                    }
+
+                    var fullPath = contextPath + _endpoint.Path;
+                    if (requestPath.StartsWith(fullPath))
+                    {
+                        matchingMgmtContext = context;
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
+        }
+
+        protected override bool IsEnabled(IManagementOptions mgmtContext)
+        {
+            if (mgmtContext == null)
+            {
+                return _endpoint.Enabled;
+            }
+            else
+            {
+                // TODO: Not sure this logic is correct!
+                if (_endpoint.Enabled)
+                {
+                    return true;
+                }
+
+                return mgmtContext.Enabled.Value;
+            }
+        }
     }
 #pragma warning restore SA1402 // File may only contain a single class
 }
