@@ -17,6 +17,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using Steeltoe.Common;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -28,7 +30,18 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
         private ILogger<CloudFoundrySecurityMiddleware> _logger;
         private ICloudFoundryOptions _options;
         private SecurityBase _base;
+        private IManagementOptions _mgmtOptions;
 
+        public CloudFoundrySecurityMiddleware(RequestDelegate next, ICloudFoundryOptions options, IEnumerable<IManagementOptions> mgmtOptions, ILogger<CloudFoundrySecurityMiddleware> logger = null)
+        {
+            _next = next;
+            _logger = logger;
+            _options = options;
+            _base = new SecurityBase(options, logger);
+            _mgmtOptions = mgmtOptions.OfType<CloudFoundryManagementOptions>().SingleOrDefault();
+        }
+
+        [Obsolete]
         public CloudFoundrySecurityMiddleware(RequestDelegate next, ICloudFoundryOptions options, ILogger<CloudFoundrySecurityMiddleware> logger)
         {
             _next = next;
@@ -102,10 +115,11 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
 
         private IEndpointOptions FindTargetEndpoint(PathString path)
         {
-            var configEndpoints = this._options.Global.EndpointOptions;
+            var configEndpoints = GetEndpointOptions();
             foreach (var ep in configEndpoints)
             {
-                PathString epPath = new PathString(ep.Path);
+                var epPathString = ep.Path.StartsWith("/") ? ep.Path : "/" + ep.Path;
+                PathString epPath = new PathString(epPathString);
                 if (path.StartsWithSegments(epPath))
                 {
                     return ep;
@@ -132,6 +146,18 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
                 {
                     _logger.LogTrace("Header: {0} - {1}", header.Key, header.Value);
                 }
+            }
+        }
+
+        private List<IEndpointOptions> GetEndpointOptions()
+        {
+            if (_mgmtOptions == null)
+            {
+                return this._options.Global.EndpointOptions;
+            }
+            else
+            {
+                return _mgmtOptions.EndpointOptions;
             }
         }
     }
