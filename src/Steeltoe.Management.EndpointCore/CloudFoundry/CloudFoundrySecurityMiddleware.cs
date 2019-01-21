@@ -32,29 +32,21 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
         private IManagementOptions _mgmtOptions;
         private SecurityBase _base;
 
-        public CloudFoundrySecurityMiddleware(RequestDelegate next, ICloudFoundryOptions options, IEnumerable<IManagementOptions> mgmtOptions, ILogger<CloudFoundrySecurityMiddleware> logger)
+        public CloudFoundrySecurityMiddleware(RequestDelegate next, ICloudFoundryOptions options, IEnumerable<IManagementOptions> mgmtOptions, ILogger<CloudFoundrySecurityMiddleware> logger = null)
         {
             _next = next;
             _logger = logger;
             _options = options;
-            
-            if (mgmtOptions == null)
-            {
-                throw new ArgumentNullException(nameof(mgmtOptions));
-            }
-
-            _mgmtOptions = mgmtOptions.OfType<CloudFoundryManagementOptions>().Single();
-           _base = new SecurityBase(options, _mgmtOptions, logger);
+            _base = new SecurityBase(options, logger);
+            _mgmtOptions = mgmtOptions.OfType<CloudFoundryManagementOptions>().SingleOrDefault();
         }
-        
+
         [Obsolete]
         public CloudFoundrySecurityMiddleware(RequestDelegate next, ICloudFoundryOptions options, ILogger<CloudFoundrySecurityMiddleware> logger)
         {
             _next = next;
             _logger = logger;
             _options = options;
-            
-          
             _base = new SecurityBase(options, logger);
         }
 
@@ -120,7 +112,6 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             return null;
         }
 
-        
         internal async Task<SecurityResult> GetPermissions(HttpContext context)
         {
             string token = GetAccessToken(context.Request);
@@ -164,7 +155,6 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             }
 
             return null;
-
         }
 
         private async Task ReturnError(HttpContext context, SecurityResult error)
