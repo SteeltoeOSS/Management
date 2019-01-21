@@ -16,6 +16,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
+using Steeltoe.Management.Endpoint.Discovery;
+using Steeltoe.Management.Endpoint.Info;
 
 namespace Steeltoe.Management.Endpoint.Loggers
 {
@@ -38,7 +40,21 @@ namespace Steeltoe.Management.Endpoint.Loggers
                 throw new ArgumentNullException(nameof(config));
             }
 
-            services.TryAddSingleton<ILoggersOptions>(new LoggersOptions(config));
+            
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
+
+            services.TryAddSingleton<ILoggersOptions>(provider =>
+            {
+                var mgmtOptions = provider.GetServices<IManagementOptions>();
+                var opts = new LoggersEndpointOptions(config);
+                
+                foreach (var mgmt in mgmtOptions)
+                {
+                    mgmt.EndpointOptions.Add(opts);
+                }
+                return opts;
+            });
+            //services.TryAddSingleton<ILoggersOptions>(new LoggersOptions(config));
             services.TryAddSingleton<LoggersEndpoint>();
         }
     }

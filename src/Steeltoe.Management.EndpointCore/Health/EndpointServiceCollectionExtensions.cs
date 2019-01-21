@@ -19,6 +19,9 @@ using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Health.Contributor;
 using System;
 using System.Collections.Generic;
+using Steeltoe.Management.Endpoint.CloudFoundry;
+using Steeltoe.Management.Endpoint.Discovery;
+using Steeltoe.Management.Endpoint.Info;
 
 namespace Steeltoe.Management.Endpoint.Health
 {
@@ -68,8 +71,22 @@ namespace Steeltoe.Management.Endpoint.Health
             {
                 throw new ArgumentNullException(nameof(aggregator));
             }
+            
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new CloudFoundryManagementOptions(config)));
 
-            services.TryAddSingleton<IHealthOptions>(new HealthOptions(config));
+            services.TryAddSingleton<IHealthOptions>(provider =>
+            {
+                var mgmtOptions = provider.GetServices<IManagementOptions>();
+                var opts = new HealthEndpointOptions(config);
+                foreach (var mgmt in mgmtOptions)
+                {
+                    mgmt.EndpointOptions.Add(opts);
+                }
+                return opts;
+            });
+            
+         //   services.TryAddSingleton<IHealthOptions>(new HealthOptions(config));
             AddHealthContributors(services, contributors);
             services.TryAddSingleton<IHealthAggregator>(aggregator);
             services.TryAddScoped<HealthEndpoint>();

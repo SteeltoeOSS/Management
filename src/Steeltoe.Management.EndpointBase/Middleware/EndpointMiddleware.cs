@@ -198,20 +198,7 @@ namespace Steeltoe.Management.Endpoint.Middleware
 
         protected virtual bool IsEnabled(IManagementOptions mgmtContext)
         {
-            if (mgmtContext == null)
-            {
-                return _endpoint.Enabled;
-            }
-            else
-            {
-                // TODO: Not sure this logic is correct!
-                if (_endpoint.Enabled)
-                {
-                    return true;
-                }
-
-                return mgmtContext.Enabled.Value;
-            }
+            return mgmtContext == null ? _endpoint.Enabled : _endpoint.Options.IsEnabled(mgmtContext);
         }
     }
 
@@ -239,20 +226,12 @@ namespace Steeltoe.Management.Endpoint.Middleware
             return Serialize(result);
         }
 
-        //public override bool RequestVerbAndPathMatch(string httpMethod, string requestPath)
-        //{
-        //    return (_exactRequestPathMatching ? requestPath.Equals(_endpoint.Path)
-        //       : requestPath.StartsWith(_endpoint.Path))
-        //          && _endpoint.Enabled
-        //          && _allowedMethods.Any(m => m.Method.Equals(httpMethod));
-        //}
-
         public override bool RequestVerbAndPathMatch(string httpMethod, string requestPath)
         {
             IManagementOptions matchingMgmtContext = null;
             return (_exactRequestPathMatching ? RequestPathMatch(requestPath, out matchingMgmtContext)
                : RequestPathStartWith(requestPath, out matchingMgmtContext))
-                  && IsEnabled(matchingMgmtContext)
+                  &&  IsEnabled(matchingMgmtContext)
                   && _allowedMethods.Any(m => m.Method.Equals(httpMethod));
         }
 
@@ -264,26 +243,24 @@ namespace Steeltoe.Management.Endpoint.Middleware
             {
                 return requestPath.Equals(_endpoint.Path);
             }
-            else
-            {
-                foreach (var context in _mgmtOptions)
-                {
-                    var contextPath = context.Path;
-                    if (!contextPath.EndsWith("/") && !string.IsNullOrEmpty(_endpoint.Path))
-                    {
-                        contextPath += "/";
-                    }
 
-                    var fullPath = contextPath + _endpoint.Path;
-                    if (requestPath.Equals(fullPath))
-                    {
-                        matchingMgmtContext = context;
-                        return true;
-                    }
+            foreach (var context in _mgmtOptions)
+            {
+                var contextPath = context.Path;
+                if (!contextPath.EndsWith("/") && !string.IsNullOrEmpty(_endpoint.Path))
+                {
+                    contextPath += "/";
                 }
 
-                return false;
+                var fullPath = contextPath + _endpoint.Path;
+                if (requestPath.Equals(fullPath))
+                {
+                    matchingMgmtContext = context;
+                    return true;
+                }
             }
+
+            return false;
         }
 
         protected override bool RequestPathStartWith(string requestPath, out IManagementOptions matchingMgmtContext)
@@ -325,13 +302,7 @@ namespace Steeltoe.Management.Endpoint.Middleware
             }
             else
             {
-                // TODO: Not sure this logic is correct!
-                if (_endpoint.Enabled)
-                {
-                    return true;
-                }
-
-                return mgmtContext.Enabled.Value;
+                return _endpoint.Options.IsEnabled(mgmtContext);
             }
         }
     }

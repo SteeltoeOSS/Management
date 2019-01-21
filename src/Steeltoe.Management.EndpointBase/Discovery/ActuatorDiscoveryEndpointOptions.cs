@@ -13,13 +13,13 @@ namespace Steeltoe.Management.Endpoint.Discovery
         public ActuatorDiscoveryEndpointOptions()
             : base()
         {
-            Id = "discovery";
+            Id = string.Empty;
         }
 
         public ActuatorDiscoveryEndpointOptions(IConfiguration config)
             : base(MANAGEMENT_INFO_PREFIX, config)
         {
-            Id = "discovery";
+            
         }
     }
 }

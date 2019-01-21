@@ -37,11 +37,13 @@ namespace Steeltoe.Management.Endpoint
             }
         }
 
+        [Obsolete]
         public virtual bool IsEnabled
         {
             get
             {
-                return Enabled.Value;
+                return false; 
+                
             }
         }
 
@@ -49,14 +51,7 @@ namespace Steeltoe.Management.Endpoint
         {
             get
             {
-                if (_enabled.HasValue)
-                {
-                    return _enabled.Value;
-                }
-                else
-                {
-                    return DefaultEnabled;
-                }
+                return _enabled;
             }
 
             set
@@ -65,26 +60,17 @@ namespace Steeltoe.Management.Endpoint
             }
         }
 
+        [Obsolete]
         public virtual bool IsSensitive
         {
-            get
-            {
-                return Sensitive.Value;
-            }
+            get { return false; }
         }
 
         public virtual bool? Sensitive
         {
             get
             {
-                if (_sensitive.HasValue)
-                {
-                    return _sensitive.Value;
-                }
-                else
-                {
-                    return DefaultSensitive;
-                }
+                return _sensitive;
             }
 
             set
@@ -122,8 +108,8 @@ namespace Steeltoe.Management.Endpoint
             return permissions >= RequiredPermissions;
         }
 
-        protected virtual bool DefaultEnabled { get; } = true;
+        public virtual bool DefaultEnabled { get; } = true;
 
-        protected virtual bool DefaultSensitive { get; } = false;
+        public virtual bool DefaultSensitive { get; } = false;
     }
 }

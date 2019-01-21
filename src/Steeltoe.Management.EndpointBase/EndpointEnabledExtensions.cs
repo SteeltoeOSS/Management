@@ -12,31 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.Management.Endpoint.Security;
 using System;
 
 namespace Steeltoe.Management.Endpoint
 {
-    public interface IEndpointOptions
+    public static class EndPointEnabledExtensions
     {
-        [Obsolete]
-        bool IsEnabled { get; }
+        public static bool IsEnabled(this IEndpointOptions options, IManagementOptions mgmtOptions)
+        {
+            var endpointOptions = (AbstractEndpointOptions)options;
 
-        bool IsSensitive { get; }
+            if (endpointOptions.Enabled.HasValue)
+            {
+                return endpointOptions.Enabled.Value;
+            }
 
-        bool? Enabled { get; }
+            if (mgmtOptions.Enabled.HasValue)
+            {
+                return mgmtOptions.Enabled.Value;
+            }
 
-        bool? Sensitive { get;  }
-
-        [Obsolete]
-        IManagementOptions Global { get; }
-
-        string Id { get;  }
-
-        string Path { get; }
-
-        Permissions RequiredPermissions { get; }
-
-        bool IsAccessAllowed(Permissions permissions);
+            return endpointOptions.DefaultEnabled;
+        }
     }
 }

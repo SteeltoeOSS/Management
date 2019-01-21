@@ -20,6 +20,8 @@ using Steeltoe.Common.Diagnostics;
 using Steeltoe.Management.Endpoint.Diagnostics;
 using System;
 using System.Linq;
+using Steeltoe.Management.Endpoint.Discovery;
+using Steeltoe.Management.Endpoint.Metrics;
 
 namespace Steeltoe.Management.Endpoint.Trace
 {
@@ -47,7 +49,19 @@ namespace Steeltoe.Management.Endpoint.Trace
 
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, TraceDiagnosticObserver>());
             services.TryAddSingleton<ITraceRepository>((p) => (ITraceRepository)p.GetServices<IDiagnosticObserver>().OfType<TraceDiagnosticObserver>().Single());
-            services.TryAddSingleton<ITraceOptions>(new TraceOptions(config));
+         //  services.TryAddSingleton<ITraceOptions>(new TraceOptions(config));
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
+            
+            services.TryAddSingleton<ITraceOptions>(provider =>
+            {
+                var mgmtOptions = provider.GetServices<IManagementOptions>();
+                var opts = new TraceEndpointOptions(config);
+                foreach (var mgmt in mgmtOptions)
+                {
+                    mgmt.EndpointOptions.Add(opts);
+                }
+                return opts;
+            });
             services.TryAddSingleton<TraceEndpoint>();
         }
     }

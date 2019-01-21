@@ -16,6 +16,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
+using Steeltoe.Management.Endpoint.Discovery;
+using Steeltoe.Management.Endpoint.Metrics;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump
 {
@@ -38,7 +40,20 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
                 throw new ArgumentNullException(nameof(config));
             }
 
-            services.TryAddSingleton<IThreadDumpOptions>(new ThreadDumpOptions(config));
+           // services.TryAddSingleton<IThreadDumpOptions>(new ThreadDumpOptions(config));
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
+            
+            services.TryAddSingleton<IThreadDumpOptions>(provider =>
+            {
+                var mgmtOptions = provider.GetServices<IManagementOptions>();
+                var opts = new ThreadDumpEndpointOptions(config);
+                foreach (var mgmt in mgmtOptions)
+                {
+                    mgmt.EndpointOptions.Add(opts);
+                }
+                return opts;
+            });
+            
             services.TryAddSingleton<IThreadDumper, ThreadDumper>();
             services.TryAddSingleton<ThreadDumpEndpoint>();
         }

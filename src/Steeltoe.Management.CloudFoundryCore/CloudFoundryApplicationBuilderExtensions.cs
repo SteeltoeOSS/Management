@@ -22,6 +22,9 @@ using Steeltoe.Management.Endpoint.Mappings;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
 using System;
+using Steeltoe.Management.Endpoint.Discovery;
+using Steeltoe.Management.Endpoint.Env;
+using Steeltoe.Management.Endpoint.Metrics;
 
 namespace Steeltoe.Management.CloudFoundry
 {

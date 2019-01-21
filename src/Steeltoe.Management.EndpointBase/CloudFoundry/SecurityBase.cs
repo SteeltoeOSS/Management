@@ -39,8 +39,16 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
         public readonly string BEARER = "bearer";
         public readonly string READ_SENSITIVE_DATA = "read_sensitive_data";
         private ICloudFoundryOptions _options;
+        private IManagementOptions _mgmtOptions;
         private ILogger _logger;
 
+        public SecurityBase(ICloudFoundryOptions options, IManagementOptions mgmtOptions, ILogger logger = null)
+        {
+            _options = options;
+            _mgmtOptions = mgmtOptions;
+            _logger = logger;
+        }
+        
         public SecurityBase(ICloudFoundryOptions options, ILogger logger = null)
         {
             _options = options;
@@ -49,8 +57,8 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
 
         public bool IsCloudFoundryRequest(string requestPath)
         {
-            bool startsWith = requestPath.StartsWith(_options.Path);
-            return startsWith;
+            var contextPath = _mgmtOptions == null ? _options.Path : _mgmtOptions.Path;
+            return requestPath.StartsWith(contextPath);
         }
 
         public string Serialize(SecurityResult error)

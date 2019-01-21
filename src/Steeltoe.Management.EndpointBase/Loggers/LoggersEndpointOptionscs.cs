@@ -12,31 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.Management.Endpoint.Security;
-using System;
+using Microsoft.Extensions.Configuration;
 
-namespace Steeltoe.Management.Endpoint
+namespace Steeltoe.Management.Endpoint.Loggers
 {
-    public interface IEndpointOptions
+    public class LoggersEndpointOptions : AbstractEndpointOptions, ILoggersOptions
     {
-        [Obsolete]
-        bool IsEnabled { get; }
+        private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:loggers";
 
-        bool IsSensitive { get; }
+        public LoggersEndpointOptions()
+            : base()
+        {
+            Id = "loggers";
+        }
 
-        bool? Enabled { get; }
+        public LoggersEndpointOptions(IConfiguration config)
+            : base(MANAGEMENT_INFO_PREFIX, config)
+        {
+            if (string.IsNullOrEmpty(Id))
+            {
+                Id = "loggers";
+            }
+        }
 
-        bool? Sensitive { get;  }
-
-        [Obsolete]
-        IManagementOptions Global { get; }
-
-        string Id { get;  }
-
-        string Path { get; }
-
-        Permissions RequiredPermissions { get; }
-
-        bool IsAccessAllowed(Permissions permissions);
     }
 }

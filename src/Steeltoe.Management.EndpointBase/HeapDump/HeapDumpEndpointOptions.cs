@@ -12,31 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.Management.Endpoint.Security;
-using System;
+using Microsoft.Extensions.Configuration;
 
-namespace Steeltoe.Management.Endpoint
+namespace Steeltoe.Management.Endpoint.HeapDump
 {
-    public interface IEndpointOptions
+    public class HeapDumpEndpointOptions : AbstractEndpointOptions, IHeapDumpOptions
     {
-        [Obsolete]
-        bool IsEnabled { get; }
+        private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:heapdump";
 
-        bool IsSensitive { get; }
+        public HeapDumpEndpointOptions()
+            : base()
+        {
+            Id = "heapdump";
+        }
 
-        bool? Enabled { get; }
+        public HeapDumpEndpointOptions(IConfiguration config)
+            : base(MANAGEMENT_INFO_PREFIX, config)
+        {
+            if (string.IsNullOrEmpty(Id))
+            {
+                Id = "heapdump";
+            }
+        }
 
-        bool? Sensitive { get;  }
-
-        [Obsolete]
-        IManagementOptions Global { get; }
-
-        string Id { get;  }
-
-        string Path { get; }
-
-        Permissions RequiredPermissions { get; }
-
-        bool IsAccessAllowed(Permissions permissions);
     }
 }

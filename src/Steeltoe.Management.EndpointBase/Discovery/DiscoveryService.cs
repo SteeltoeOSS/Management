@@ -36,14 +36,14 @@ namespace Steeltoe.Management.Endpoint.Discovery
             var endpointOptions = _mgmtOptions.EndpointOptions;
             var links = new Links();
 
-            if (!_options.Enabled.Value)
+            if (!_options.IsEnabled(_mgmtOptions))
             {
                 return links;
             }
 
             foreach (var opt in endpointOptions)
             {
-                if (!opt.Enabled.Value)
+                if (!opt.IsEnabled(_mgmtOptions))
                 {
                     continue;
                 }

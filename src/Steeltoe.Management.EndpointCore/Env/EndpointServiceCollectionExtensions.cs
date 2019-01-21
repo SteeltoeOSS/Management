@@ -17,6 +17,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using System;
+using Steeltoe.Management.Endpoint.Discovery;
+using Steeltoe.Management.Endpoint.Info;
 
 namespace Steeltoe.Management.Endpoint.Env
 {
@@ -50,8 +52,21 @@ namespace Steeltoe.Management.Endpoint.Env
                     ContentRootPath = service.ContentRootPath
                 };
             });
+            
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
 
-            services.TryAddSingleton<IEnvOptions>(new EnvOptions(config));
+            services.TryAddSingleton<IEnvOptions>(provider =>
+            {
+                var mgmtOptions = provider.GetServices<IManagementOptions>();
+                var opts = new EnvEndpointOptions(config);
+                foreach (var mgmt in mgmtOptions)
+                {
+                    mgmt.EndpointOptions.Add(opts);
+                }
+                return opts;
+            });
+
+            //services.TryAddSingleton<IEnvOptions>(new EnvOptions(config));
             services.TryAddSingleton<EnvEndpoint>();
         }
     }

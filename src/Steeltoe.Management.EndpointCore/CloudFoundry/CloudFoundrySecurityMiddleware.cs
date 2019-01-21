@@ -17,6 +17,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using Steeltoe.Common;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -27,13 +29,32 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
         private RequestDelegate _next;
         private ILogger<CloudFoundrySecurityMiddleware> _logger;
         private ICloudFoundryOptions _options;
+        private IManagementOptions _mgmtOptions;
         private SecurityBase _base;
 
+        public CloudFoundrySecurityMiddleware(RequestDelegate next, ICloudFoundryOptions options, IEnumerable<IManagementOptions> mgmtOptions, ILogger<CloudFoundrySecurityMiddleware> logger)
+        {
+            _next = next;
+            _logger = logger;
+            _options = options;
+            
+            if (mgmtOptions == null)
+            {
+                throw new ArgumentNullException(nameof(mgmtOptions));
+            }
+
+            _mgmtOptions = mgmtOptions.OfType<CloudFoundryManagementOptions>().Single();
+           _base = new SecurityBase(options, _mgmtOptions, logger);
+        }
+        
+        [Obsolete]
         public CloudFoundrySecurityMiddleware(RequestDelegate next, ICloudFoundryOptions options, ILogger<CloudFoundrySecurityMiddleware> logger)
         {
             _next = next;
             _logger = logger;
             _options = options;
+            
+          
             _base = new SecurityBase(options, logger);
         }
 
@@ -41,7 +62,12 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
         {
             _logger.LogDebug("Invoke({0})", context.Request.Path.Value);
 
-            if (Platform.IsCloudFoundry && _options.IsEnabled && _base.IsCloudFoundryRequest(context.Request.Path))
+            
+            bool isEndpointEnabled = _mgmtOptions == null ? _options.IsEnabled : _options.IsEnabled(_mgmtOptions);
+            
+            if (Platform.IsCloudFoundry  
+                && isEndpointEnabled
+                && _base.IsCloudFoundryRequest(context.Request.Path))
             {
                 if (string.IsNullOrEmpty(_options.ApplicationId))
                 {
@@ -94,6 +120,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             return null;
         }
 
+        
         internal async Task<SecurityResult> GetPermissions(HttpContext context)
         {
             string token = GetAccessToken(context.Request);
@@ -102,17 +129,42 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
 
         private IEndpointOptions FindTargetEndpoint(PathString path)
         {
-            var configEndpoints = this._options.Global.EndpointOptions;
+            List<IEndpointOptions> configEndpoints;
+            
+            // Remove in 3.0
+            if (_mgmtOptions == null)
+            {
+                configEndpoints = this._options.Global.EndpointOptions;
+                foreach (var ep in configEndpoints)
+                {
+                    PathString epPath = new PathString(ep.Path);
+                    if (path.StartsWithSegments(epPath))
+                    {
+                        return ep;
+                    }
+                }
+
+                return null;
+            }
+
+            configEndpoints = _mgmtOptions.EndpointOptions;
             foreach (var ep in configEndpoints)
             {
-                PathString epPath = new PathString(ep.Path);
-                if (path.StartsWithSegments(epPath))
+                var contextPath = _mgmtOptions.Path;
+                if (!contextPath.EndsWith("/") && !string.IsNullOrEmpty(ep.Path))
+                {
+                    contextPath += "/";
+                }
+
+                var fullPath = contextPath + ep.Path;
+                if (path.StartsWithSegments(new PathString(fullPath)))
                 {
                     return ep;
                 }
             }
 
             return null;
+
         }
 
         private async Task ReturnError(HttpContext context, SecurityResult error)

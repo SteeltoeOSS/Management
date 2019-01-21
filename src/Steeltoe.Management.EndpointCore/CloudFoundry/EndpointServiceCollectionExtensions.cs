@@ -16,6 +16,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
+using System.Linq;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry
 {
@@ -38,17 +39,34 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new CloudFoundryManagementOptions(config)));
 
             services.TryAddSingleton<ICloudFoundryOptions>(provider =>
-            {
-                var mgmtOptions = provider.GetServices<IManagementOptions>();
+            { 
+                var mgmtOptions = provider
+                    .GetServices<IManagementOptions>().Single(m => m.GetType() == typeof(CloudFoundryManagementOptions));
+
                 var opts = new CloudFoundryEndpointOptions(config);
-                foreach (var mgmt in mgmtOptions)
-                {
-                    mgmt.EndpointOptions.Add(opts);
-                }
+                mgmtOptions.EndpointOptions.Insert(0,opts); //Add the options in the first place
+                
                 return opts;
             });
 
             services.TryAddSingleton<CloudFoundryEndpoint>();
         }
+//        
+//        [Obsolete]
+//        public static void AddCloudFoundryActuatorOld(this IServiceCollection services, IConfiguration config)
+//        {
+//            if (services == null)
+//            {
+//                throw new ArgumentNullException(nameof(services));
+//            }
+//
+//            if (config == null)
+//            {
+//                throw new ArgumentNullException(nameof(config));
+//            }
+//
+//            services.TryAddSingleton<ICloudFoundryOptions>(new CloudFoundryOptions(config));
+//            services.TryAddSingleton<CloudFoundryEndpoint>();
+//        }
     }
 }

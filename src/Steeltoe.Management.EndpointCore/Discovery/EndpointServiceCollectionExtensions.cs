@@ -16,6 +16,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
+using System.Linq;
+using Steeltoe.Management.Endpoint.CloudFoundry;
 
 namespace Steeltoe.Management.Endpoint.Discovery
 {
@@ -23,19 +25,31 @@ namespace Steeltoe.Management.Endpoint.Discovery
     {
         public static void AddDiscoveryActuator(this IServiceCollection services, IConfiguration config)
         {
-            //if (services == null)
-            //{
-            //    throw new ArgumentNullException(nameof(services));
-            //}
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
 
-            //if (config == null)
-            //{
-            //    throw new ArgumentNullException(nameof(config));
-            //}
+            if (config == null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
 
-            ////services.TryAddSingleton<ICloudFoundryOptions>(new CloudFoundryOptions(config));
+            //services.TryAddSingleton<ICloudFoundryOptions>(new CloudFoundryOptions(config));
 
-            //services.TryAddSingleton<CloudFoundryEndpoint>();
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
+
+            services.TryAddSingleton<IActuatorDiscoveryOptions>(provider =>
+            {
+                var mgmtOptions = provider
+                    .GetServices<IManagementOptions>().Single(m => m.GetType() == typeof(ActuatorManagementOptions));
+                var opts = new ActuatorDiscoveryEndpointOptions(config);
+                mgmtOptions.EndpointOptions.Insert(0,opts); //Add the discover options in the first place
+                
+                return opts;
+            });
+
+            services.TryAddSingleton<ActuatorDiscoveryEndpoint>();
         }
     }
 }

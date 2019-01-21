@@ -16,6 +16,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
+using System.Linq;
+using Steeltoe.Management.Endpoint.Discovery;
+using Steeltoe.Management.Endpoint.Health;
 
 namespace Steeltoe.Management.Endpoint.HeapDump
 {
@@ -38,7 +41,22 @@ namespace Steeltoe.Management.Endpoint.HeapDump
                 throw new ArgumentNullException(nameof(config));
             }
 
-            services.TryAddSingleton<IHeapDumpOptions>(new HeapDumpOptions(config));
+        
+            
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
+    
+            services.TryAddSingleton<IHeapDumpOptions>(provider =>
+            {
+                var mgmtOptions = provider.GetServices<IManagementOptions>();
+                var opts = new HeapDumpEndpointOptions(config);
+                foreach (var mgmt in mgmtOptions)
+                {
+                    mgmt.EndpointOptions.Add(opts);
+                }
+                return opts;
+            });
+                
+            //services.TryAddSingleton<IHeapDumpOptions>(new HeapDumpOptions(config));
             services.TryAddSingleton<IHeapDumper, HeapDumper>();
             services.TryAddSingleton<HeapDumpEndpoint>();
         }

@@ -77,7 +77,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             using (var server = new TestServer(builder))
             {
                 var client = server.CreateClient();
-                var result = await client.GetAsync("http://localhost/info");
+                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/info");
                 Assert.Equal(HttpStatusCode.ServiceUnavailable, result.StatusCode);
             }
 
@@ -105,38 +105,41 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             using (var server = new TestServer(builder2))
             {
                 var client = server.CreateClient();
-                var result = await client.GetAsync("http://localhost/info");
+                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/info");
                 Assert.Equal(HttpStatusCode.ServiceUnavailable, result.StatusCode);
             }
 
-            var appSettings3 = new Dictionary<string, string>()
-            {
-                ["management:endpoints:enabled"] = "true",
-                ["management:endpoints:sensitive"] = "false",
-                ["management:endpoints:path"] = "/",
-                ["management:endpoints:info:enabled"] = "true",
-                ["management:endpoints:info:sensitive"] = "false",
-                ["info:application:name"] = "foobar",
-                ["info:application:version"] = "1.0.0",
-                ["info:application:date"] = "5/1/2008",
-                ["info:application:time"] = "8:30:52 AM",
-                ["info:NET:type"] = "Core",
-                ["info:NET:version"] = "2.0.0",
-                ["info:NET:ASPNET:type"] = "Core",
-                ["info:NET:ASPNET:version"] = "2.0.0",
-                ["vcap:application:application_id"] = "foobar",
-                ["vcap:application:cf_api"] = "http://localhost:9999/foo"
-            };
-
-            var builder3 = new WebHostBuilder().UseStartup<StartupWithSecurity>()
-                .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appSettings3));
-
-            using (var server = new TestServer(builder3))
-            {
-                var client = server.CreateClient();
-                var result = await client.GetAsync("http://localhost/barfoo");
-                Assert.Equal(HttpStatusCode.ServiceUnavailable, result.StatusCode);
-            }
+            // TODO: double-check
+            // with the context path forced to be /cloudfoundryapplication, this usecase is no longer applicable
+            
+//            var appSettings3 = new Dictionary<string, string>()
+//            {
+//                ["management:endpoints:enabled"] = "true",
+//                ["management:endpoints:sensitive"] = "false",
+//                ["management:endpoints:path"] = "/",
+//                ["management:endpoints:info:enabled"] = "true",
+//                ["management:endpoints:info:sensitive"] = "false",
+//                ["info:application:name"] = "foobar",
+//                ["info:application:version"] = "1.0.0",
+//                ["info:application:date"] = "5/1/2008",
+//                ["info:application:time"] = "8:30:52 AM",
+//                ["info:NET:type"] = "Core",
+//                ["info:NET:version"] = "2.0.0",
+//                ["info:NET:ASPNET:type"] = "Core",
+//                ["info:NET:ASPNET:version"] = "2.0.0",
+//                ["vcap:application:application_id"] = "foobar",
+//                ["vcap:application:cf_api"] = "http://localhost:9999/foo"
+//            };
+//
+//            var builder3 = new WebHostBuilder().UseStartup<StartupWithSecurity>()
+//                .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appSettings3));
+//
+//            using (var server = new TestServer(builder3))
+//            {
+//                var client = server.CreateClient();
+//                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/barfoo");
+//                Assert.Equal(HttpStatusCode.ServiceUnavailable, result.StatusCode);
+//            }
         }
 
         [Fact]
@@ -168,7 +171,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             using (var server = new TestServer(builder))
             {
                 var client = server.CreateClient();
-                var result = await client.GetAsync("http://localhost/info");
+                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/info");
                 Assert.Equal(HttpStatusCode.Unauthorized, result.StatusCode);
             }
         }

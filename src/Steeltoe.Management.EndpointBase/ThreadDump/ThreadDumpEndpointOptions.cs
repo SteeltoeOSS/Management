@@ -12,31 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.Management.Endpoint.Security;
-using System;
+using Microsoft.Extensions.Configuration;
 
-namespace Steeltoe.Management.Endpoint
+namespace Steeltoe.Management.Endpoint.ThreadDump
 {
-    public interface IEndpointOptions
+    public class ThreadDumpEndpointOptions : AbstractEndpointOptions, IThreadDumpOptions
     {
-        [Obsolete]
-        bool IsEnabled { get; }
+        private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:dump";
 
-        bool IsSensitive { get; }
+        public ThreadDumpEndpointOptions()
+            : base()
+        {
+            Id = "dump";
+        }
 
-        bool? Enabled { get; }
+        public ThreadDumpEndpointOptions(IConfiguration config)
+            : base(MANAGEMENT_INFO_PREFIX, config)
+        {
+            if (string.IsNullOrEmpty(Id))
+            {
+                Id = "dump";
+            }
+        }
 
-        bool? Sensitive { get;  }
-
-        [Obsolete]
-        IManagementOptions Global { get; }
-
-        string Id { get;  }
-
-        string Path { get; }
-
-        Permissions RequiredPermissions { get; }
-
-        bool IsAccessAllowed(Permissions permissions);
     }
 }

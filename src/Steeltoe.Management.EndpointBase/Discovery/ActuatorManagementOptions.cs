@@ -17,6 +17,10 @@ namespace Steeltoe.Management.Endpoint.Discovery
         public ActuatorManagementOptions(IConfiguration config)
             : base(config)
         {
+            if (string.IsNullOrEmpty(Path))
+            {
+                Path = DEFAULT_ACTUATOR_PATH;
+            }
         }
     }
 }

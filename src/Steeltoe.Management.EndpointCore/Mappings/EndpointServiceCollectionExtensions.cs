@@ -16,6 +16,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
+using Steeltoe.Management.Endpoint.Discovery;
+using Steeltoe.Management.Endpoint.Env;
 
 namespace Steeltoe.Management.Endpoint.Mappings
 {
@@ -38,7 +40,19 @@ namespace Steeltoe.Management.Endpoint.Mappings
                 throw new ArgumentNullException(nameof(config));
             }
 
-            services.TryAddSingleton<IMappingsOptions>(new MappingsOptions(config));
+            //services.TryAddSingleton<IMappingsOptions>(new MappingsOptions(config));
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
+
+            services.TryAddSingleton<IMappingsOptions>(provider =>
+            {
+                var mgmtOptions = provider.GetServices<IManagementOptions>();
+                var opts = new MappingsEndpointOptions(config);
+                foreach (var mgmt in mgmtOptions)
+                {
+                    mgmt.EndpointOptions.Add(opts);
+                }
+                return opts;
+            });
             services.TryAddSingleton<IRouteMappings, RouteMappings>();
         }
     }

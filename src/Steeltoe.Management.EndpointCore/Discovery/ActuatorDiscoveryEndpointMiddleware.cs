@@ -18,6 +18,7 @@ using Microsoft.Extensions.Primitives;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Middleware;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.Discovery
@@ -27,7 +28,7 @@ namespace Steeltoe.Management.Endpoint.Discovery
         private RequestDelegate _next;
 
         public ActuatorDiscoveryEndpointMiddleware(RequestDelegate next, ActuatorDiscoveryEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<ActuatorDiscoveryEndpointMiddleware> logger = null)
-            : base(endpoint, mgmtOptions, logger: logger)
+            : base(endpoint, mgmtOptions.OfType<ActuatorManagementOptions>(), logger: logger)
         {
             _next = next;
         }

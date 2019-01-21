@@ -8,7 +8,7 @@ namespace Steeltoe.Management.Endpoint
 {
     public class ManagementEndpointOptions : IManagementOptions
     {
-        private const string DEFAULT_PATH = "/";
+        private const string DEFAULT_PATH = "/actuator";
         private const string MANAGEMENT_INFO_PREFIX = "management:endpoints";
 
         private bool? _enabled;
