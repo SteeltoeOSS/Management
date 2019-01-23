@@ -30,7 +30,7 @@ namespace Steeltoe.Management.Endpoint.Trace
         {
             _next = next;
         }
-        
+
         [Obsolete]
         public TraceEndpointMiddleware(RequestDelegate next, TraceEndpoint endpoint, ILogger<TraceEndpointMiddleware> logger = null)
             : base(endpoint, logger: logger)

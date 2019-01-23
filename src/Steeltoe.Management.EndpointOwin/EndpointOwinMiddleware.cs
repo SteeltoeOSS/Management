@@ -32,7 +32,30 @@ namespace Steeltoe.Management.EndpointOwin
         protected ILogger _logger;
         protected IEnumerable<HttpMethod> _allowedMethods;
         protected bool _exactRequestPathMatching;
+        protected IEnumerable<IManagementOptions> _mgmtOptions;
 
+        public EndpointOwinMiddleware(OwinMiddleware next, IEnumerable<IManagementOptions> mgmtOptions, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
+            : base(next)
+        {
+            _allowedMethods = allowedMethods ?? new List<HttpMethod> { HttpMethod.Get };
+
+            if (_allowedMethods.Count() == 0)
+            {
+                _allowedMethods = new List<HttpMethod> { HttpMethod.Get };
+            }
+
+            _exactRequestPathMatching = exactRequestPathMatching;
+            _logger = logger;
+            _mgmtOptions = mgmtOptions;
+        }
+
+        public EndpointOwinMiddleware(OwinMiddleware next, IEndpoint<TResult> endpoint, IEnumerable<IManagementOptions> mgmtOptions, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
+            : this(next, mgmtOptions, allowedMethods, exactRequestPathMatching, logger)
+        {
+            _endpoint = endpoint;
+        }
+
+        [Obsolete]
         public EndpointOwinMiddleware(OwinMiddleware next, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
             : base(next)
         {
@@ -47,6 +70,7 @@ namespace Steeltoe.Management.EndpointOwin
             _logger = logger;
         }
 
+        [Obsolete]
         public EndpointOwinMiddleware(OwinMiddleware next, IEndpoint<TResult> endpoint, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
             : this(next, allowedMethods, exactRequestPathMatching, logger)
         {
@@ -68,11 +92,21 @@ namespace Steeltoe.Management.EndpointOwin
             }
         }
 
+        //public virtual bool RequestVerbAndPathMatch(string httpMethod, string requestPath)
+        //{
+        //    return _exactRequestPathMatching
+        //        ? requestPath.Equals(_endpoint.Path) && _allowedMethods.Any(m => m.Method.Equals(httpMethod))
+        //        : requestPath.StartsWith(_endpoint.Path) && _allowedMethods.Any(m => m.Method.Equals(httpMethod));
+        //}
         public virtual bool RequestVerbAndPathMatch(string httpMethod, string requestPath)
         {
-            return _exactRequestPathMatching
-                ? requestPath.Equals(_endpoint.Path) && _allowedMethods.Any(m => m.Method.Equals(httpMethod))
-                : requestPath.StartsWith(_endpoint.Path) && _allowedMethods.Any(m => m.Method.Equals(httpMethod));
+            IManagementOptions matchingMgmtContext;
+            return _allowedMethods.Any(m => m.Method.Equals(httpMethod))
+                && (_exactRequestPathMatching
+                    ? RequestPathMatch(_endpoint, requestPath, out matchingMgmtContext)
+                    : RequestPathStartWith(_endpoint, requestPath, out matchingMgmtContext));
+
+            // TODO: Check enabled setting here?
         }
 
         protected virtual string Serialize<T>(T result)
@@ -95,6 +129,66 @@ namespace Steeltoe.Management.EndpointOwin
 
             return string.Empty;
         }
+
+        protected virtual bool RequestPathMatch(IEndpoint endpoint, string requestPath, out IManagementOptions matchingMgmtContext)
+        {
+            matchingMgmtContext = null;
+
+            if (_mgmtOptions == null)
+            {
+                return requestPath.Equals(endpoint.Path);
+            }
+            else
+            {
+                foreach (var context in _mgmtOptions)
+                {
+                    var contextPath = context.Path;
+                    if (!contextPath.EndsWith("/") && !string.IsNullOrEmpty(endpoint.Path))
+                    {
+                        contextPath += "/";
+                    }
+
+                    var fullPath = contextPath + endpoint.Path;
+                    if (requestPath.Equals(fullPath))
+                    {
+                        matchingMgmtContext = context;
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+        }
+
+        protected virtual bool RequestPathStartWith(IEndpoint endpoint, string requestPath, out IManagementOptions matchingMgmtContext)
+        {
+            matchingMgmtContext = null;
+
+            if (_mgmtOptions == null)
+            {
+                return requestPath.StartsWith(endpoint.Path);
+            }
+            else
+            {
+                foreach (var context in _mgmtOptions)
+                {
+                    var contextPath = context.Path;
+                    if (!contextPath.EndsWith("/") && !string.IsNullOrEmpty(endpoint.Path))
+                    {
+                        contextPath += "/";
+                    }
+
+                    var fullPath = contextPath + endpoint.Path;
+                    if (requestPath.StartsWith(fullPath))
+                    {
+                        matchingMgmtContext = context;
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+        }
     }
 
 #pragma warning disable SA1402 // File may only contain a single class
@@ -102,6 +196,13 @@ namespace Steeltoe.Management.EndpointOwin
     {
         protected new IEndpoint<TResult, TRequest> _endpoint;
 
+        public EndpointOwinMiddleware(OwinMiddleware next, IEndpoint<TResult, TRequest> endpoint, IEnumerable<IManagementOptions> mgmtOptions, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
+          : base(next, mgmtOptions, allowedMethods, exactRequestPathMatching, logger)
+        {
+            _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
+        }
+
+        [Obsolete]
         public EndpointOwinMiddleware(OwinMiddleware next, IEndpoint<TResult, TRequest> endpoint, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
             : base(next, allowedMethods, exactRequestPathMatching, logger)
         {
@@ -114,11 +215,21 @@ namespace Steeltoe.Management.EndpointOwin
             return Serialize(result);
         }
 
+        //public override bool RequestVerbAndPathMatch(string httpMethod, string requestPath)
+        //{
+        //    return _exactRequestPathMatching
+        //        ? requestPath.Equals(_endpoint.Path) && _allowedMethods.Any(m => m.Method.Equals(httpMethod))
+        //        : requestPath.StartsWith(_endpoint.Path) && _allowedMethods.Any(m => m.Method.Equals(httpMethod));
+        //}
         public override bool RequestVerbAndPathMatch(string httpMethod, string requestPath)
         {
-            return _exactRequestPathMatching
-                ? requestPath.Equals(_endpoint.Path) && _allowedMethods.Any(m => m.Method.Equals(httpMethod))
-                : requestPath.StartsWith(_endpoint.Path) && _allowedMethods.Any(m => m.Method.Equals(httpMethod));
+            IManagementOptions matchingMgmtContext;
+            var returnValue = _allowedMethods.Any(m => m.Method.Equals(httpMethod))
+                && (_exactRequestPathMatching
+                    ? RequestPathMatch(_endpoint, requestPath, out matchingMgmtContext)
+                    : RequestPathStartWith(_endpoint, requestPath, out matchingMgmtContext));
+            return returnValue;
+            // TODO: verify enabled 
         }
     }
 #pragma warning restore SA1402 // File may only contain a single class

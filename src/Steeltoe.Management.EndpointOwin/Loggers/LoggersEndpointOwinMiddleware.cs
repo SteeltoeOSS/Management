@@ -14,6 +14,7 @@
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Owin;
+using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Loggers;
 using System;
 using System.Collections.Generic;
@@ -25,6 +26,13 @@ namespace Steeltoe.Management.EndpointOwin.Loggers
 {
     public class LoggersEndpointOwinMiddleware : EndpointOwinMiddleware<Dictionary<string, object>, LoggersChangeRequest>
     {
+        public LoggersEndpointOwinMiddleware(OwinMiddleware next, LoggersEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<LoggersEndpointOwinMiddleware> logger = null)
+         : base(next, endpoint, mgmtOptions, new List<HttpMethod> { HttpMethod.Get, HttpMethod.Post }, false, logger)
+        {
+            _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
+        }
+
+        [Obsolete]
         public LoggersEndpointOwinMiddleware(OwinMiddleware next, LoggersEndpoint endpoint, ILogger<LoggersEndpointOwinMiddleware> logger = null)
             : base(next, endpoint, new List<HttpMethod> { HttpMethod.Get, HttpMethod.Post }, false, logger)
         {

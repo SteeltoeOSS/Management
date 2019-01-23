@@ -15,6 +15,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Owin;
+using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using System;
 using System.Collections.Generic;
@@ -30,8 +31,9 @@ namespace Steeltoe.Management.EndpointOwin.ThreadDump
         /// <param name="builder">OWIN <see cref="IAppBuilder" /></param>
         /// <param name="config"><see cref="IConfiguration"/> of application for configuring thread dump endpoint</param>
         /// <param name="loggerFactory">For logging within the middleware</param>
+        /// <param name="mgmtOptions">Shared Management Options</param>
         /// <returns>OWIN <see cref="IAppBuilder" /> with Thread Dump Endpoint added</returns>
-        public static IAppBuilder UseThreadDumpActuator(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null)
+        public static IAppBuilder UseThreadDumpActuator(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null, IEnumerable<IManagementOptions> mgmtOptions = null)
         {
             if (builder == null)
             {
@@ -43,7 +45,22 @@ namespace Steeltoe.Management.EndpointOwin.ThreadDump
                 throw new ArgumentNullException(nameof(config));
             }
 
-            var options = new ThreadDumpOptions(config);
+            IThreadDumpOptions options;
+
+            // TODO: Remove in 3.0
+            if (mgmtOptions == null)
+            {
+                options = new ThreadDumpOptions(config);
+            }
+            else
+            {
+                options = new ThreadDumpEndpointOptions(config);
+                foreach (var mgmt in mgmtOptions)
+                {
+                    mgmt.EndpointOptions.Add(options);
+                }
+            }
+
             var threadDumper = new ThreadDumper(options, loggerFactory?.CreateLogger<ThreadDumper>());
             return builder.UseThreadDumpActuator(options, threadDumper, loggerFactory);
         }

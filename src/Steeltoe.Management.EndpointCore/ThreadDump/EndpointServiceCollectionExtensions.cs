@@ -42,7 +42,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
 
            // services.TryAddSingleton<IThreadDumpOptions>(new ThreadDumpOptions(config));
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
-            
+
             services.TryAddSingleton<IThreadDumpOptions>(provider =>
             {
                 var mgmtOptions = provider.GetServices<IManagementOptions>();
@@ -53,7 +53,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
                 }
                 return opts;
             });
-            
+
             services.TryAddSingleton<IThreadDumper, ThreadDumper>();
             services.TryAddSingleton<ThreadDumpEndpoint>();
         }

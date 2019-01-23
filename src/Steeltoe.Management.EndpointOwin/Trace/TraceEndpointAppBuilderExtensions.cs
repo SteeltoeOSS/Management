@@ -16,6 +16,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Owin;
 using Steeltoe.Common.Diagnostics;
+using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Trace;
 using System;
 using System.Collections.Generic;
@@ -32,8 +33,9 @@ namespace Steeltoe.Management.EndpointOwin.Trace
         /// <param name="config"><see cref="IConfiguration"/> of application for configuring thread dump endpoint</param>
         /// <param name="traceRepository">repository to put traces in</param>
         /// <param name="loggerFactory">For logging within the middleware</param>
+        /// <param name="mgmtOptions">Shared management options</param>
         /// <returns>OWIN <see cref="IAppBuilder" /> with Trace Endpoint added</returns>
-        public static IAppBuilder UseTraceActuator(this IAppBuilder builder, IConfiguration config, ITraceRepository traceRepository = null, ILoggerFactory loggerFactory = null)
+        public static IAppBuilder UseTraceActuator(this IAppBuilder builder, IConfiguration config, ITraceRepository traceRepository = null, ILoggerFactory loggerFactory = null, IEnumerable<IManagementOptions> mgmtOptions = null)
         {
             if (builder == null)
             {
@@ -45,12 +47,25 @@ namespace Steeltoe.Management.EndpointOwin.Trace
                 throw new ArgumentNullException(nameof(config));
             }
 
-            var options = new TraceOptions(config);
+            ITraceOptions options;
+            if (mgmtOptions == null)
+            {
+                options = new TraceOptions(config);
+            }
+            else
+            {
+                options = new TraceEndpointOptions(config);
+                foreach (var mgmtOption in mgmtOptions)
+                {
+                    mgmtOption.EndpointOptions.Add(options);
+                }
+            }
+
             traceRepository = traceRepository ?? new TraceDiagnosticObserver(options, loggerFactory?.CreateLogger<TraceDiagnosticObserver>());
             DiagnosticsManager.Instance.Observers.Add((IDiagnosticObserver)traceRepository);
             var endpoint = new TraceEndpoint(options, traceRepository, loggerFactory?.CreateLogger<TraceEndpoint>());
             var logger = loggerFactory?.CreateLogger<EndpointOwinMiddleware<TraceEndpoint, List<TraceResult>>>();
-            return builder.Use<EndpointOwinMiddleware<List<TraceResult>>>(endpoint, new List<HttpMethod> { HttpMethod.Get }, true, logger);
+            return builder.Use<EndpointOwinMiddleware<List<TraceResult>>>(endpoint, mgmtOptions, new List<HttpMethod> { HttpMethod.Get }, true, logger);
         }
     }
 }

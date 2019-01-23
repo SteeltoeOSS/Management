@@ -14,6 +14,7 @@
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Owin;
+using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Metrics;
 using System;
 using System.Collections.Generic;
@@ -26,6 +27,13 @@ namespace Steeltoe.Management.EndpointOwin.Metrics
     {
         protected new MetricsEndpoint _endpoint;
 
+        public MetricsEndpointOwinMiddleware(OwinMiddleware next, MetricsEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<MetricsEndpointOwinMiddleware> logger = null)
+            : base(next, endpoint, mgmtOptions, null, false, logger)
+        {
+            _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
+        }
+
+        [Obsolete]
         public MetricsEndpointOwinMiddleware(OwinMiddleware next, MetricsEndpoint endpoint, ILogger<MetricsEndpointOwinMiddleware> logger = null)
             : base(next, endpoint, null, false, logger)
         {

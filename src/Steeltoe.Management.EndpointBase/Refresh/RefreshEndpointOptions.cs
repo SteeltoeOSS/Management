@@ -17,7 +17,7 @@ using Steeltoe.Management.Endpoint.Security;
 
 namespace Steeltoe.Management.Endpoint.Refresh
 {
-    public class RefreshEndpointOptions : AbstractOptions, IRefreshOptions
+    public class RefreshEndpointOptions : AbstractEndpointOptions, IRefreshOptions
     {
         private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:refresh";
 

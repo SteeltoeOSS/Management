@@ -15,8 +15,10 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Owin;
+using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.HeapDump;
 using System;
+using System.Collections.Generic;
 
 namespace Steeltoe.Management.EndpointOwin.HeapDump
 {
@@ -29,8 +31,9 @@ namespace Steeltoe.Management.EndpointOwin.HeapDump
         /// <param name="config"><see cref="IConfiguration"/> for configuring the endpoint</param>
         /// <param name="applicationPathOnDisk">Provide the path to the app directory if heap dumps are failing due to access restrictions</param>
         /// <param name="loggerFactory"><see cref="ILoggerFactory"/> for logging inside the middleware and its components</param>
+        /// <param name="mgmtOptions">Shared Management Options</param>
         /// <returns>Your <see cref="IAppBuilder"/> with Heap Dump middleware attached</returns>
-        public static IAppBuilder UseHeapDumpActuator(this IAppBuilder builder, IConfiguration config, string applicationPathOnDisk = null, ILoggerFactory loggerFactory = null)
+        public static IAppBuilder UseHeapDumpActuator(this IAppBuilder builder, IConfiguration config, string applicationPathOnDisk = null, ILoggerFactory loggerFactory = null, IEnumerable<IManagementOptions> mgmtOptions = null)
         {
             if (builder == null)
             {
@@ -42,7 +45,21 @@ namespace Steeltoe.Management.EndpointOwin.HeapDump
                 throw new ArgumentNullException(nameof(config));
             }
 
-            var options = new HeapDumpOptions(config);
+            IHeapDumpOptions options;
+            // TODO: Remove in 3.0
+            if (mgmtOptions == null)
+            {
+                options = new HeapDumpOptions(config);
+            }
+            else
+            {
+                options = new HeapDumpEndpointOptions(config);
+                foreach (var mgmt in mgmtOptions)
+                {
+                    mgmt.EndpointOptions.Add(options);
+                }
+            }
+
             var heapDumper = new HeapDumper(options, applicationPathOnDisk, loggerFactory?.CreateLogger<HeapDumper>());
             return builder.UseHeapDumpActuator(options, heapDumper, loggerFactory);
         }

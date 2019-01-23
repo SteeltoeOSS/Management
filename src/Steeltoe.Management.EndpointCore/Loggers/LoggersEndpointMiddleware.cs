@@ -35,7 +35,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
             _next = next;
             _mgmtOptions = mgmtOptions;
         }
-        
+
         [Obsolete]
         public LoggersEndpointMiddleware(RequestDelegate next, LoggersEndpoint endpoint, ILogger<LoggersEndpointMiddleware> logger = null)
             : base(endpoint, new List<HttpMethod> { HttpMethod.Get, HttpMethod.Post }, false, logger)

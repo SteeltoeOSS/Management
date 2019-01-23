@@ -15,6 +15,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Owin;
+using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 
 namespace Steeltoe.Management.EndpointOwin.CloudFoundry
@@ -28,7 +29,7 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
         /// <param name="loggerFactory"><see cref="ILoggerFactory"/> for logging within the middleware</param>
         /// <returns>Your OWIN <see cref="IAppBuilder"/> with Cloud Foundry request security and CORS configured</returns>
-        public static IAppBuilder UseCloudFoundrySecurityMiddleware(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null)
+        public static IAppBuilder UseCloudFoundrySecurityMiddleware(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null, IManagementOptions mgmtOptions = null)
         {
             if (builder == null)
             {
@@ -40,8 +41,9 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
                 throw new System.ArgumentNullException(nameof(config));
             }
 
+            var cloudFoundryOptions = mgmtOptions == null ? (ICloudFoundryOptions)new CloudFoundryOptions(config) : new CloudFoundryEndpointOptions(config);
             var logger = loggerFactory?.CreateLogger<CloudFoundrySecurityOwinMiddleware>();
-            return builder.Use<CloudFoundrySecurityOwinMiddleware>(new CloudFoundryOptions(config), logger);
+            return builder.Use<CloudFoundrySecurityOwinMiddleware>(cloudFoundryOptions, mgmtOptions, logger);
         }
     }
 }

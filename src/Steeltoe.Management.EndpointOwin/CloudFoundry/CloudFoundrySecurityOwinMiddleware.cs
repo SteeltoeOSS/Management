@@ -18,6 +18,7 @@ using Steeltoe.Common;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -28,7 +29,18 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
         private ILogger<CloudFoundrySecurityOwinMiddleware> _logger;
         private ICloudFoundryOptions _options;
         private SecurityBase _base;
+        private IManagementOptions _mgmtOptions;
 
+        public CloudFoundrySecurityOwinMiddleware(OwinMiddleware next, ICloudFoundryOptions options, IManagementOptions mgmtOptions, ILogger<CloudFoundrySecurityOwinMiddleware> logger = null)
+            : base(next)
+        {
+            _options = options;
+            _logger = logger;
+            _base = new SecurityBase(options, logger);
+            _mgmtOptions = mgmtOptions;
+        }
+
+        [Obsolete]
         public CloudFoundrySecurityOwinMiddleware(OwinMiddleware next, ICloudFoundryOptions options, ILogger<CloudFoundrySecurityOwinMiddleware> logger = null)
             : base(next)
         {
@@ -121,11 +133,35 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
 
         private IEndpointOptions FindTargetEndpoint(PathString path)
         {
-            var configEndpoints = this._options.Global.EndpointOptions;
+            List<IEndpointOptions> configEndpoints;
+
+            // Remove in 3.0
+            if (_mgmtOptions == null)
+            {
+                configEndpoints = _options.Global.EndpointOptions;
+                foreach (var ep in configEndpoints)
+                {
+                    PathString epPath = new PathString(ep.Path);
+                    if (path.StartsWithSegments(epPath))
+                    {
+                        return ep;
+                    }
+                }
+
+                return null;
+            }
+
+            configEndpoints = _mgmtOptions.EndpointOptions;
             foreach (var ep in configEndpoints)
             {
-                PathString epPath = new PathString(ep.Path);
-                if (path.StartsWithSegments(epPath))
+                var contextPath = _mgmtOptions.Path;
+                if (!contextPath.EndsWith("/") && !string.IsNullOrEmpty(ep.Path))
+                {
+                    contextPath += "/";
+                }
+
+                var fullPath = contextPath + ep.Path;
+                if (path.StartsWithSegments(new PathString(fullPath)))
                 {
                     return ep;
                 }
