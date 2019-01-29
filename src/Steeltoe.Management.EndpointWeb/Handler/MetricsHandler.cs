@@ -18,6 +18,7 @@ using Steeltoe.Management.Endpoint.Security;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Linq;
 using System.Net;
 using System.Web;
 
@@ -25,6 +26,12 @@ namespace Steeltoe.Management.Endpoint.Handler
 {
     public class MetricsHandler : ActuatorHandler<MetricsEndpoint, IMetricsResponse, MetricsRequest>
     {
+        public MetricsHandler(MetricsEndpoint endpoint, ISecurityService securityService, IEnumerable<IManagementOptions> mgmtOptions, ILogger<MetricsHandler> logger = null)
+           : base(endpoint, securityService, mgmtOptions, null, false, logger)
+        {
+        }
+
+        [Obsolete]
         public MetricsHandler(MetricsEndpoint endpoint, ISecurityService securityService, ILogger<MetricsHandler> logger = null)
             : base(endpoint, securityService, null, false, logger)
         {
@@ -68,13 +75,25 @@ namespace Steeltoe.Management.Endpoint.Handler
 
         protected internal string GetMetricName(HttpRequest request)
         {
-            var epPath = _endpoint.Path;
-            var psPath = request.Path;
-            if (psPath.StartsWithSegments(epPath, out string remaining))
+            List<string> epPaths;
+            if (_mgmtOptions == null)
             {
-                if (!string.IsNullOrEmpty(remaining))
+                epPaths = new List<string>() { _endpoint.Path };
+            }
+            else
+            {
+                epPaths = _mgmtOptions.Select(opt => $"{opt.Path}/{_endpoint.Id}").ToList();
+            }
+
+            foreach (var epPath in epPaths)
+            {
+                var psPath = request.Path;
+                if (psPath.StartsWithSegments(epPath, out string remaining))
                 {
-                    return remaining.TrimStart('/');
+                    if (!string.IsNullOrEmpty(remaining))
+                    {
+                        return remaining.TrimStart('/');
+                    }
                 }
             }
 

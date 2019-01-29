@@ -16,6 +16,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Owin;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.CloudFoundry;
+using Steeltoe.Management.Endpoint.Discovery;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,24 +24,16 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Management.EndpointOwin.CloudFoundry
 {
-    public class CloudFoundryEndpointOwinMiddleware : EndpointOwinMiddleware<Links, string>
+    public class ActuatorDiscoveryEndpointOwinMiddleware : EndpointOwinMiddleware<Links, string>
     {
-        public CloudFoundryEndpointOwinMiddleware(OwinMiddleware next, CloudFoundryEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<CloudFoundryEndpointOwinMiddleware> logger = null)
-            : base(next, endpoint, mgmtOptions?.OfType<CloudFoundryManagementOptions>(), logger: logger)
-        {
-            _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
-        }
-
-        [Obsolete]
-        public CloudFoundryEndpointOwinMiddleware(OwinMiddleware next, CloudFoundryEndpoint endpoint, ILogger<CloudFoundryEndpointOwinMiddleware> logger = null)
-            : base(next, endpoint, logger: logger)
+        public ActuatorDiscoveryEndpointOwinMiddleware(OwinMiddleware next, ActuatorDiscoveryEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions = null, ILogger<ActuatorDiscoveryEndpointOwinMiddleware> logger = null)
+            : base(next, endpoint, mgmtOptions?.OfType<ActuatorManagementOptions>(), logger: logger)
         {
             _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
         }
 
         public override async Task Invoke(IOwinContext context)
         {
-
             if (!IsCloudFoundryRequest(context))
             {
                 await Next.Invoke(context);
@@ -70,26 +63,19 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
         {
             var methodMatch = context.Request.Method == "GET";
             var endpointPaths = new List<string>();
-            if (_mgmtOptions == null)
-            {
-                endpointPaths.Add(_endpoint.Path);
-            }
-            else
-            {
+            endpointPaths.AddRange(
+                   _mgmtOptions.Select(opt =>
+                   {
+                       var contextPath = opt.Path;
+                       if (!contextPath.EndsWith("/") && !string.IsNullOrEmpty(_endpoint.Id))
+                       {
+                           contextPath += "/";
+                       }
+                       var fullPath = contextPath + _endpoint.Path;
+                       return fullPath;
+                   })
+               );
 
-                endpointPaths.AddRange(
-                    _mgmtOptions.Select(opt =>
-                    {
-                        var contextPath = opt.Path;
-                        if (!contextPath.EndsWith("/") && !string.IsNullOrEmpty(_endpoint.Id))
-                        {
-                            contextPath += "/";
-                        }
-                        var fullPath = contextPath + _endpoint.Path;
-                        return fullPath;
-                    })
-                );
-            }
 
             var pathMatch = endpointPaths.Any(p => context.Request.Path.Value.Equals(p));
             return methodMatch && pathMatch;

@@ -32,9 +32,19 @@ namespace Steeltoe.Management.Endpoint.Handler
 {
     public class MappingsHandler : ActuatorHandler
     {
-        protected MappingsOptions _options;
+        protected IMappingsOptions _options;
         protected IApiExplorer _apiExplorer;
+        private readonly IEnumerable<IManagementOptions> _mgmtOptions;
 
+        public MappingsHandler(IMappingsOptions options, ISecurityService securityService, IApiExplorer apiExplorer, IEnumerable<IManagementOptions> mgmtOptions, ILogger<MappingsHandler> logger = null)
+           : base(securityService, mgmtOptions, null, true, logger)
+        {
+            _options = options;
+            _apiExplorer = apiExplorer;
+            _mgmtOptions = mgmtOptions;
+        }
+
+        [Obsolete]
         public MappingsHandler(MappingsOptions options, ISecurityService securityService, IApiExplorer apiExplorer, ILogger<MappingsHandler> logger = null)
             : base(securityService, null, true, logger)
         {
@@ -45,7 +55,19 @@ namespace Steeltoe.Management.Endpoint.Handler
         public override bool RequestVerbAndPathMatch(string httpMethod, string requestPath)
         {
             _logger?.LogTrace("RequestVerbAndPathMatch {httpMethod}/{requestPath}/{optionsPath} request", httpMethod, requestPath, _options.Path);
+
             return requestPath.Equals(_options.Path) && _allowedMethods.Any(m => m.Method.Equals(httpMethod));
+        }
+
+        protected bool PathMatch(string requestPath)
+        {
+            // TODO: Remove in 3.0
+            if(_mgmtOptions == null)
+            {
+                return requestPath.Equals(_options.Path);
+            }
+
+            return _mgmtOptions.Select(opt => $"{opt.Path}/{_options.Id}").Any(p => p.Equals(requestPath));
         }
 
         public async override Task<bool> IsAccessAllowed(HttpContext context)

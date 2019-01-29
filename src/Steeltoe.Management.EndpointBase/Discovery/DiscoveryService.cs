@@ -33,6 +33,7 @@ namespace Steeltoe.Management.Endpoint.Discovery
 
         public Links Invoke(string baseUrl)
         {
+
             var endpointOptions = _mgmtOptions.EndpointOptions;
             var links = new Links();
 

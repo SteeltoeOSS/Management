@@ -31,10 +31,10 @@ namespace Steeltoe.Management.EndpointOwin.Mappings
         /// <param name="builder">OWIN <see cref="IAppBuilder" /></param>
         /// <param name="config"><see cref="IConfiguration"/> of application for configuring refresh endpoint</param>
         /// <param name="apiExplorer">An <see cref="ApiExplorer"/> for iterating routes and their metadata</param>
-        /// <param name="loggerFactory">For logging within the middleware</param>
         /// <param name="mgmtOptions">Shared management options</param>
+        /// <param name="loggerFactory">For logging within the middleware</param>
         /// <returns>OWIN <see cref="IAppBuilder" /> with Refresh Endpoint added</returns>
-        public static IAppBuilder UseMappingActuator(this IAppBuilder builder, IConfiguration config, IApiExplorer apiExplorer, ILoggerFactory loggerFactory = null, IEnumerable<IManagementOptions> mgmtOptions = null)
+        public static IAppBuilder UseMappingActuator(this IAppBuilder builder, IConfiguration config, IApiExplorer apiExplorer, IEnumerable<IManagementOptions> mgmtOptions, ILoggerFactory loggerFactory = null)
         {
             if (builder == null)
             {
@@ -68,6 +68,12 @@ namespace Steeltoe.Management.EndpointOwin.Mappings
 
             var logger = loggerFactory?.CreateLogger<EndpointOwinMiddleware<IList<string>>>();
             return builder.Use<MappingsEndpointOwinMiddleware>(options, mgmtOptions, apiExplorer, loggerFactory?.CreateLogger<MappingsEndpointOwinMiddleware>());
+        }
+
+        [Obsolete]
+        public static IAppBuilder UseMappingActuator(this IAppBuilder builder, IConfiguration config, IApiExplorer apiExplorer, ILoggerFactory loggerFactory = null)
+        {
+            return builder.UseMappingActuator(config, apiExplorer, mgmtOptions: null, loggerFactory: loggerFactory);
         }
     }
 }

@@ -28,7 +28,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
         /// </summary>
         /// <param name="services">Service collection to add logging to</param>
         /// <param name="config">Application configuration (this actuator looks for a settings starting with management:endpoints:loggers)</param>
-        public static void AddLoggersActuator(this IServiceCollection services, IConfiguration config)
+        public static void AddLoggersActuator(this IServiceCollection services, IConfiguration config,  bool addToDiscovery = false)
         {
             if (services == null)
             {
@@ -40,21 +40,11 @@ namespace Steeltoe.Management.Endpoint.Loggers
                 throw new ArgumentNullException(nameof(config));
             }
 
-            
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
 
-            services.TryAddSingleton<ILoggersOptions>(provider =>
-            {
-                var mgmtOptions = provider.GetServices<IManagementOptions>();
-                var opts = new LoggersEndpointOptions(config);
-                
-                foreach (var mgmt in mgmtOptions)
-                {
-                    mgmt.EndpointOptions.Add(opts);
-                }
-                return opts;
-            });
-            //services.TryAddSingleton<ILoggersOptions>(new LoggersOptions(config));
+            var options = new LoggersEndpointOptions(config);
+            services.TryAddSingleton<ILoggersOptions>(options);
+            services.RegisterEndpointOptions(options, addToDiscovery);
             services.TryAddSingleton<LoggersEndpoint>();
         }
     }

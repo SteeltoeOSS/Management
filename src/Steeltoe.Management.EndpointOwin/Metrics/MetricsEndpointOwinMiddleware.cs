@@ -18,6 +18,7 @@ using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Metrics;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -96,16 +97,33 @@ namespace Steeltoe.Management.EndpointOwin.Metrics
 
         protected internal string GetMetricName(IOwinRequest request)
         {
-            PathString epPath = new PathString(_endpoint.Path);
-            if (request.Path.StartsWithSegments(epPath, out PathString remaining))
+            var epPaths = GetEndpointPath();
+            foreach (var path in epPaths)
             {
-                if (remaining.HasValue)
+                PathString epPath = new PathString(path);
+                if (request.Path.StartsWithSegments(epPath, out PathString remaining))
                 {
-                    return remaining.Value.TrimStart('/');
+                    if (remaining.HasValue)
+                    {
+                        return remaining.Value.TrimStart('/');
+                    }
                 }
             }
 
             return null;
+        }
+
+        private IEnumerable<string> GetEndpointPath()
+        {
+            if(_mgmtOptions == null)
+            {
+                return new List<string>() { _endpoint.Path };
+            }
+            else
+            {
+                return _mgmtOptions.Select(opt => $"{opt.Path}/{_endpoint.Id}");
+
+            }
         }
 
         /// <summary>

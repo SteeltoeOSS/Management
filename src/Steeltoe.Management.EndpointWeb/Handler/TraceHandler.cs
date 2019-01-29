@@ -15,12 +15,19 @@
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Security;
 using Steeltoe.Management.Endpoint.Trace;
+using System;
 using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint.Handler
 {
     public class TraceHandler : ActuatorHandler<TraceEndpoint, List<TraceResult>>
     {
+        public TraceHandler(TraceEndpoint endpoint, ISecurityService securityService,IEnumerable<IManagementOptions> mgmtOptions, ILogger<TraceHandler> logger = null)
+          : base(endpoint, securityService, mgmtOptions, null, true, logger)
+        {
+        }
+
+        [Obsolete]
         public TraceHandler(TraceEndpoint endpoint, ISecurityService securityService, ILogger<TraceHandler> logger = null)
             : base(endpoint, securityService, null, true, logger)
         {

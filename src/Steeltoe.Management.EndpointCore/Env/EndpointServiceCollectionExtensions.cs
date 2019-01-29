@@ -29,7 +29,7 @@ namespace Steeltoe.Management.Endpoint.Env
         /// </summary>
         /// <param name="services">Service collection to add actuator to</param>
         /// <param name="config">Application configuration (this actuator looks for settings starting with management:endpoints:dump)</param>
-        public static void AddEnvActuator(this IServiceCollection services, IConfiguration config)
+        public static void AddEnvActuator(this IServiceCollection services, IConfiguration config, bool addToDiscovery=false)
         {
             if (services == null)
             {
@@ -52,21 +52,11 @@ namespace Steeltoe.Management.Endpoint.Env
                     ContentRootPath = service.ContentRootPath
                 };
             });
-            
+
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
-
-            services.TryAddSingleton<IEnvOptions>(provider =>
-            {
-                var mgmtOptions = provider.GetServices<IManagementOptions>();
-                var opts = new EnvEndpointOptions(config);
-                foreach (var mgmt in mgmtOptions)
-                {
-                    mgmt.EndpointOptions.Add(opts);
-                }
-                return opts;
-            });
-
-            //services.TryAddSingleton<IEnvOptions>(new EnvOptions(config));
+            var options = new EnvEndpointOptions(config);
+            services.TryAddSingleton<IEnvOptions>(options);
+            services.RegisterEndpointOptions(options, addToDiscovery);
             services.TryAddSingleton<EnvEndpoint>();
         }
     }

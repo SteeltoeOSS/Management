@@ -28,7 +28,7 @@ namespace Steeltoe.Management.Endpoint.Refresh
         /// </summary>
         /// <param name="services">Service collection to add actuator to</param>
         /// <param name="config">Application configuration (this actuator looks for settings starting with management:endpoints:dump)</param>
-        public static void AddRefreshActuator(this IServiceCollection services, IConfiguration config)
+        public static void AddRefreshActuator(this IServiceCollection services, IConfiguration config, bool addToDiscovery=false)
         {
             if (services == null)
             {
@@ -41,16 +41,9 @@ namespace Steeltoe.Management.Endpoint.Refresh
             }
 
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
-            services.TryAddSingleton<IRefreshOptions>(provider =>
-            {
-                var mgmtOptions = provider.GetServices<IManagementOptions>();
-                var opts = new RefreshEndpointOptions(config);
-                foreach (var mgmt in mgmtOptions)
-                {
-                    mgmt.EndpointOptions.Add(opts);
-                }
-                return opts;
-            });
+            var options = new RefreshEndpointOptions(config);
+            services.TryAddSingleton<IRefreshOptions>(options);
+            services.RegisterEndpointOptions(options, addToDiscovery);
             services.TryAddSingleton<RefreshEndpoint>();
         }
     }

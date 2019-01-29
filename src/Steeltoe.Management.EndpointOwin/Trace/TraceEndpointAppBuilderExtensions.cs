@@ -31,11 +31,11 @@ namespace Steeltoe.Management.EndpointOwin.Trace
         /// </summary>
         /// <param name="builder">OWIN <see cref="IAppBuilder" /></param>
         /// <param name="config"><see cref="IConfiguration"/> of application for configuring thread dump endpoint</param>
+        /// <param name="mgmtOptions">Shared management options</param>
         /// <param name="traceRepository">repository to put traces in</param>
         /// <param name="loggerFactory">For logging within the middleware</param>
-        /// <param name="mgmtOptions">Shared management options</param>
         /// <returns>OWIN <see cref="IAppBuilder" /> with Trace Endpoint added</returns>
-        public static IAppBuilder UseTraceActuator(this IAppBuilder builder, IConfiguration config, ITraceRepository traceRepository = null, ILoggerFactory loggerFactory = null, IEnumerable<IManagementOptions> mgmtOptions = null)
+        public static IAppBuilder UseTraceActuator(this IAppBuilder builder, IConfiguration config, IEnumerable<IManagementOptions> mgmtOptions, ITraceRepository traceRepository = null, ILoggerFactory loggerFactory = null)
         {
             if (builder == null)
             {
@@ -66,6 +66,11 @@ namespace Steeltoe.Management.EndpointOwin.Trace
             var endpoint = new TraceEndpoint(options, traceRepository, loggerFactory?.CreateLogger<TraceEndpoint>());
             var logger = loggerFactory?.CreateLogger<EndpointOwinMiddleware<TraceEndpoint, List<TraceResult>>>();
             return builder.Use<EndpointOwinMiddleware<List<TraceResult>>>(endpoint, mgmtOptions, new List<HttpMethod> { HttpMethod.Get }, true, logger);
+        }
+
+        public static IAppBuilder UseTraceActuator(this IAppBuilder builder, IConfiguration config, ITraceRepository traceRepository = null, ILoggerFactory loggerFactory = null)
+        {
+            return builder.UseTraceActuator(config, mgmtOptions: null, traceRepository: traceRepository, loggerFactory: loggerFactory);
         }
     }
 }

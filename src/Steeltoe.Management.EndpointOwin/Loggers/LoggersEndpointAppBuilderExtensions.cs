@@ -31,10 +31,10 @@ namespace Steeltoe.Management.EndpointOwin.Loggers
         /// <param name="builder">OWIN <see cref="IAppBuilder" /></param>
         /// <param name="config"><see cref="IConfiguration"/> of application for configuring loggers endpoint</param>
         /// <param name="loggerProvider">Provider of loggers to report on and configure</param>
-        /// <param name="loggerFactory">For logging within the middleware</param>
         /// <param name="mgmtOptions">Shared management options</param>
+        /// <param name="loggerFactory">For logging within the middleware</param>
         /// <returns>OWIN <see cref="IAppBuilder" /> with Loggers Endpoint added</returns>
-        public static IAppBuilder UseLoggersActuator(this IAppBuilder builder, IConfiguration config, ILoggerProvider loggerProvider, ILoggerFactory loggerFactory = null, IEnumerable<IManagementOptions> mgmtOptions = null)
+        public static IAppBuilder UseLoggersActuator(this IAppBuilder builder, IConfiguration config, ILoggerProvider loggerProvider, IEnumerable<IManagementOptions> mgmtOptions, ILoggerFactory loggerFactory = null)
         {
             if (builder == null)
             {
@@ -68,6 +68,12 @@ namespace Steeltoe.Management.EndpointOwin.Loggers
             var endpoint = new LoggersEndpoint(options, loggerProvider as IDynamicLoggerProvider, loggerFactory?.CreateLogger<LoggersEndpoint>());
             var logger = loggerFactory?.CreateLogger<LoggersEndpointOwinMiddleware>();
             return builder.Use<LoggersEndpointOwinMiddleware>(endpoint, mgmtOptions, logger);
+        }
+
+        [Obsolete]
+        public static IAppBuilder UseLoggersActuator(this IAppBuilder builder, IConfiguration config, ILoggerProvider loggerProvider, ILoggerFactory loggerFactory = null)
+        {
+            return builder.UseLoggersActuator(config, loggerProvider, mgmtOptions: null, loggerFactory: loggerFactory);
         }
     }
 }

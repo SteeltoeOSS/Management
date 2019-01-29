@@ -16,24 +16,23 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Owin;
 using Steeltoe.Management.Endpoint;
-using Steeltoe.Management.Endpoint.CloudFoundry;
+using Steeltoe.Management.Endpoint.Discovery;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Steeltoe.Management.EndpointOwin.CloudFoundry
 {
-    public static class CloudFoundryEndpointAppBuilderExtensions
+    public static class DiscoveryActuatorEndpointAppBuilderExtensions
     {
         /// <summary>
         /// Add Cloud Foundry actuator to OWIN Pipeline
         /// </summary>
         /// <param name="builder">Your OWIN <see cref="IAppBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        /// <param name="mgmtOptions">Shared management options</param>
         /// <param name="loggerFactory"><see cref="ILoggerFactory"/> for logging within the middleware</param>
         /// <returns>Your OWIN <see cref="IAppBuilder"/> with Cloud Foundry actuator attached</returns>
-        public static IAppBuilder UseCloudFoundryActuator(this IAppBuilder builder, IConfiguration config, IEnumerable<IManagementOptions> mgmtOptions, ILoggerFactory loggerFactory = null)
+        public static IAppBuilder UseDiscoveryActuator(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null, IEnumerable<IManagementOptions> mgmtOptions = null)
         {
             if (builder == null)
             {
@@ -45,29 +44,16 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
                 throw new ArgumentNullException(nameof(config));
             }
 
-            ICloudFoundryOptions cloudFoundryOptions;
+            IActuatorDiscoveryOptions discoveryOptions;
 
-            // TODO: remove in 3.0
-            if (mgmtOptions == null)
-            {
-                cloudFoundryOptions = new CloudFoundryOptions(config);
-            }
-            else
-            {
-                cloudFoundryOptions = new CloudFoundryEndpointOptions(config);
-                var mgmt = mgmtOptions.OfType<CloudFoundryManagementOptions>().Single();
-                mgmt.EndpointOptions.Add(cloudFoundryOptions);
-            }
+            discoveryOptions = new ActuatorDiscoveryEndpointOptions(config);
+            var mgmt = mgmtOptions?.OfType<ActuatorManagementOptions>().Single();
+            mgmt.EndpointOptions.Add(discoveryOptions);
 
-            var endpoint = new CloudFoundryEndpoint(cloudFoundryOptions, mgmtOptions, loggerFactory?.CreateLogger<CloudFoundryEndpoint>());
-            var logger = loggerFactory?.CreateLogger<CloudFoundryEndpointOwinMiddleware>();
-            return builder.Use<CloudFoundryEndpointOwinMiddleware>(endpoint, mgmtOptions, logger);
+            var endpoint = new ActuatorDiscoveryEndpoint(discoveryOptions, mgmtOptions, loggerFactory?.CreateLogger<ActuatorDiscoveryEndpoint>());
+            var logger = loggerFactory?.CreateLogger<ActuatorDiscoveryEndpointOwinMiddleware>();
+            return builder.Use<ActuatorDiscoveryEndpointOwinMiddleware>(endpoint, mgmtOptions, logger);
         }
 
-        [Obsolete]
-        public static IAppBuilder UseCloudFoundryActuator(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null)
-        {
-            return builder.UseCloudFoundryActuator(config, mgmtOptions: null, loggerFactory: loggerFactory);
-        }
     }
 }

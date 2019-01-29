@@ -15,6 +15,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Owin;
+using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Refresh;
 using System;
 using System.Collections.Generic;
@@ -31,7 +32,7 @@ namespace Steeltoe.Management.EndpointOwin.Refresh
         /// <param name="config"><see cref="IConfiguration"/> of application for configuring refresh endpoint</param>
         /// <param name="loggerFactory">For logging within the middleware</param>
         /// <returns>OWIN <see cref="IAppBuilder" /> with Refresh Endpoint added</returns>
-        public static IAppBuilder UseRefreshActuator(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null)
+        public static IAppBuilder UseRefreshActuator(this IAppBuilder builder, IConfiguration config, IEnumerable<IManagementOptions> mgmtOptions, ILoggerFactory loggerFactory = null)
         {
             if (builder == null)
             {
@@ -43,9 +44,30 @@ namespace Steeltoe.Management.EndpointOwin.Refresh
                 throw new ArgumentNullException(nameof(config));
             }
 
-            var endpoint = new RefreshEndpoint(new RefreshOptions(config), config, loggerFactory?.CreateLogger<RefreshEndpoint>());
+            IRefreshOptions options;
+            if (mgmtOptions == null)
+            {
+                options = new RefreshOptions(config);
+            }
+            else
+            {
+                options = new RefreshEndpointOptions(config);
+                foreach (var mgmtOption in mgmtOptions)
+                {
+                    mgmtOption.EndpointOptions.Add(options);
+                }
+            }
+
+            var endpoint = new RefreshEndpoint(options, config, loggerFactory?.CreateLogger<RefreshEndpoint>());
             var logger = loggerFactory?.CreateLogger<EndpointOwinMiddleware<IList<string>>>();
             return builder.Use<EndpointOwinMiddleware<IList<string>>>(endpoint, new List<HttpMethod> { HttpMethod.Get }, true, logger);
         }
+
+        public static IAppBuilder UseRefreshActuator(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null)
+        {
+            return builder.UseRefreshActuator(config, mgmtOptions: null, loggerFactory: loggerFactory);
+        }
+
+
     }
 }

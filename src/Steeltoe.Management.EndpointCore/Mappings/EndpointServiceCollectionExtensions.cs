@@ -28,7 +28,7 @@ namespace Steeltoe.Management.Endpoint.Mappings
         /// </summary>
         /// <param name="services">Service collection to add actuator to</param>
         /// <param name="config">Application configuration (this actuator looks for settings starting with management:endpoints:dump)</param>
-        public static void AddMappingsActuator(this IServiceCollection services, IConfiguration config)
+        public static void AddMappingsActuator(this IServiceCollection services, IConfiguration config, bool addToDiscovery = false)
         {
             if (services == null)
             {
@@ -40,19 +40,10 @@ namespace Steeltoe.Management.Endpoint.Mappings
                 throw new ArgumentNullException(nameof(config));
             }
 
-            //services.TryAddSingleton<IMappingsOptions>(new MappingsOptions(config));
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
-
-            services.TryAddSingleton<IMappingsOptions>(provider =>
-            {
-                var mgmtOptions = provider.GetServices<IManagementOptions>();
-                var opts = new MappingsEndpointOptions(config);
-                foreach (var mgmt in mgmtOptions)
-                {
-                    mgmt.EndpointOptions.Add(opts);
-                }
-                return opts;
-            });
+            var options = new MappingsEndpointOptions(config);
+            services.TryAddSingleton<IMappingsOptions>(options);
+            services.RegisterEndpointOptions(options, addToDiscovery);
             services.TryAddSingleton<IRouteMappings, RouteMappings>();
         }
     }

@@ -28,7 +28,7 @@ namespace Steeltoe.Management.Endpoint.Discovery
         public ActuatorDiscoveryEndpoint(IActuatorDiscoveryOptions options, IEnumerable<IManagementOptions> mgmtOptions, ILogger<ActuatorDiscoveryEndpoint> logger = null)
         : base(options)
         {
-            _mgmtOption = mgmtOptions.OfType<ActuatorManagementOptions>().Single();
+            _mgmtOption = mgmtOptions?.OfType<ActuatorManagementOptions>().Single();
             _logger = logger;
         }
 

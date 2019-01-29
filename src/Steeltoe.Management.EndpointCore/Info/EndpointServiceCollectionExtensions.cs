@@ -30,9 +30,9 @@ namespace Steeltoe.Management.Endpoint.Info
         /// </summary>
         /// <param name="services">Service collection to add info to</param>
         /// <param name="config">Application configuration (this actuator looks for a settings starting with management:endpoints:info)</param>
-        public static void AddInfoActuator(this IServiceCollection services, IConfiguration config)
+        public static void AddInfoActuator(this IServiceCollection services, IConfiguration config, bool addToDiscovery = false)
         {
-            services.AddInfoActuator(config, new GitInfoContributor(), new AppSettingsInfoContributor(config));
+            services.AddInfoActuator(config, addToDiscovery, new GitInfoContributor(), new AppSettingsInfoContributor(config));
         }
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace Steeltoe.Management.Endpoint.Info
         //    services.TryAddSingleton<InfoEndpoint>();
         //}
 
-        public static void AddInfoActuator(this IServiceCollection services, IConfiguration config, params IInfoContributor[] contributors)
+        public static void AddInfoActuator(this IServiceCollection services, IConfiguration config, bool addToDiscovery, params IInfoContributor[] contributors)
         {
             if (services == null)
             {
@@ -71,18 +71,9 @@ namespace Steeltoe.Management.Endpoint.Info
             }
 
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
-
-            services.TryAddSingleton<IInfoOptions>(provider =>
-            {
-                var mgmtOptions = provider.GetServices<IManagementOptions>();
-                var opts = new InfoEndpointOptions(config);
-                foreach (var mgmt in mgmtOptions)
-                {
-                    mgmt.EndpointOptions.Add(opts);
-                }
-                return opts;
-            });
-
+            var options = new InfoEndpointOptions(config);
+            services.TryAddSingleton<IInfoOptions>(options);
+            services.RegisterEndpointOptions(options, addToDiscovery);
             AddContributors(services, contributors);
             services.TryAddSingleton<InfoEndpoint>();
         }

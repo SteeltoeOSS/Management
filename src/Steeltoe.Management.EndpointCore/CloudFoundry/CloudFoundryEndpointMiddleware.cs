@@ -18,6 +18,7 @@ using Microsoft.Extensions.Primitives;
 using Steeltoe.Management.Endpoint.Middleware;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry
@@ -28,7 +29,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
         private RequestDelegate _next;
 
         public CloudFoundryEndpointMiddleware(RequestDelegate next, CloudFoundryEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<CloudFoundryEndpointMiddleware> logger = null)
-            : base(endpoint, mgmtOptions, logger: logger)
+            : base(endpoint, mgmtOptions?.OfType<CloudFoundryManagementOptions>(), logger: logger)
         {
             _next = next;
             _options = endpoint.Options as ICloudFoundryOptions;

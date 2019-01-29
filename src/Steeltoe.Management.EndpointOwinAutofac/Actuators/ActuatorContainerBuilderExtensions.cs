@@ -16,6 +16,7 @@ using Autofac;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.CloudFoundry;
+using Steeltoe.Management.Endpoint.Discovery;
 using Steeltoe.Management.EndpointOwin.CloudFoundry;
 using System;
 using System.Collections.Generic;
@@ -23,14 +24,14 @@ using System.Linq;
 
 namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
 {
-    public static class CloudFoundryContainerBuilderExtensions
+    public static class ActuatorContainerBuilderExtensions
     {
         /// <summary>
-        /// Register the Cloud Foundry endpoint, OWIN middleware and options
+        /// Register the Discovery endpoint, OWIN middleware and options
         /// </summary>
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        public static void RegisterCloudFoundryActuator(this ContainerBuilder container, IConfiguration config)
+        public static void RegisterDiscoveryActuator(this ContainerBuilder container, IConfiguration config)
         {
             if (container == null)
             {
@@ -42,19 +43,20 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
                 throw new ArgumentNullException(nameof(config));
             }
 
-            container.RegisterInstance(new CloudFoundryManagementOptions())
+            container.RegisterInstance(new ActuatorManagementOptions())
                 .SingleInstance()
                 .As<IManagementOptions>();
 
             container.Register(c =>
             {
-                var options = new CloudFoundryEndpointOptions(config);
-                var mgmtOptions = c.Resolve<IEnumerable<IManagementOptions>>().OfType<CloudFoundryManagementOptions>().Single();
+                var options = new ActuatorDiscoveryEndpointOptions(config);
+                var mgmtOptions = c.Resolve<IEnumerable<IManagementOptions>>().OfType<ActuatorManagementOptions>().Single();
+
                 mgmtOptions.EndpointOptions.Add(options);
                 return options;
-            }).As<ICloudFoundryOptions>().SingleInstance();
-            container.RegisterType<CloudFoundryEndpoint>().SingleInstance();
-            container.RegisterType<CloudFoundryEndpointOwinMiddleware>().SingleInstance();
+            }).As<IActuatorDiscoveryOptions>().SingleInstance();
+            container.RegisterType<ActuatorDiscoveryEndpoint>().SingleInstance();
+            container.RegisterType<ActuatorDiscoveryEndpointOwinMiddleware>().SingleInstance();
         }
 
         /// <summary>
@@ -62,7 +64,7 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
         /// </summary>
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        public static void RegisterCloudFoundrySecurityMiddleware(this ContainerBuilder container, IConfiguration config)
+        public static void RegisterActuatorSecurityMiddleware(this ContainerBuilder container, IConfiguration config)
         {
             if (container == null)
             {
@@ -74,7 +76,8 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
                 throw new ArgumentNullException(nameof(config));
             }
 
-            container.RegisterType<CloudFoundrySecurityOwinMiddleware>().SingleInstance();
+            //TODO: implement security for actuator
+          //  container.RegisterType<CloudFoundrySecurityOwinMiddleware>().SingleInstance();
         }
     }
 }

@@ -17,41 +17,41 @@ using Microsoft.Extensions.Logging;
 using Owin;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.CloudFoundry;
+using Steeltoe.Management.Endpoint.Discovery;
 using System;
 
 namespace Steeltoe.Management.EndpointOwin.CloudFoundry
 {
-    public static class CloudFoundrySecurityAppBuilderExtensions
+    public static class DiscoverySecurityAppBuilderExtensions
     {
         /// <summary>
         /// Add Cloud Foundry security to actuator requests in the OWIN Pipeline
         /// </summary>
         /// <param name="builder">Your OWIN <see cref="IAppBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        /// <param name="mgmtOptions">Shared management options</param>
         /// <param name="loggerFactory"><see cref="ILoggerFactory"/> for logging within the middleware</param>
         /// <returns>Your OWIN <see cref="IAppBuilder"/> with Cloud Foundry request security and CORS configured</returns>
-        public static IAppBuilder UseCloudFoundrySecurityMiddleware(this IAppBuilder builder, IConfiguration config, IManagementOptions mgmtOptions, ILoggerFactory loggerFactory = null)
+        public static IAppBuilder UseDiscoveryActuatorSecurityMiddleware(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null, IManagementOptions mgmtOptions = null)
         {
-            if (builder == null)
-            {
-                throw new System.ArgumentNullException(nameof(builder));
-            }
+            throw new Exception("Not implemented");
+            //if (builder == null)
+            //{
+            //    throw new System.ArgumentNullException(nameof(builder));
+            //}
 
-            if (config == null)
-            {
-                throw new System.ArgumentNullException(nameof(config));
-            }
+            //if (config == null)
+            //{
+            //    throw new System.ArgumentNullException(nameof(config));
+            //}
 
-            var cloudFoundryOptions = mgmtOptions == null ? (ICloudFoundryOptions)new CloudFoundryOptions(config) : new CloudFoundryEndpointOptions(config);
-            var logger = loggerFactory?.CreateLogger<CloudFoundrySecurityOwinMiddleware>();
-            return builder.Use<CloudFoundrySecurityOwinMiddleware>(cloudFoundryOptions, mgmtOptions, logger);
-        }
+            //if (mgmtOptions == null)
+            //{
+            //    throw new System.ArgumentNullException(nameof(mgmtOptions));
+            //}
 
-        [Obsolete]
-        public static IAppBuilder UseCloudFoundrySecurityMiddleware(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null)
-        {
-            return builder.UseCloudFoundrySecurityMiddleware(config,  mgmtOptions: null, loggerFactory: loggerFactory);
+            //var actuatorOptions =  new ActuatorDiscoveryEndpointOptions(config);
+            //var logger = loggerFactory?.CreateLogger<ActuatorDiscoveryEndpointOwinMiddleware>();
+            //return builder.Use<ActuatorDiscoveryEndpointOwinMiddleware>(actuatorOptions, mgmtOptions, logger);
         }
     }
 }

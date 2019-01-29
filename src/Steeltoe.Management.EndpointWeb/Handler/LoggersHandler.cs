@@ -15,6 +15,7 @@
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Loggers;
 using Steeltoe.Management.Endpoint.Security;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
@@ -24,6 +25,12 @@ namespace Steeltoe.Management.Endpoint.Handler
 {
     public class LoggersHandler : ActuatorHandler<LoggersEndpoint, Dictionary<string, object>, LoggersChangeRequest>
     {
+        public LoggersHandler(LoggersEndpoint endpoint, ISecurityService securityService, IEnumerable<IManagementOptions> mgmtOptions, ILogger<LoggersHandler> logger = null)
+            : base(endpoint, securityService, mgmtOptions, new List<HttpMethod> { HttpMethod.Get, HttpMethod.Post }, false, logger)
+        {
+        }
+
+        [Obsolete]
         public LoggersHandler(LoggersEndpoint endpoint, ISecurityService securityService, ILogger<LoggersHandler> logger = null)
             : base(endpoint, securityService, new List<HttpMethod> { HttpMethod.Get, HttpMethod.Post }, false, logger)
         {

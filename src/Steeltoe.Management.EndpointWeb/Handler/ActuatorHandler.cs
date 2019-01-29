@@ -32,7 +32,18 @@ namespace Steeltoe.Management.Endpoint.Handler
         protected IEnumerable<HttpMethod> _allowedMethods;
         protected bool _exactRequestPathMatching;
         protected ISecurityService _securityService;
+        protected IEnumerable<IManagementOptions> _mgmtOptions;
 
+        public ActuatorHandler(ISecurityService securityService, IEnumerable<IManagementOptions> mgmtOptions, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
+        {
+            _logger = logger;
+            _allowedMethods = allowedMethods ?? new List<HttpMethod> { HttpMethod.Get };
+            _exactRequestPathMatching = exactRequestPathMatching;
+            _securityService = securityService;
+            _mgmtOptions = mgmtOptions;
+        }
+
+        [Obsolete]
         public ActuatorHandler(ISecurityService securityService, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
         {
             _logger = logger;
@@ -87,11 +98,24 @@ namespace Steeltoe.Management.Endpoint.Handler
     {
         protected IEndpoint<TResult> _endpoint;
 
+        public ActuatorHandler(ISecurityService securityService,IEnumerable<IManagementOptions> mgmtOptions, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
+           : base(securityService, mgmtOptions, allowedMethods, exactRequestPathMatching, logger)
+        {
+        }
+
+        public ActuatorHandler(IEndpoint<TResult> endpoint, ISecurityService securityService, IEnumerable<IManagementOptions> mgmtOptions, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
+          : base(securityService, mgmtOptions, allowedMethods, exactRequestPathMatching, logger)
+        {
+            _endpoint = endpoint ?? throw new NullReferenceException(nameof(endpoint));
+        }
+
+        [Obsolete]
         public ActuatorHandler(ISecurityService securityService, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
             : base(securityService, allowedMethods, exactRequestPathMatching, logger)
         {
         }
 
+        [Obsolete]
         public ActuatorHandler(IEndpoint<TResult> endpoint, ISecurityService securityService, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
             : base(securityService, allowedMethods, exactRequestPathMatching, logger)
         {
@@ -108,9 +132,70 @@ namespace Steeltoe.Management.Endpoint.Handler
 
         public override bool RequestVerbAndPathMatch(string httpMethod, string requestPath)
         {
-            return _exactRequestPathMatching
-                ? requestPath.Equals(_endpoint.Path) && _allowedMethods.Any(m => m.Method.Equals(httpMethod))
-                : requestPath.StartsWith(_endpoint.Path) && _allowedMethods.Any(m => m.Method.Equals(httpMethod));
+            IManagementOptions matchingMgmtContext;
+            return _allowedMethods.Any(m => m.Method.Equals(httpMethod)) &&
+                (_exactRequestPathMatching
+                ? RequestPathMatch(requestPath, out matchingMgmtContext)
+                : RequestPathStartWith(requestPath, out matchingMgmtContext));
+        }
+
+        protected virtual bool RequestPathMatch(string requestPath, out IManagementOptions matchingMgmtContext)
+        {
+            matchingMgmtContext = null;
+
+            if (_mgmtOptions == null)
+            {
+                return requestPath.Equals(_endpoint.Path);
+            }
+
+            foreach (var context in _mgmtOptions)
+            {
+                var contextPath = context.Path;
+                if (!contextPath.EndsWith("/") && !string.IsNullOrEmpty(_endpoint.Path))
+                {
+                    contextPath += "/";
+                }
+
+                var fullPath = contextPath + _endpoint.Path;
+                if (requestPath.Equals(fullPath))
+                {
+                    matchingMgmtContext = context;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        protected virtual bool RequestPathStartWith(string requestPath, out IManagementOptions matchingMgmtContext)
+        {
+            matchingMgmtContext = null;
+
+            if (_mgmtOptions == null)
+            {
+                return requestPath.StartsWith(_endpoint.Path);
+            }
+            else
+            {
+                foreach (var context in _mgmtOptions)
+                {
+                    var contextPath = context.Path;
+                    if (!contextPath.EndsWith("/") && !string.IsNullOrEmpty(_endpoint.Path))
+                    {
+                        contextPath += "/";
+                    }
+
+                    var fullPath = contextPath + _endpoint.Path;
+                    if (requestPath.StartsWith(fullPath))
+                    {
+                        matchingMgmtContext = context;
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
         }
 
         public async override Task<bool> IsAccessAllowed(HttpContext context)
@@ -125,6 +210,13 @@ namespace Steeltoe.Management.Endpoint.Handler
     {
         protected new IEndpoint<TResult, TRequest> _endpoint;
 
+        public ActuatorHandler(IEndpoint<TResult, TRequest> endpoint, ISecurityService securityService, IEnumerable<IManagementOptions> mgmtOptions,  IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
+            : base(securityService, mgmtOptions, allowedMethods, exactRequestPathMatching, logger)
+        {
+            _endpoint = endpoint ?? throw new NullReferenceException(nameof(endpoint));
+        }
+
+        [Obsolete]
         public ActuatorHandler(IEndpoint<TResult, TRequest> endpoint, ISecurityService securityService, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
             : base(securityService, allowedMethods, exactRequestPathMatching, logger)
         {
@@ -137,11 +229,81 @@ namespace Steeltoe.Management.Endpoint.Handler
             return Serialize(result);
         }
 
+        //public override bool RequestVerbAndPathMatch(string httpMethod, string requestPath)
+        //{
+        //    return _exactRequestPathMatching
+        //          ? requestPath.Equals(_endpoint.Path) && _allowedMethods.Any(m => m.Method.Equals(httpMethod))
+        //          : requestPath.StartsWith(_endpoint.Path) && _allowedMethods.Any(m => m.Method.Equals(httpMethod));
+        //}
+
         public override bool RequestVerbAndPathMatch(string httpMethod, string requestPath)
         {
-            return _exactRequestPathMatching
-                  ? requestPath.Equals(_endpoint.Path) && _allowedMethods.Any(m => m.Method.Equals(httpMethod))
-                  : requestPath.StartsWith(_endpoint.Path) && _allowedMethods.Any(m => m.Method.Equals(httpMethod));
+            IManagementOptions matchingMgmtContext;
+            return _allowedMethods.Any(m => m.Method.Equals(httpMethod)) &&
+                (_exactRequestPathMatching
+                ? RequestPathMatch(requestPath, out matchingMgmtContext)
+                : RequestPathStartWith(requestPath, out matchingMgmtContext));
+
+            // TODO: Handle enabled? 
+        }
+
+        protected override bool RequestPathMatch(string requestPath, out IManagementOptions matchingMgmtContext)
+        {
+            matchingMgmtContext = null;
+
+            if (_mgmtOptions == null)
+            {
+                return requestPath.Equals(_endpoint.Path);
+            }
+
+            foreach (var context in _mgmtOptions)
+            {
+                var contextPath = context.Path;
+                if (!contextPath.EndsWith("/") && !string.IsNullOrEmpty(_endpoint.Path))
+                {
+                    contextPath += "/";
+                }
+
+                var fullPath = contextPath + _endpoint.Path;
+                if (requestPath.Equals(fullPath))
+                {
+                    matchingMgmtContext = context;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        protected override bool RequestPathStartWith(string requestPath, out IManagementOptions matchingMgmtContext)
+        {
+            matchingMgmtContext = null;
+
+            if (_mgmtOptions == null)
+            {
+                return requestPath.StartsWith(_endpoint.Path);
+            }
+            else
+            {
+                foreach (var context in _mgmtOptions)
+                {
+                    var contextPath = context.Path;
+                    if (!contextPath.EndsWith("/") && !string.IsNullOrEmpty(_endpoint.Path))
+                    {
+                        contextPath += "/";
+                    }
+
+                    var fullPath = contextPath + _endpoint.Path;
+                    if (requestPath.StartsWith(fullPath))
+                    {
+                        matchingMgmtContext = context;
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
         }
 
         public async override Task<bool> IsAccessAllowed(HttpContext context)

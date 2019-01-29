@@ -29,11 +29,11 @@ namespace Steeltoe.Management.EndpointOwin.HeapDump
         /// </summary>
         /// <param name="builder">Your <see cref="IAppBuilder"/></param>
         /// <param name="config"><see cref="IConfiguration"/> for configuring the endpoint</param>
+        /// <param name="mgmtOptions">Shared Management Options</param>
         /// <param name="applicationPathOnDisk">Provide the path to the app directory if heap dumps are failing due to access restrictions</param>
         /// <param name="loggerFactory"><see cref="ILoggerFactory"/> for logging inside the middleware and its components</param>
-        /// <param name="mgmtOptions">Shared Management Options</param>
         /// <returns>Your <see cref="IAppBuilder"/> with Heap Dump middleware attached</returns>
-        public static IAppBuilder UseHeapDumpActuator(this IAppBuilder builder, IConfiguration config, string applicationPathOnDisk = null, ILoggerFactory loggerFactory = null, IEnumerable<IManagementOptions> mgmtOptions = null)
+        public static IAppBuilder UseHeapDumpActuator(this IAppBuilder builder, IConfiguration config, IEnumerable<IManagementOptions> mgmtOptions, string applicationPathOnDisk = null, ILoggerFactory loggerFactory = null)
         {
             if (builder == null)
             {
@@ -62,6 +62,12 @@ namespace Steeltoe.Management.EndpointOwin.HeapDump
 
             var heapDumper = new HeapDumper(options, applicationPathOnDisk, loggerFactory?.CreateLogger<HeapDumper>());
             return builder.UseHeapDumpActuator(options, heapDumper, loggerFactory);
+        }
+
+        [Obsolete]
+        public static IAppBuilder UseHeapDumpActuator(this IAppBuilder builder, IConfiguration config, string applicationPathOnDisk = null, ILoggerFactory loggerFactory = null)
+        {
+            return builder.UseHeapDumpActuator(config, mgmtOptions: null, applicationPathOnDisk: applicationPathOnDisk, loggerFactory: loggerFactory);
         }
 
         /// <summary>

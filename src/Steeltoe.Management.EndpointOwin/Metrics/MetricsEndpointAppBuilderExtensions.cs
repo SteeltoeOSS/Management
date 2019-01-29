@@ -18,9 +18,11 @@ using OpenCensus.Stats;
 using OpenCensus.Tags;
 using Owin;
 using Steeltoe.Common.Diagnostics;
+using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Metrics.Observer;
 using System;
+using System.Collections.Generic;
 
 namespace Steeltoe.Management.EndpointOwin.Metrics
 {
@@ -31,9 +33,10 @@ namespace Steeltoe.Management.EndpointOwin.Metrics
         /// </summary>
         /// <param name="builder">OWIN <see cref="IAppBuilder" /></param>
         /// <param name="config"><see cref="IConfiguration"/> of application for configuring metrics endpoint</param>
+        /// <param name="mgmtOptions"></param>
         /// <param name="loggerFactory">For logging within the middleware</param>
         /// <returns>OWIN <see cref="IAppBuilder" /> with Metrics Endpoint added</returns>
-        public static IAppBuilder UseMetricsActuator(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null)
+        public static IAppBuilder UseMetricsActuator(this IAppBuilder builder, IConfiguration config, IEnumerable<IManagementOptions> mgmtOptions, ILoggerFactory loggerFactory = null)
         {
             if (builder == null)
             {
@@ -45,7 +48,13 @@ namespace Steeltoe.Management.EndpointOwin.Metrics
                 throw new ArgumentNullException(nameof(config));
             }
 
-            return builder.UseMetricsActuator(config, OpenCensusStats.Instance, OpenCensusTags.Instance, loggerFactory);
+            return builder.UseMetricsActuator(config, OpenCensusStats.Instance, OpenCensusTags.Instance, mgmtOptions, loggerFactory);
+        }
+
+        [Obsolete]
+        public static IAppBuilder UseMetricsActuator(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null)
+        {
+            return builder.UseMetricsActuator(config, mgmtOptions: null, loggerFactory: loggerFactory);
         }
 
         /// <summary>
@@ -55,9 +64,10 @@ namespace Steeltoe.Management.EndpointOwin.Metrics
         /// <param name="config"><see cref="IConfiguration"/> of application for configuring metrics endpoint</param>
         /// <param name="stats">Class for recording statistics - See also: <seealso cref="OpenCensusStats"/></param>
         /// <param name="tags">Class using for recording statistics</param>
+        /// <param name="mgmtOptions">Shared management options</param>
         /// <param name="loggerFactory">For logging within the middleware</param>
         /// <returns>OWIN <see cref="IAppBuilder" /> with Metrics Endpoint added</returns>
-        public static IAppBuilder UseMetricsActuator(this IAppBuilder builder, IConfiguration config, IStats stats, ITags tags, ILoggerFactory loggerFactory = null)
+        public static IAppBuilder UseMetricsActuator(this IAppBuilder builder, IConfiguration config, IStats stats, ITags tags, IEnumerable<IManagementOptions> mgmtOptions, ILoggerFactory loggerFactory = null)
         {
             if (builder == null)
             {
@@ -79,7 +89,20 @@ namespace Steeltoe.Management.EndpointOwin.Metrics
                 throw new ArgumentNullException(nameof(tags));
             }
 
-            var options = new MetricsOptions(config);
+            IMetricsOptions options;
+
+            if (mgmtOptions == null)
+            {
+                options = new MetricsOptions(config);
+            }
+            else
+            {
+                options = new MetricsEndpointOptions(config);
+                foreach (var mgmtOption in mgmtOptions)
+                {
+                    mgmtOption.EndpointOptions.Add(options);
+                }
+            }
 
             var hostObserver = new OwinHostingObserver(options, stats, tags, loggerFactory?.CreateLogger<OwinHostingObserver>());
             var clrObserver = new CLRRuntimeObserver(options, stats, tags, loggerFactory?.CreateLogger<CLRRuntimeObserver>());
@@ -91,7 +114,16 @@ namespace Steeltoe.Management.EndpointOwin.Metrics
 
             var endpoint = new MetricsEndpoint(options, stats, loggerFactory?.CreateLogger<MetricsEndpoint>());
             var logger = loggerFactory?.CreateLogger<MetricsEndpointOwinMiddleware>();
-            return builder.Use<MetricsEndpointOwinMiddleware>(endpoint, logger);
+            return builder.Use<MetricsEndpointOwinMiddleware>(endpoint, mgmtOptions, logger);
         }
+
+        [Obsolete]
+        public static IAppBuilder UseMetricsActuator(this IAppBuilder builder, IConfiguration config, IStats stats, ITags tags, ILoggerFactory loggerFactory = null)
+        {
+            return builder.UseMetricsActuator(config, stats, tags, mgmtOptions: null, loggerFactory: loggerFactory);
+        }
+
+
+
     }
 }
