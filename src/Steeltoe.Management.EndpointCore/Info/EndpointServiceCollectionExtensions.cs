@@ -40,24 +40,8 @@ namespace Steeltoe.Management.Endpoint.Info
         /// </summary>
         /// <param name="services">Service collection to add info to</param>
         /// <param name="config">Application configuration (this actuator looks for a settings starting with management:endpoints:info)</param>
+        /// <param name="addToDiscovery">Add to Discovery Actuators</param>
         /// <param name="contributors">Contributors to application information</param>
-        //public static void AddInfoActuator(this IServiceCollection services, IConfiguration config, params IInfoContributor[] contributors)
-        //{
-        //    if (services == null)
-        //    {
-        //        throw new ArgumentNullException(nameof(services));
-        //    }
-
-        //    if (config == null)
-        //    {
-        //        throw new ArgumentNullException(nameof(config));
-        //    }
-
-        //    services.TryAddSingleton<IInfoOptions>(new InfoOptions(config));
-        //    AddContributors(services, contributors);
-        //    services.TryAddSingleton<InfoEndpoint>();
-        //}
-
         public static void AddInfoActuator(this IServiceCollection services, IConfiguration config, bool addToDiscovery, params IInfoContributor[] contributors)
         {
             if (services == null)

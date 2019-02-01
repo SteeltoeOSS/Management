@@ -20,7 +20,7 @@ using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Discovery;
 using System;
 
-namespace Steeltoe.Management.EndpointOwin.CloudFoundry
+namespace Steeltoe.Management.EndpointOwin.Discovery
 {
     public static class DiscoverySecurityAppBuilderExtensions
     {

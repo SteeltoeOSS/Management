@@ -17,20 +17,14 @@ using Microsoft.Extensions.Logging;
 using Owin;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint;
-using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Discovery;
 using Steeltoe.Management.Endpoint.Health;
-using Steeltoe.Management.EndpointOwin.CloudFoundry;
 using Steeltoe.Management.EndpointOwin.Diagnostics;
+using Steeltoe.Management.EndpointOwin.Discovery;
 using Steeltoe.Management.EndpointOwin.Health;
-using Steeltoe.Management.EndpointOwin.HeapDump;
 using Steeltoe.Management.EndpointOwin.Info;
-using Steeltoe.Management.EndpointOwin.Loggers;
-using Steeltoe.Management.EndpointOwin.Mappings;
-using Steeltoe.Management.EndpointOwin.ThreadDump;
-using Steeltoe.Management.EndpointOwin.Trace;
-using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Web.Http.Description;
 
 namespace Steeltoe.Management.EndpointOwin
@@ -48,18 +42,13 @@ namespace Steeltoe.Management.EndpointOwin
         /// <param name="apiExplorer">a IApiExplorer to use for mappings actuator</param>
         /// <param name="loggerProvider">the Steeltoe logging provider to use for loggers actuator</param>
         /// <param name="loggerFactory">logging factory used to create loggers for the actuators</param>
-        public static void UseActuators(this IAppBuilder app, IConfiguration configuration, IApiExplorer apiExplorer,  ILoggerProvider loggerProvider, ILoggerFactory loggerFactory = null)
+        public static void UseDiscoveryActuators(this IAppBuilder app, IConfiguration configuration, IApiExplorer apiExplorer,  ILoggerProvider loggerProvider, ILoggerFactory loggerFactory = null)
         {
-            var actuatorOptions = new ActuatorManagementOptions(configuration);
-            var mgmtOptions = new List<IManagementOptions>() { actuatorOptions };
-
-            //  app.UseCloudFoundrySecurityMiddleware(configuration, loggerFactory, actuatorOptions); //Do sensitive using this ...
-
             app.UseDiagnosticSourceMiddleware(loggerFactory);
-            app.UseDiscoveryActuator(configuration, loggerFactory, mgmtOptions);
+            app.UseDiscoveryActuator(configuration, loggerFactory);
 
-          //  app.UseInfoActuator(configuration, mgmtOptions, loggerFactory);
-            app.UseHealthActuator(configuration, mgmtOptions, loggerFactory);
+            app.UseInfoActuator(configuration, loggerFactory);
+            app.UseHealthActuator(configuration, loggerFactory);
 
         }
 
@@ -72,19 +61,18 @@ namespace Steeltoe.Management.EndpointOwin
         /// <param name="apiExplorer">a IApiExplorer to use for mappings actuator</param>
         /// <param name="loggerProvider">the Steeltoe logging provider to use for loggers actuator</param>
         /// <param name="loggerFactory">logging factory used to create loggers for the actuators</param>
-        public static void UseActuators(this IAppBuilder app, IConfiguration configuration, IEnumerable<IHealthContributor> healthContributors, IApiExplorer apiExplorer, ILoggerProvider loggerProvider, ILoggerFactory loggerFactory = null)
+        public static void UseDiscoveryActuators(this IAppBuilder app, IConfiguration configuration, IEnumerable<IHealthContributor> healthContributors, IApiExplorer apiExplorer, ILoggerProvider loggerProvider, ILoggerFactory loggerFactory = null)
         {
-            var actuatorOptions = new ActuatorManagementOptions(configuration);
-            var mgmtOptions = new List<IManagementOptions>() { actuatorOptions };
 
             app.UseDiagnosticSourceMiddleware(loggerFactory);
             //  app.UseCloudFoundrySecurityMiddleware(configuration, loggerFactory, actuatorOptions);
-            app.UseDiscoveryActuator(configuration, loggerFactory, mgmtOptions);
+            app.UseDiscoveryActuator(configuration, loggerFactory);
 
-            app.UseInfoActuator(configuration, mgmtOptions, loggerFactory);
+            app.UseInfoActuator(configuration, loggerFactory);
             var healthOptions = new HealthEndpointOptions(configuration);
-            actuatorOptions.EndpointOptions.Add(healthOptions);
-            app.UseHealthActuator(healthOptions, mgmtOptions, new DefaultHealthAggregator(), healthContributors, loggerFactory);
+            var mgmtOptions = ManagementOptions.Get(configuration);
+            var actuatorOptions = mgmtOptions.OfType<ActuatorManagementOptions>().Single();
+            app.UseHealthActuator(healthOptions, new DefaultHealthAggregator(), healthContributors, loggerFactory);
         }
     }
 }

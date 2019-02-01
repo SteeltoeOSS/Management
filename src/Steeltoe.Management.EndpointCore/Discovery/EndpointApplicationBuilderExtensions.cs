@@ -39,12 +39,12 @@ namespace Steeltoe.Management.Endpoint.Discovery
         /// <param name="builder">Your application builder</param>
         public static void UseActuatorSecurity(this IApplicationBuilder builder)
         {
-            //if (builder == null)
-            //{
-            //    throw new ArgumentNullException(nameof(builder));
-            //}
+            if (builder == null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
 
-            //builder.UseMiddleware<CloudFoundrySecurityMiddleware>();
+            builder.UseMiddleware<ActuatorSecurityMiddleware>();
         }
     }
 }

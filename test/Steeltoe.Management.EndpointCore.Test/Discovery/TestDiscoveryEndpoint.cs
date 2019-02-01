@@ -12,27 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
+using Microsoft.Extensions.Logging;
+using Steeltoe.Management.Endpoint.CloudFoundry;
+using System.Collections.Generic;
 
-namespace Steeltoe.Management.Endpoint
+namespace Steeltoe.Management.Endpoint.Discovery.Test
 {
-    public static class EndPointEnabledExtensions
+    internal class TestDiscoveryEndpoint : ActuatorDiscoveryEndpoint
     {
-        public static bool IsEnabled(this IEndpointOptions options, IManagementOptions mgmtOptions)
+        public TestDiscoveryEndpoint(IActuatorDiscoveryOptions options, IEnumerable<IManagementOptions> mgmtOptions, ILogger<ActuatorDiscoveryEndpoint> logger = null)
+            : base(options, mgmtOptions, logger)
         {
-            var endpointOptions = (AbstractEndpointOptions)options;
+        }
 
-            if (endpointOptions.Enabled.HasValue)
-            {
-                return endpointOptions.Enabled.Value;
-            }
-
-            if (mgmtOptions.Enabled.HasValue)
-            {
-                return mgmtOptions.Enabled.Value;
-            }
-
-            return endpointOptions.DefaultEnabled;
+        public override Links Invoke(string baseUrl)
+        {
+            return new Links();
         }
     }
 }

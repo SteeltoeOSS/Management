@@ -34,7 +34,7 @@ namespace Steeltoe.Management.EndpointOwin.Info
         /// <param name="mgmtOptions">Shared Management Options</param>
         /// <param name="loggerFactory">For logging within the middleware</param>
         /// <returns>OWIN <see cref="IAppBuilder" /> with Info Endpoint added</returns>
-        public static IAppBuilder UseInfoActuator(this IAppBuilder builder, IConfiguration config,IEnumerable<IManagementOptions> mgmtOptions, ILoggerFactory loggerFactory = null)
+        public static IAppBuilder UseInfoActuator(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null)
         {
             if (builder == null)
             {
@@ -46,15 +46,10 @@ namespace Steeltoe.Management.EndpointOwin.Info
                 throw new ArgumentNullException(nameof(config));
             }
 
-            return builder.UseInfoActuator(config, GetDefaultInfoContributors(config, loggerFactory), mgmtOptions, loggerFactory);
+            return builder.UseInfoActuator(config, GetDefaultInfoContributors(config, loggerFactory), loggerFactory);
         }
 
-        [Obsolete]
-        public static IAppBuilder UseInfoActuator(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null)
-        {
-            return builder.UseInfoActuator(config, mgmtOptions: null, loggerFactory: loggerFactory);
-        }
-
+     
         /// <summary>
         /// Add Info actuator endpoint to OWIN Pipeline
         /// </summary>
@@ -64,7 +59,7 @@ namespace Steeltoe.Management.EndpointOwin.Info
         /// <param name="mgmtOptions">Shared Management Options</param>
         /// <param name="loggerFactory">For logging within the middleware</param>
         /// <returns>OWIN <see cref="IAppBuilder" /> with Info Endpoint added</returns>
-        public static IAppBuilder UseInfoActuator(this IAppBuilder builder, IConfiguration config, IList<IInfoContributor> contributors, IEnumerable<IManagementOptions> mgmtOptions, ILoggerFactory loggerFactory = null)
+        public static IAppBuilder UseInfoActuator(this IAppBuilder builder, IConfiguration config, IList<IInfoContributor> contributors, ILoggerFactory loggerFactory = null)
         {
             if (builder == null)
             {
@@ -81,31 +76,16 @@ namespace Steeltoe.Management.EndpointOwin.Info
                 throw new ArgumentNullException(nameof(contributors));
             }
 
-            IInfoOptions options;
-
-            // TODO: Remove in 3.0
-            if (mgmtOptions == null)
+            var mgmtOptions = ManagementOptions.Get(config);
+            var options = new InfoEndpointOptions(config);
+            foreach (var mgmt in mgmtOptions)
             {
-                options = new InfoOptions(config);
-            }
-            else
-            {
-                options = new InfoEndpointOptions(config);
-                foreach (var mgmt in mgmtOptions)
-                {
-                    mgmt.EndpointOptions.Add(options);
-                }
+                mgmt.EndpointOptions.Add(options);
             }
 
             var endpoint = new InfoEndpoint(options, contributors, loggerFactory?.CreateLogger<InfoEndpoint>());
             var logger = loggerFactory?.CreateLogger<EndpointOwinMiddleware<Dictionary<string, object>>>();
             return builder.Use<EndpointOwinMiddleware<Dictionary<string, object>>>(endpoint, mgmtOptions, new List<HttpMethod> { HttpMethod.Get }, true, logger);
-        }
-
-        [Obsolete]
-        public static IAppBuilder UseInfoActuator(this IAppBuilder builder, IConfiguration config, IList<IInfoContributor> contributors, ILoggerFactory loggerFactory = null)
-        {
-            return builder.UseInfoActuator(config, contributors, mgmtOptions: null, loggerFactory: loggerFactory);
         }
 
         private static IList<IInfoContributor> GetDefaultInfoContributors(IConfiguration config, ILoggerFactory loggerFactory = null)

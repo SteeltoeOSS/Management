@@ -50,7 +50,6 @@ namespace Steeltoe.Management.CloudFoundry
 
             services.AddCors();
             services.AddCloudFoundryActuator(config);
-            services.AddDiscoveryActuator(config);
 
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
             {

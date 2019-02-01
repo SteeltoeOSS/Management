@@ -13,30 +13,28 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Management.Endpoint.CloudFoundry;
+using Steeltoe.Management.Endpoint.Test;
+using System;
+using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Trace.Test
+namespace Steeltoe.Management.Endpoint.Discovery.Test
 {
-    public class Startup
+    public class EndpointApplicationBuilderExtensionsTest : BaseTest
     {
-        public Startup(IConfiguration configuration)
+        [Fact]
+        public void UseCloudFoundryActuator_ThrowsIfNulls()
         {
-            Configuration = configuration;
+            IApplicationBuilder builder = null;
+
+            Assert.Throws<ArgumentNullException>(() => builder.UseDiscoveryActuator());
         }
 
-        public IConfiguration Configuration { get; set; }
-
-        public void ConfigureServices(IServiceCollection services)
+        [Fact]
+        public void UseCloudFoundrySecurity_ThrowsIfNulls()
         {
-            services.AddCloudFoundryActuator(Configuration);
-            services.AddTraceActuator(Configuration);
-        }
+            IApplicationBuilder builder = null;
 
-        public void Configure(IApplicationBuilder app)
-        {
-            app.UseTraceActuator();
+            Assert.Throws<ArgumentNullException>(() => builder.UseActuatorSecurity());
         }
     }
 }

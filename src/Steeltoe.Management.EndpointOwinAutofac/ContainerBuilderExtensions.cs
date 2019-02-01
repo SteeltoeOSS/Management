@@ -65,7 +65,7 @@ namespace Steeltoe.Management.EndpointOwinAutofac
         /// <param name="container">Autofac DI <see cref="ContainerBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
         /// <param name="apiExplorer">An <see cref="ApiExplorer" /> that has access to your HttpConfiguration.<para />If not provided, mappings actuator will not be registered</param>
-        public static void RegisterActuators(this ContainerBuilder container, IConfiguration config, IApiExplorer apiExplorer = null)
+        public static void RegisterDiscoveryActuators(this ContainerBuilder container, IConfiguration config, IApiExplorer apiExplorer = null)
         {
             if (container == null)
             {

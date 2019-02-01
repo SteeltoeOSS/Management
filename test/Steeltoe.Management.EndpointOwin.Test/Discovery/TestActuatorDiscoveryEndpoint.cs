@@ -12,31 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.CloudFoundry;
+using Steeltoe.Management.Endpoint.Discovery;
+using System.Collections.Generic;
 
-namespace Steeltoe.Management.Endpoint.Trace.Test
+namespace Steeltoe.Management.EndpointOwin.Discovery.Test
 {
-    public class Startup
+    internal class TestActuatorDiscoveryEndpoint : ActuatorDiscoveryEndpoint
     {
-        public Startup(IConfiguration configuration)
+        public TestActuatorDiscoveryEndpoint(IActuatorDiscoveryOptions options, List<IManagementOptions> mgmtOptions, ILogger<ActuatorDiscoveryEndpoint> logger = null)
+            : base(options, mgmtOptions, logger)
         {
-            Configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; set; }
-
-        public void ConfigureServices(IServiceCollection services)
+        public override Links Invoke(string baseUrl)
         {
-            services.AddCloudFoundryActuator(Configuration);
-            services.AddTraceActuator(Configuration);
-        }
-
-        public void Configure(IApplicationBuilder app)
-        {
-            app.UseTraceActuator();
+            return new Links();
         }
     }
 }

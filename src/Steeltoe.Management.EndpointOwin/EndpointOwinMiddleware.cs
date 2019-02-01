@@ -92,21 +92,9 @@ namespace Steeltoe.Management.EndpointOwin
             }
         }
 
-        //public virtual bool RequestVerbAndPathMatch(string httpMethod, string requestPath)
-        //{
-        //    return _exactRequestPathMatching
-        //        ? requestPath.Equals(_endpoint.Path) && _allowedMethods.Any(m => m.Method.Equals(httpMethod))
-        //        : requestPath.StartsWith(_endpoint.Path) && _allowedMethods.Any(m => m.Method.Equals(httpMethod));
-        //}
         public virtual bool RequestVerbAndPathMatch(string httpMethod, string requestPath)
         {
-            IManagementOptions matchingMgmtContext;
-            return _allowedMethods.Any(m => m.Method.Equals(httpMethod))
-                && (_exactRequestPathMatching
-                    ? RequestPathMatch(_endpoint, requestPath, out matchingMgmtContext)
-                    : RequestPathStartWith(_endpoint, requestPath, out matchingMgmtContext));
-
-            // TODO: Check enabled setting here?
+            return _endpoint.RequestVerbAndPathMatch(httpMethod, requestPath, _allowedMethods, _mgmtOptions, _exactRequestPathMatching);
         }
 
         protected virtual string Serialize<T>(T result)
@@ -130,65 +118,6 @@ namespace Steeltoe.Management.EndpointOwin
             return string.Empty;
         }
 
-        protected virtual bool RequestPathMatch(IEndpoint endpoint, string requestPath, out IManagementOptions matchingMgmtContext)
-        {
-            matchingMgmtContext = null;
-
-            if (_mgmtOptions == null)
-            {
-                return requestPath.Equals(endpoint.Path);
-            }
-            else
-            {
-                foreach (var context in _mgmtOptions)
-                {
-                    var contextPath = context.Path;
-                    if (!contextPath.EndsWith("/") && !string.IsNullOrEmpty(endpoint.Path))
-                    {
-                        contextPath += "/";
-                    }
-
-                    var fullPath = contextPath + endpoint.Path;
-                    if (requestPath.Equals(fullPath))
-                    {
-                        matchingMgmtContext = context;
-                        return true;
-                    }
-                }
-
-                return false;
-            }
-        }
-
-        protected virtual bool RequestPathStartWith(IEndpoint endpoint, string requestPath, out IManagementOptions matchingMgmtContext)
-        {
-            matchingMgmtContext = null;
-
-            if (_mgmtOptions == null)
-            {
-                return requestPath.StartsWith(endpoint.Path);
-            }
-            else
-            {
-                foreach (var context in _mgmtOptions)
-                {
-                    var contextPath = context.Path;
-                    if (!contextPath.EndsWith("/") && !string.IsNullOrEmpty(endpoint.Path))
-                    {
-                        contextPath += "/";
-                    }
-
-                    var fullPath = contextPath + endpoint.Path;
-                    if (requestPath.StartsWith(fullPath))
-                    {
-                        matchingMgmtContext = context;
-                        return true;
-                    }
-                }
-
-                return false;
-            }
-        }
     }
 
 #pragma warning disable SA1402 // File may only contain a single class
@@ -215,22 +144,12 @@ namespace Steeltoe.Management.EndpointOwin
             return Serialize(result);
         }
 
-        //public override bool RequestVerbAndPathMatch(string httpMethod, string requestPath)
-        //{
-        //    return _exactRequestPathMatching
-        //        ? requestPath.Equals(_endpoint.Path) && _allowedMethods.Any(m => m.Method.Equals(httpMethod))
-        //        : requestPath.StartsWith(_endpoint.Path) && _allowedMethods.Any(m => m.Method.Equals(httpMethod));
-        //}
         public override bool RequestVerbAndPathMatch(string httpMethod, string requestPath)
         {
-            IManagementOptions matchingMgmtContext;
-            var returnValue = _allowedMethods.Any(m => m.Method.Equals(httpMethod))
-                && (_exactRequestPathMatching
-                    ? RequestPathMatch(_endpoint, requestPath, out matchingMgmtContext)
-                    : RequestPathStartWith(_endpoint, requestPath, out matchingMgmtContext));
-            return returnValue;
-            // TODO: verify enabled 
+            return _endpoint.RequestVerbAndPathMatch(httpMethod, requestPath, _allowedMethods, _mgmtOptions, _exactRequestPathMatching);
         }
+
     }
+
 #pragma warning restore SA1402 // File may only contain a single class
 }

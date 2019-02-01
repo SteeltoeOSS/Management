@@ -19,6 +19,8 @@ using OpenCensus.Tags;
 using Owin;
 using Steeltoe.Common.Diagnostics;
 using Steeltoe.Management.Endpoint;
+using Steeltoe.Management.Endpoint.CloudFoundry;
+using Steeltoe.Management.Endpoint.Discovery;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Metrics.Observer;
 using System;
@@ -36,7 +38,7 @@ namespace Steeltoe.Management.EndpointOwin.Metrics
         /// <param name="mgmtOptions"></param>
         /// <param name="loggerFactory">For logging within the middleware</param>
         /// <returns>OWIN <see cref="IAppBuilder" /> with Metrics Endpoint added</returns>
-        public static IAppBuilder UseMetricsActuator(this IAppBuilder builder, IConfiguration config, IEnumerable<IManagementOptions> mgmtOptions, ILoggerFactory loggerFactory = null)
+        public static IAppBuilder UseMetricsActuator(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null, bool addToDiscovery = false)
         {
             if (builder == null)
             {
@@ -48,13 +50,7 @@ namespace Steeltoe.Management.EndpointOwin.Metrics
                 throw new ArgumentNullException(nameof(config));
             }
 
-            return builder.UseMetricsActuator(config, OpenCensusStats.Instance, OpenCensusTags.Instance, mgmtOptions, loggerFactory);
-        }
-
-        [Obsolete]
-        public static IAppBuilder UseMetricsActuator(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null)
-        {
-            return builder.UseMetricsActuator(config, mgmtOptions: null, loggerFactory: loggerFactory);
+            return builder.UseMetricsActuator(config, OpenCensusStats.Instance, OpenCensusTags.Instance, loggerFactory, addToDiscovery);
         }
 
         /// <summary>
@@ -67,7 +63,7 @@ namespace Steeltoe.Management.EndpointOwin.Metrics
         /// <param name="mgmtOptions">Shared management options</param>
         /// <param name="loggerFactory">For logging within the middleware</param>
         /// <returns>OWIN <see cref="IAppBuilder" /> with Metrics Endpoint added</returns>
-        public static IAppBuilder UseMetricsActuator(this IAppBuilder builder, IConfiguration config, IStats stats, ITags tags, IEnumerable<IManagementOptions> mgmtOptions, ILoggerFactory loggerFactory = null)
+        public static IAppBuilder UseMetricsActuator(this IAppBuilder builder, IConfiguration config, IStats stats, ITags tags, ILoggerFactory loggerFactory = null, bool addToDiscovery = false)
         {
             if (builder == null)
             {
@@ -89,19 +85,16 @@ namespace Steeltoe.Management.EndpointOwin.Metrics
                 throw new ArgumentNullException(nameof(tags));
             }
 
-            IMetricsOptions options;
-
-            if (mgmtOptions == null)
+            IMetricsOptions options = new MetricsEndpointOptions(config);
+            var mgmtOptions = ManagementOptions.Get(config);
+            foreach (var mgmt in mgmtOptions)
             {
-                options = new MetricsOptions(config);
-            }
-            else
-            {
-                options = new MetricsEndpointOptions(config);
-                foreach (var mgmtOption in mgmtOptions)
+                if (!addToDiscovery && mgmt is ActuatorManagementOptions)
                 {
-                    mgmtOption.EndpointOptions.Add(options);
+                    continue;
                 }
+
+                mgmt.EndpointOptions.Add(options);
             }
 
             var hostObserver = new OwinHostingObserver(options, stats, tags, loggerFactory?.CreateLogger<OwinHostingObserver>());
@@ -116,14 +109,6 @@ namespace Steeltoe.Management.EndpointOwin.Metrics
             var logger = loggerFactory?.CreateLogger<MetricsEndpointOwinMiddleware>();
             return builder.Use<MetricsEndpointOwinMiddleware>(endpoint, mgmtOptions, logger);
         }
-
-        [Obsolete]
-        public static IAppBuilder UseMetricsActuator(this IAppBuilder builder, IConfiguration config, IStats stats, ITags tags, ILoggerFactory loggerFactory = null)
-        {
-            return builder.UseMetricsActuator(config, stats, tags, mgmtOptions: null, loggerFactory: loggerFactory);
-        }
-
-
 
     }
 }

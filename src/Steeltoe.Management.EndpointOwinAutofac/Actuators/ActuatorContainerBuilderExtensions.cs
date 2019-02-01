@@ -15,9 +15,8 @@
 using Autofac;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint;
-using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Discovery;
-using Steeltoe.Management.EndpointOwin.CloudFoundry;
+using Steeltoe.Management.EndpointOwin.Discovery;
 using System;
 using System.Collections.Generic;
 using System.Linq;

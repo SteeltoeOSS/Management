@@ -15,9 +15,9 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Management.Endpoint.CloudFoundry;
+using Steeltoe.Management.Endpoint.Info;
 
-namespace Steeltoe.Management.Endpoint.Trace.Test
+namespace Steeltoe.Management.Endpoint.Discovery.Test
 {
     public class Startup
     {
@@ -30,13 +30,14 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCloudFoundryActuator(Configuration);
-            services.AddTraceActuator(Configuration);
+            services.AddDiscoveryActuator(Configuration);
+            services.AddInfoActuator(Configuration, true);
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseTraceActuator();
+            app.UseDiscoveryActuator();
+            app.UseInfoActuator();
         }
     }
 }

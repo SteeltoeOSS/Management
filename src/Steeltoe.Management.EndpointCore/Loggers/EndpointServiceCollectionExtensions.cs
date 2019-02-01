@@ -15,9 +15,9 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using System;
+using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Discovery;
-using Steeltoe.Management.Endpoint.Info;
+using System;
 
 namespace Steeltoe.Management.Endpoint.Loggers
 {

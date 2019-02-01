@@ -22,7 +22,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Management.EndpointOwin.CloudFoundry
+namespace Steeltoe.Management.EndpointOwin.Discovery
 {
     public class ActuatorDiscoveryEndpointOwinMiddleware : EndpointOwinMiddleware<Links, string>
     {

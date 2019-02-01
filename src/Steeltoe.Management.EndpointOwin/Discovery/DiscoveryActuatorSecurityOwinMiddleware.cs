@@ -22,16 +22,16 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Management.EndpointOwin.CloudFoundry
+namespace Steeltoe.Management.EndpointOwin.Discovery
 {
     public class DiscoveryEndpointSecurityOwinMiddleware : OwinMiddleware
     {
-        private ILogger<CloudFoundrySecurityOwinMiddleware> _logger;
+        private ILogger<DiscoveryEndpointSecurityOwinMiddleware> _logger;
         private ICloudFoundryOptions _options;
         private SecurityBase _base;
         private IManagementOptions _mgmtOptions;
 
-        public DiscoveryEndpointSecurityOwinMiddleware(OwinMiddleware next, ICloudFoundryOptions options, IManagementOptions mgmtOptions, ILogger<CloudFoundrySecurityOwinMiddleware> logger = null)
+        public DiscoveryEndpointSecurityOwinMiddleware(OwinMiddleware next, ICloudFoundryOptions options, IManagementOptions mgmtOptions, ILogger<DiscoveryEndpointSecurityOwinMiddleware> logger = null)
             : base(next)
         {
             _options = options;
@@ -41,7 +41,7 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
         }
 
         [Obsolete]
-        public DiscoveryEndpointSecurityOwinMiddleware(OwinMiddleware next, ICloudFoundryOptions options, ILogger<CloudFoundrySecurityOwinMiddleware> logger = null)
+        public DiscoveryEndpointSecurityOwinMiddleware(OwinMiddleware next, ICloudFoundryOptions options, ILogger<DiscoveryEndpointSecurityOwinMiddleware> logger = null)
             : base(next)
         {
             _options = options;

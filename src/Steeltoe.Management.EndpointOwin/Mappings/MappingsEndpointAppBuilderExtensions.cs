@@ -16,6 +16,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Owin;
 using Steeltoe.Management.Endpoint;
+using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Mappings;
 using System;
 using System.Collections.Generic;
@@ -34,7 +35,7 @@ namespace Steeltoe.Management.EndpointOwin.Mappings
         /// <param name="mgmtOptions">Shared management options</param>
         /// <param name="loggerFactory">For logging within the middleware</param>
         /// <returns>OWIN <see cref="IAppBuilder" /> with Refresh Endpoint added</returns>
-        public static IAppBuilder UseMappingActuator(this IAppBuilder builder, IConfiguration config, IApiExplorer apiExplorer, IEnumerable<IManagementOptions> mgmtOptions, ILoggerFactory loggerFactory = null)
+        public static IAppBuilder UseMappingActuator(this IAppBuilder builder, IConfiguration config, IApiExplorer apiExplorer, ILoggerFactory loggerFactory = null, bool addToDiscovery = false)
         {
             if (builder == null)
             {
@@ -52,17 +53,14 @@ namespace Steeltoe.Management.EndpointOwin.Mappings
             }
 
 
-            IMappingsOptions options;
-            if (mgmtOptions == null)
+            IMappingsOptions options= new MappingsEndpointOptions(config);
+            var mgmtOptions = ManagementOptions.Get(config);
+
+            foreach (var mgmt in mgmtOptions)
             {
-                options = new MappingsOptions(config);
-            }
-            else
-            {
-                options = new MappingsEndpointOptions(config);
-                foreach (var mgmtOption in mgmtOptions)
+                if (!addToDiscovery && mgmt is CloudFoundryManagementOptions)
                 {
-                    mgmtOption.EndpointOptions.Add(options);
+                    mgmt.EndpointOptions.Add(options);
                 }
             }
 
@@ -70,10 +68,5 @@ namespace Steeltoe.Management.EndpointOwin.Mappings
             return builder.Use<MappingsEndpointOwinMiddleware>(options, mgmtOptions, apiExplorer, loggerFactory?.CreateLogger<MappingsEndpointOwinMiddleware>());
         }
 
-        [Obsolete]
-        public static IAppBuilder UseMappingActuator(this IAppBuilder builder, IConfiguration config, IApiExplorer apiExplorer, ILoggerFactory loggerFactory = null)
-        {
-            return builder.UseMappingActuator(config, apiExplorer, mgmtOptions: null, loggerFactory: loggerFactory);
-        }
     }
 }

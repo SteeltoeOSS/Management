@@ -16,6 +16,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Owin;
 using Steeltoe.Management.Endpoint;
+using Steeltoe.Management.Endpoint.CloudFoundry;
+using Steeltoe.Management.Endpoint.Discovery;
 using Steeltoe.Management.Endpoint.Refresh;
 using System;
 using System.Collections.Generic;
@@ -31,8 +33,9 @@ namespace Steeltoe.Management.EndpointOwin.Refresh
         /// <param name="builder">OWIN <see cref="IAppBuilder" /></param>
         /// <param name="config"><see cref="IConfiguration"/> of application for configuring refresh endpoint</param>
         /// <param name="loggerFactory">For logging within the middleware</param>
+        /// <param name="addToDiscovery"></param>
         /// <returns>OWIN <see cref="IAppBuilder" /> with Refresh Endpoint added</returns>
-        public static IAppBuilder UseRefreshActuator(this IAppBuilder builder, IConfiguration config, IEnumerable<IManagementOptions> mgmtOptions, ILoggerFactory loggerFactory = null)
+        public static IAppBuilder UseRefreshActuator(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null, bool addToDiscovery = false)
         {
             if (builder == null)
             {
@@ -44,30 +47,21 @@ namespace Steeltoe.Management.EndpointOwin.Refresh
                 throw new ArgumentNullException(nameof(config));
             }
 
-            IRefreshOptions options;
-            if (mgmtOptions == null)
+            IRefreshOptions options = new RefreshEndpointOptions(config);
+            var mgmtOptions = ManagementOptions.Get(config);
+            foreach (var mgmt in mgmtOptions)
             {
-                options = new RefreshOptions(config);
-            }
-            else
-            {
-                options = new RefreshEndpointOptions(config);
-                foreach (var mgmtOption in mgmtOptions)
+                if (!addToDiscovery && mgmt is ActuatorManagementOptions)
                 {
-                    mgmtOption.EndpointOptions.Add(options);
+                    continue;
                 }
+
+                mgmt.EndpointOptions.Add(options);
             }
 
             var endpoint = new RefreshEndpoint(options, config, loggerFactory?.CreateLogger<RefreshEndpoint>());
             var logger = loggerFactory?.CreateLogger<EndpointOwinMiddleware<IList<string>>>();
-            return builder.Use<EndpointOwinMiddleware<IList<string>>>(endpoint, new List<HttpMethod> { HttpMethod.Get }, true, logger);
+            return builder.Use<EndpointOwinMiddleware<IList<string>>>(endpoint, mgmtOptions, new List<HttpMethod> { HttpMethod.Get }, true, logger);
         }
-
-        public static IAppBuilder UseRefreshActuator(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null)
-        {
-            return builder.UseRefreshActuator(config, mgmtOptions: null, loggerFactory: loggerFactory);
-        }
-
-
     }
 }

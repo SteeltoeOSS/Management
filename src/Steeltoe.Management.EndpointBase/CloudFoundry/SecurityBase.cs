@@ -48,7 +48,8 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             _mgmtOptions = mgmtOptions;
             _logger = logger;
         }
-        
+
+        [Obsolete]
         public SecurityBase(ICloudFoundryOptions options, ILogger logger = null)
         {
             _options = options;

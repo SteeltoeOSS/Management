@@ -18,6 +18,7 @@ using Owin;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using System;
+using System.Linq;
 
 namespace Steeltoe.Management.EndpointOwin.CloudFoundry
 {
@@ -31,7 +32,7 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
         /// <param name="mgmtOptions">Shared management options</param>
         /// <param name="loggerFactory"><see cref="ILoggerFactory"/> for logging within the middleware</param>
         /// <returns>Your OWIN <see cref="IAppBuilder"/> with Cloud Foundry request security and CORS configured</returns>
-        public static IAppBuilder UseCloudFoundrySecurityMiddleware(this IAppBuilder builder, IConfiguration config, IManagementOptions mgmtOptions, ILoggerFactory loggerFactory = null)
+        public static IAppBuilder UseCloudFoundrySecurityMiddleware(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null)
         {
             if (builder == null)
             {
@@ -43,15 +44,11 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
                 throw new System.ArgumentNullException(nameof(config));
             }
 
-            var cloudFoundryOptions = mgmtOptions == null ? (ICloudFoundryOptions)new CloudFoundryOptions(config) : new CloudFoundryEndpointOptions(config);
+            IManagementOptions cfmOptions = ManagementOptions.Get(config).OfType<CloudFoundryManagementOptions>().Single();
+            var cloudFoundryOptions = new CloudFoundryEndpointOptions(config);
             var logger = loggerFactory?.CreateLogger<CloudFoundrySecurityOwinMiddleware>();
-            return builder.Use<CloudFoundrySecurityOwinMiddleware>(cloudFoundryOptions, mgmtOptions, logger);
+            return builder.Use<CloudFoundrySecurityOwinMiddleware>(cloudFoundryOptions, cfmOptions, logger);
         }
 
-        [Obsolete]
-        public static IAppBuilder UseCloudFoundrySecurityMiddleware(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null)
-        {
-            return builder.UseCloudFoundrySecurityMiddleware(config,  mgmtOptions: null, loggerFactory: loggerFactory);
-        }
     }
 }

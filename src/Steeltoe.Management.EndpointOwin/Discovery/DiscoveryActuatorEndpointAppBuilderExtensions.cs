@@ -21,7 +21,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Steeltoe.Management.EndpointOwin.CloudFoundry
+namespace Steeltoe.Management.EndpointOwin.Discovery
 {
     public static class DiscoveryActuatorEndpointAppBuilderExtensions
     {
@@ -32,7 +32,7 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
         /// <param name="loggerFactory"><see cref="ILoggerFactory"/> for logging within the middleware</param>
         /// <returns>Your OWIN <see cref="IAppBuilder"/> with Cloud Foundry actuator attached</returns>
-        public static IAppBuilder UseDiscoveryActuator(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null, IEnumerable<IManagementOptions> mgmtOptions = null)
+        public static IAppBuilder UseDiscoveryActuator(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null)
         {
             if (builder == null)
             {
@@ -47,7 +47,8 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
             IActuatorDiscoveryOptions discoveryOptions;
 
             discoveryOptions = new ActuatorDiscoveryEndpointOptions(config);
-            var mgmt = mgmtOptions?.OfType<ActuatorManagementOptions>().Single();
+            var mgmtOptions = ManagementOptions.Get(config);
+            var mgmt = mgmtOptions.OfType<ActuatorManagementOptions>().Single();
             mgmt.EndpointOptions.Add(discoveryOptions);
 
             var endpoint = new ActuatorDiscoveryEndpoint(discoveryOptions, mgmtOptions, loggerFactory?.CreateLogger<ActuatorDiscoveryEndpoint>());

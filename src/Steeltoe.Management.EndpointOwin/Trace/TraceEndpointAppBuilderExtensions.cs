@@ -17,6 +17,8 @@ using Microsoft.Extensions.Logging;
 using Owin;
 using Steeltoe.Common.Diagnostics;
 using Steeltoe.Management.Endpoint;
+using Steeltoe.Management.Endpoint.CloudFoundry;
+using Steeltoe.Management.Endpoint.Discovery;
 using Steeltoe.Management.Endpoint.Trace;
 using System;
 using System.Collections.Generic;
@@ -35,7 +37,7 @@ namespace Steeltoe.Management.EndpointOwin.Trace
         /// <param name="traceRepository">repository to put traces in</param>
         /// <param name="loggerFactory">For logging within the middleware</param>
         /// <returns>OWIN <see cref="IAppBuilder" /> with Trace Endpoint added</returns>
-        public static IAppBuilder UseTraceActuator(this IAppBuilder builder, IConfiguration config, IEnumerable<IManagementOptions> mgmtOptions, ITraceRepository traceRepository = null, ILoggerFactory loggerFactory = null)
+        public static IAppBuilder UseTraceActuator(this IAppBuilder builder, IConfiguration config, ITraceRepository traceRepository = null, ILoggerFactory loggerFactory = null, bool addToDiscovery = false)
         {
             if (builder == null)
             {
@@ -47,18 +49,17 @@ namespace Steeltoe.Management.EndpointOwin.Trace
                 throw new ArgumentNullException(nameof(config));
             }
 
-            ITraceOptions options;
-            if (mgmtOptions == null)
+            ITraceOptions options = new TraceEndpointOptions(config);
+
+            var mgmtOptions = ManagementOptions.Get(config);
+            foreach (var mgmt in mgmtOptions)
             {
-                options = new TraceOptions(config);
-            }
-            else
-            {
-                options = new TraceEndpointOptions(config);
-                foreach (var mgmtOption in mgmtOptions)
+                if (!addToDiscovery && mgmt is ActuatorManagementOptions)
                 {
-                    mgmtOption.EndpointOptions.Add(options);
+                    continue;
                 }
+
+                mgmt.EndpointOptions.Add(options);
             }
 
             traceRepository = traceRepository ?? new TraceDiagnosticObserver(options, loggerFactory?.CreateLogger<TraceDiagnosticObserver>());
@@ -68,9 +69,5 @@ namespace Steeltoe.Management.EndpointOwin.Trace
             return builder.Use<EndpointOwinMiddleware<List<TraceResult>>>(endpoint, mgmtOptions, new List<HttpMethod> { HttpMethod.Get }, true, logger);
         }
 
-        public static IAppBuilder UseTraceActuator(this IAppBuilder builder, IConfiguration config, ITraceRepository traceRepository = null, ILoggerFactory loggerFactory = null)
-        {
-            return builder.UseTraceActuator(config, mgmtOptions: null, traceRepository: traceRepository, loggerFactory: loggerFactory);
-        }
     }
 }

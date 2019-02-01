@@ -36,7 +36,7 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
         {
             _options = options;
             _logger = logger;
-            _base = new SecurityBase(options, logger);
+            _base = new SecurityBase(options, mgmtOptions, logger);
             _mgmtOptions = mgmtOptions;
         }
 
@@ -51,8 +51,9 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
 
         public override async Task Invoke(IOwinContext context)
         {
+            bool isEnabled = _mgmtOptions == null ? _options.IsEnabled : _options.IsEnabled(_mgmtOptions);
             // if running on Cloud Foundry, security is enabled, the path starts with /cloudfoundryapplication...
-            if (Platform.IsCloudFoundry && _options.IsEnabled && _base.IsCloudFoundryRequest(context.Request.Path.ToString()))
+            if (Platform.IsCloudFoundry && isEnabled && _base.IsCloudFoundryRequest(context.Request.Path.ToString()))
             {
                 context.Response.Headers.Set("Access-Control-Allow-Credentials", "true");
                 context.Response.Headers.Set("Access-Control-Allow-Origin", context.Request.Headers.Get("origin"));
@@ -169,6 +170,8 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
 
             return null;
         }
+
+      
 
         private async Task ReturnError(IOwinContext context, SecurityResult error)
         {

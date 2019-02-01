@@ -12,27 +12,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Extensions.Configuration;
 using Microsoft.Owin.Testing;
 using Newtonsoft.Json;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.CloudFoundry;
+using Steeltoe.Management.Endpoint.Discovery;
 using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.EndpointOwin.Test;
+using System.Collections.Generic;
 using System.Net;
 using Xunit;
-using Xunit.Abstractions;
 
-namespace Steeltoe.Management.EndpointOwin.CloudFoundry.Test
+namespace Steeltoe.Management.EndpointOwin.Discovery.Test
 {
-    public class CloudFoundryEndpointOwinMiddlewareTest : BaseTest
+    public class DiscoveryEndpointOwinMiddlewareTest : BaseTest
     {
         [Fact]
-        public async void CloudFoundryInvoke_ReturnsExpected()
+        public async void DiscoveryEndpointInvoke_ReturnsExpected()
         {
+            var mgmtOptions = new List<IManagementOptions> { new ActuatorManagementOptions() };
             // arrange
-            var middle = new CloudFoundryEndpointOwinMiddleware(null, new TestCloudFoundryEndpoint(new CloudFoundryOptions()));
-            var context = OwinTestHelpers.CreateRequest("GET", "/");
+            var middle = new ActuatorDiscoveryEndpointOwinMiddleware( null, new TestActuatorDiscoveryEndpoint(new ActuatorDiscoveryEndpointOptions(), mgmtOptions), mgmtOptions);
+
+            var context = OwinTestHelpers.CreateRequest("GET", "/actuator");
 
             // act
             var json = await middle.InvokeAndReadResponse(context);
@@ -67,12 +69,17 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry.Test
         [Fact]
         public void CloudFoundryEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
         {
-            var opts = new CloudFoundryOptions();
-            var ep = new CloudFoundryEndpoint(opts);
-            var middle = new CloudFoundryEndpointOwinMiddleware(null, ep);
+            var actmgmtOpts = new ActuatorManagementOptions();
+            var mgmtOptions = new List<IManagementOptions> { actmgmtOpts };
 
-            Assert.True(middle.RequestVerbAndPathMatch("GET", "/"));
-            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/"));
+            var opts = new ActuatorDiscoveryEndpointOptions();
+            actmgmtOpts.EndpointOptions.Add(opts);
+            var ep = new ActuatorDiscoveryEndpoint(opts, mgmtOptions);
+
+            var middle = new ActuatorDiscoveryEndpointOwinMiddleware(null, ep, mgmtOptions);
+
+            Assert.True(middle.RequestVerbAndPathMatch("GET", "/actuator"));
+            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/actuator"));
             Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
         }
     }

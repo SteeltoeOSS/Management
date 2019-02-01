@@ -97,21 +97,9 @@ namespace Steeltoe.Management.Endpoint.Middleware
             return Serialize(result);
         }
 
-        //public virtual bool RequestVerbAndPathMatch(string httpMethod, string requestPath)
-        //{
-        //    return (_exactRequestPathMatching ? requestPath.Equals(_endpoint.Path)
-        //     : requestPath.StartsWith(_endpoint.Path))
-        //        && _endpoint.Enabled
-        //        && _allowedMethods.Any(m => m.Method.Equals(httpMethod));
-        //}
-
         public virtual bool RequestVerbAndPathMatch(string httpMethod, string requestPath)
         {
-            IManagementOptions matchingMgmtContext = null;
-            return (_exactRequestPathMatching ? RequestPathMatch(requestPath, out matchingMgmtContext)
-             : RequestPathStartWith(requestPath, out matchingMgmtContext))
-                && IsEnabled(matchingMgmtContext)
-                && _allowedMethods.Any(m => m.Method.Equals(httpMethod));
+            return _endpoint.RequestVerbAndPathMatch(httpMethod, requestPath, _allowedMethods, _mgmtOptions, _exactRequestPathMatching);
         }
 
         protected virtual string Serialize(TResult result)
@@ -135,71 +123,6 @@ namespace Steeltoe.Management.Endpoint.Middleware
             return string.Empty;
         }
 
-        protected virtual bool RequestPathMatch(string requestPath, out IManagementOptions matchingMgmtContext)
-        {
-            matchingMgmtContext = null;
-
-            if (_mgmtOptions == null)
-            {
-                return requestPath.Equals(_endpoint.Path);
-            }
-            else
-            {
-                foreach (var context in _mgmtOptions)
-                {
-                    var contextPath = context.Path;
-                    if (!contextPath.EndsWith("/") && !string.IsNullOrEmpty(_endpoint.Path))
-                    {
-                        contextPath += "/";
-                    }
-
-                    var fullPath = contextPath + _endpoint.Path;
-                    if (requestPath.Equals(fullPath))
-                    {
-                        matchingMgmtContext = context;
-                        return true;
-                    }
-                }
-
-                return false;
-            }
-        }
-
-        protected virtual bool RequestPathStartWith(string requestPath, out IManagementOptions matchingMgmtContext)
-        {
-            matchingMgmtContext = null;
-
-            if (_mgmtOptions == null)
-            {
-                return requestPath.StartsWith(_endpoint.Path);
-            }
-            else
-            {
-                foreach (var context in _mgmtOptions)
-                {
-                    var contextPath = context.Path;
-                    if (!contextPath.EndsWith("/") && !string.IsNullOrEmpty(_endpoint.Path))
-                    {
-                        contextPath += "/";
-                    }
-
-                    var fullPath = contextPath + _endpoint.Path;
-                    if (requestPath.StartsWith(fullPath))
-                    {
-                        matchingMgmtContext = context;
-                        return true;
-                    }
-                }
-
-                return false;
-            }
-
-        }
-
-        protected virtual bool IsEnabled(IManagementOptions mgmtContext)
-        {
-            return mgmtContext == null ? _endpoint.Enabled : _endpoint.Options.IsEnabled(mgmtContext);
-        }
     }
 
 #pragma warning disable SA1402 // File may only contain a single class
@@ -228,83 +151,9 @@ namespace Steeltoe.Management.Endpoint.Middleware
 
         public override bool RequestVerbAndPathMatch(string httpMethod, string requestPath)
         {
-            IManagementOptions matchingMgmtContext = null;
-            return (_exactRequestPathMatching ? RequestPathMatch(requestPath, out matchingMgmtContext)
-               : RequestPathStartWith(requestPath, out matchingMgmtContext))
-                  &&  IsEnabled(matchingMgmtContext)
-                  && _allowedMethods.Any(m => m.Method.Equals(httpMethod));
+            return _endpoint.RequestVerbAndPathMatch(httpMethod, requestPath, _allowedMethods, _mgmtOptions, _exactRequestPathMatching);
         }
 
-        protected override bool RequestPathMatch(string requestPath, out IManagementOptions matchingMgmtContext)
-        {
-            matchingMgmtContext = null;
-
-            if (_mgmtOptions == null)
-            {
-                return requestPath.Equals(_endpoint.Path);
-            }
-
-            foreach (var context in _mgmtOptions)
-            {
-                var contextPath = context.Path;
-                if (!contextPath.EndsWith("/") && !string.IsNullOrEmpty(_endpoint.Path))
-                {
-                    contextPath += "/";
-                }
-
-                var fullPath = contextPath + _endpoint.Path;
-                if (requestPath.Equals(fullPath))
-                {
-                    matchingMgmtContext = context;
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        protected override bool RequestPathStartWith(string requestPath, out IManagementOptions matchingMgmtContext)
-        {
-            matchingMgmtContext = null;
-
-            if (_mgmtOptions == null)
-            {
-                return requestPath.StartsWith(_endpoint.Path);
-            }
-            else
-            {
-                foreach (var context in _mgmtOptions)
-                {
-                    var contextPath = context.Path;
-                    if (!contextPath.EndsWith("/") && !string.IsNullOrEmpty(_endpoint.Path))
-                    {
-                        contextPath += "/";
-                    }
-
-                    var fullPath = contextPath + _endpoint.Path;
-                    if (requestPath.StartsWith(fullPath))
-                    {
-                        matchingMgmtContext = context;
-                        return true;
-                    }
-                }
-
-                return false;
-            }
-
-        }
-
-        protected override bool IsEnabled(IManagementOptions mgmtContext)
-        {
-            if (mgmtContext == null)
-            {
-                return _endpoint.Enabled;
-            }
-            else
-            {
-                return _endpoint.Options.IsEnabled(mgmtContext);
-            }
-        }
     }
 #pragma warning restore SA1402 // File may only contain a single class
 }

@@ -44,27 +44,21 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
             {
                 throw new ArgumentNullException(nameof(config));
             }
-
-            ICloudFoundryOptions cloudFoundryOptions;
-
-            // TODO: remove in 3.0
             if (mgmtOptions == null)
             {
-                cloudFoundryOptions = new CloudFoundryOptions(config);
+                mgmtOptions = ManagementOptions.Get(config);
             }
-            else
-            {
-                cloudFoundryOptions = new CloudFoundryEndpointOptions(config);
-                var mgmt = mgmtOptions.OfType<CloudFoundryManagementOptions>().Single();
-                mgmt.EndpointOptions.Add(cloudFoundryOptions);
-            }
+
+            var cloudFoundryOptions = new CloudFoundryEndpointOptions(config);
+            var mgmt = mgmtOptions.OfType<CloudFoundryManagementOptions>().Single();
+            mgmt.EndpointOptions.Add(cloudFoundryOptions);
 
             var endpoint = new CloudFoundryEndpoint(cloudFoundryOptions, mgmtOptions, loggerFactory?.CreateLogger<CloudFoundryEndpoint>());
             var logger = loggerFactory?.CreateLogger<CloudFoundryEndpointOwinMiddleware>();
             return builder.Use<CloudFoundryEndpointOwinMiddleware>(endpoint, mgmtOptions, logger);
         }
 
-        [Obsolete]
+
         public static IAppBuilder UseCloudFoundryActuator(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null)
         {
             return builder.UseCloudFoundryActuator(config, mgmtOptions: null, loggerFactory: loggerFactory);

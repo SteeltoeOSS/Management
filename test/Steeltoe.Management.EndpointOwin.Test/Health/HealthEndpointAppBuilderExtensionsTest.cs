@@ -47,7 +47,7 @@ namespace Steeltoe.Management.EndpointOwin.Health.Test
         public void UseHealthActuator_ThrowsIfOptionsNull()
         {
             IAppBuilder builder = new AppBuilder();
-            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseHealthActuator(options: null, mgmtOptions: null));
+            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseHealthActuator(options: null));
             Assert.Equal("options", exception.ParamName);
         }
 
@@ -57,7 +57,7 @@ namespace Steeltoe.Management.EndpointOwin.Health.Test
             var builder = new AppBuilder();
             var config = new ConfigurationBuilder().Build();
             var options = new HealthOptions(config);
-            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseHealthActuator(options, mgmtOptions: null, aggregator: null));
+            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseHealthActuator(options, aggregator: null));
             Assert.Equal("aggregator", exception.ParamName);
         }
 
@@ -67,7 +67,7 @@ namespace Steeltoe.Management.EndpointOwin.Health.Test
             var builder = new AppBuilder();
             var config = new ConfigurationBuilder().Build();
             var options = new HealthOptions(config);
-            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseHealthActuator(options, null, new DefaultHealthAggregator(), contributors: null));
+            var exception = Assert.Throws<ArgumentNullException>(() => builder.UseHealthActuator(options, new DefaultHealthAggregator(), contributors: null));
             Assert.Equal("contributors", exception.ParamName);
         }
     }

@@ -60,24 +60,27 @@ namespace Steeltoe.Management.EndpointOwin.Loggers
                 {
                     // POST - change a logger level
                     _logger?.LogDebug("Incoming logger path: {0}", context.Request.Path.Value);
-                    PathString epPath = new PathString(_endpoint.Path);
-                    if (context.Request.Path.StartsWithSegments(epPath, out PathString remaining))
+                    foreach (var path in GetPaths())
                     {
-                        if (remaining.HasValue)
+                        PathString epPath = new PathString(path);
+                        if (context.Request.Path.StartsWithSegments(epPath, out PathString remaining))
                         {
-                            string loggerName = remaining.Value.TrimStart('/');
-
-                            var change = ((LoggersEndpoint)_endpoint).DeserializeRequest(context.Request.Body);
-
-                            change.TryGetValue("configuredLevel", out string level);
-
-                            _logger?.LogDebug("Change Request: {Logger}, {Level}", loggerName, level ?? "RESET");
-                            if (!string.IsNullOrEmpty(loggerName))
+                            if (remaining.HasValue)
                             {
-                                var changeReq = new LoggersChangeRequest(loggerName, level);
-                                _endpoint.Invoke(changeReq);
-                                context.Response.StatusCode = (int)HttpStatusCode.OK;
-                                return;
+                                string loggerName = remaining.Value.TrimStart('/');
+
+                                var change = ((LoggersEndpoint)_endpoint).DeserializeRequest(context.Request.Body);
+
+                                change.TryGetValue("configuredLevel", out string level);
+
+                                _logger?.LogDebug("Change Request: {Logger}, {Level}", loggerName, level ?? "RESET");
+                                if (!string.IsNullOrEmpty(loggerName))
+                                {
+                                    var changeReq = new LoggersChangeRequest(loggerName, level);
+                                    _endpoint.Invoke(changeReq);
+                                    context.Response.StatusCode = (int)HttpStatusCode.OK;
+                                    return;
+                                }
                             }
                         }
                     }
@@ -86,6 +89,30 @@ namespace Steeltoe.Management.EndpointOwin.Loggers
                     return;
                 }
             }
+        }
+
+        private List<string> GetPaths()
+        {
+            var paths = new List<string>();
+            if (_mgmtOptions == null)
+            {
+                paths.Add(_endpoint.Path);
+            }
+            else
+            {
+                foreach (var mgmt in _mgmtOptions)
+                {
+                    var path = mgmt.Path;
+                    if (!path.EndsWith("/") && !string.IsNullOrEmpty(_endpoint.Id))
+                    {
+                        path += "/";
+                    }
+
+                    var fullPath = path + _endpoint.Id;
+                    paths.Add(fullPath);
+                }
+            }
+            return paths;
         }
     }
 }

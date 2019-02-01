@@ -132,70 +132,7 @@ namespace Steeltoe.Management.Endpoint.Handler
 
         public override bool RequestVerbAndPathMatch(string httpMethod, string requestPath)
         {
-            IManagementOptions matchingMgmtContext;
-            return _allowedMethods.Any(m => m.Method.Equals(httpMethod)) &&
-                (_exactRequestPathMatching
-                ? RequestPathMatch(requestPath, out matchingMgmtContext)
-                : RequestPathStartWith(requestPath, out matchingMgmtContext));
-        }
-
-        protected virtual bool RequestPathMatch(string requestPath, out IManagementOptions matchingMgmtContext)
-        {
-            matchingMgmtContext = null;
-
-            if (_mgmtOptions == null)
-            {
-                return requestPath.Equals(_endpoint.Path);
-            }
-
-            foreach (var context in _mgmtOptions)
-            {
-                var contextPath = context.Path;
-                if (!contextPath.EndsWith("/") && !string.IsNullOrEmpty(_endpoint.Path))
-                {
-                    contextPath += "/";
-                }
-
-                var fullPath = contextPath + _endpoint.Path;
-                if (requestPath.Equals(fullPath))
-                {
-                    matchingMgmtContext = context;
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        protected virtual bool RequestPathStartWith(string requestPath, out IManagementOptions matchingMgmtContext)
-        {
-            matchingMgmtContext = null;
-
-            if (_mgmtOptions == null)
-            {
-                return requestPath.StartsWith(_endpoint.Path);
-            }
-            else
-            {
-                foreach (var context in _mgmtOptions)
-                {
-                    var contextPath = context.Path;
-                    if (!contextPath.EndsWith("/") && !string.IsNullOrEmpty(_endpoint.Path))
-                    {
-                        contextPath += "/";
-                    }
-
-                    var fullPath = contextPath + _endpoint.Path;
-                    if (requestPath.StartsWith(fullPath))
-                    {
-                        matchingMgmtContext = context;
-                        return true;
-                    }
-                }
-
-                return false;
-            }
-
+            return _endpoint.RequestVerbAndPathMatch(httpMethod, requestPath, _allowedMethods, _mgmtOptions, _exactRequestPathMatching);
         }
 
         public async override Task<bool> IsAccessAllowed(HttpContext context)
@@ -229,81 +166,9 @@ namespace Steeltoe.Management.Endpoint.Handler
             return Serialize(result);
         }
 
-        //public override bool RequestVerbAndPathMatch(string httpMethod, string requestPath)
-        //{
-        //    return _exactRequestPathMatching
-        //          ? requestPath.Equals(_endpoint.Path) && _allowedMethods.Any(m => m.Method.Equals(httpMethod))
-        //          : requestPath.StartsWith(_endpoint.Path) && _allowedMethods.Any(m => m.Method.Equals(httpMethod));
-        //}
-
         public override bool RequestVerbAndPathMatch(string httpMethod, string requestPath)
         {
-            IManagementOptions matchingMgmtContext;
-            return _allowedMethods.Any(m => m.Method.Equals(httpMethod)) &&
-                (_exactRequestPathMatching
-                ? RequestPathMatch(requestPath, out matchingMgmtContext)
-                : RequestPathStartWith(requestPath, out matchingMgmtContext));
-
-            // TODO: Handle enabled? 
-        }
-
-        protected override bool RequestPathMatch(string requestPath, out IManagementOptions matchingMgmtContext)
-        {
-            matchingMgmtContext = null;
-
-            if (_mgmtOptions == null)
-            {
-                return requestPath.Equals(_endpoint.Path);
-            }
-
-            foreach (var context in _mgmtOptions)
-            {
-                var contextPath = context.Path;
-                if (!contextPath.EndsWith("/") && !string.IsNullOrEmpty(_endpoint.Path))
-                {
-                    contextPath += "/";
-                }
-
-                var fullPath = contextPath + _endpoint.Path;
-                if (requestPath.Equals(fullPath))
-                {
-                    matchingMgmtContext = context;
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        protected override bool RequestPathStartWith(string requestPath, out IManagementOptions matchingMgmtContext)
-        {
-            matchingMgmtContext = null;
-
-            if (_mgmtOptions == null)
-            {
-                return requestPath.StartsWith(_endpoint.Path);
-            }
-            else
-            {
-                foreach (var context in _mgmtOptions)
-                {
-                    var contextPath = context.Path;
-                    if (!contextPath.EndsWith("/") && !string.IsNullOrEmpty(_endpoint.Path))
-                    {
-                        contextPath += "/";
-                    }
-
-                    var fullPath = contextPath + _endpoint.Path;
-                    if (requestPath.StartsWith(fullPath))
-                    {
-                        matchingMgmtContext = context;
-                        return true;
-                    }
-                }
-
-                return false;
-            }
-
+            return _endpoint.RequestVerbAndPathMatch(httpMethod, requestPath, _allowedMethods, _mgmtOptions, _exactRequestPathMatching);
         }
 
         public async override Task<bool> IsAccessAllowed(HttpContext context)

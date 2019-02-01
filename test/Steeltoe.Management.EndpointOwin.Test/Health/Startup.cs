@@ -31,10 +31,9 @@ namespace Steeltoe.Management.EndpointOwin.Health.Test
             var config = builder.Build();
 
             app.UseHealthActuator(config);
-            app.UseHealthActuator(new HealthOptions { Id = "down" }, null, new DefaultHealthAggregator(), new List<IHealthContributor> { new DownContributor() });
-            app.UseHealthActuator(new HealthOptions { Id = "out" }, null,   new DefaultHealthAggregator(), new List<IHealthContributor> { new OutOfSserviceContributor() });
-            app.UseHealthActuator(new HealthOptions { Id = "unknown" }, null, new DefaultHealthAggregator(), new List<IHealthContributor> { new UnknownContributor() });
+            app.UseHealthActuator(new HealthEndpointOptions { Id = "down" }, new DefaultHealthAggregator(), new List<IHealthContributor> { new DownContributor() });
+            app.UseHealthActuator(new HealthEndpointOptions { Id = "out" }, new DefaultHealthAggregator(), new List<IHealthContributor> { new OutOfSserviceContributor() });
+            app.UseHealthActuator(new HealthEndpointOptions { Id = "unknown" }, new DefaultHealthAggregator(), new List<IHealthContributor> { new UnknownContributor() });
         }
-        //TODO: Add alternate test passing mgmtoptions
     }
 }
