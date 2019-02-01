@@ -22,14 +22,14 @@ namespace Steeltoe.Management.Endpoint.Handler
 {
     public class EnvHandler : ActuatorHandler<EnvEndpoint, EnvironmentDescriptor>
     {
-        public EnvHandler(IEndpoint<EnvironmentDescriptor> endpoint, ISecurityService securityService, IEnumerable<IManagementOptions> mgmtOptions, ILogger<EnvHandler> logger = null)
-           : base(endpoint, securityService, mgmtOptions, null, true, logger)
+        public EnvHandler(IEndpoint<EnvironmentDescriptor> endpoint, IEnumerable<ISecurityService> securityServices, IEnumerable<IManagementOptions> mgmtOptions, ILogger<EnvHandler> logger = null)
+           : base(endpoint, securityServices, mgmtOptions, null, true, logger)
         {
         }
 
         [Obsolete]
-        public EnvHandler(IEndpoint<EnvironmentDescriptor> endpoint, ISecurityService securityService, ILogger<EnvHandler> logger = null)
-            : base(endpoint, securityService, null, true, logger)
+        public EnvHandler(IEndpoint<EnvironmentDescriptor> endpoint, IEnumerable<ISecurityService> securityServices, ILogger<EnvHandler> logger = null)
+            : base(endpoint, securityServices, null, true, logger)
         {
         }
     }

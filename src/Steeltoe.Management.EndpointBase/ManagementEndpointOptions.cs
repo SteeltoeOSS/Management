@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint;
+using Steeltoe.Management.EndpointBase.Security;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -64,5 +65,7 @@ namespace Steeltoe.Management.Endpoint
         public string Path { get; set; }
 
         public List<IEndpointOptions> EndpointOptions { get; set; }
+
+        public SensitiveClaim SensitiveClaim { get; set; }
     }
 }

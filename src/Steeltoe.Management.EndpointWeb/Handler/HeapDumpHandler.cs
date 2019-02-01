@@ -26,18 +26,18 @@ namespace Steeltoe.Management.Endpoint.Handler
 {
     public class HeapDumpHandler : ActuatorHandler<HeapDumpEndpoint, string>
     {
-        public HeapDumpHandler(HeapDumpEndpoint endpoint, ISecurityService securityService, IEnumerable<IManagementOptions> mgmtOptions, ILogger<HeapDumpHandler> logger = null)
-           : base(endpoint, securityService, mgmtOptions, null, true, logger)
+        public HeapDumpHandler(HeapDumpEndpoint endpoint, IEnumerable<ISecurityService> securityServices, IEnumerable<IManagementOptions> mgmtOptions, ILogger<HeapDumpHandler> logger = null)
+           : base(endpoint, securityServices, mgmtOptions, null, true, logger)
         {
         }
 
         [Obsolete]
-        public HeapDumpHandler(HeapDumpEndpoint endpoint, ISecurityService securityService, ILogger<HeapDumpHandler> logger = null)
-            : base(endpoint, securityService, null, true, logger)
+        public HeapDumpHandler(HeapDumpEndpoint endpoint, IEnumerable<ISecurityService> securityServices, ILogger<HeapDumpHandler> logger = null)
+            : base(endpoint, securityServices, null, true, logger)
         {
         }
 
-        public override void HandleRequest(HttpContext context)
+        public override void HandleRequest(HttpContextBase context)
         {
             var filename = _endpoint.Invoke();
             _logger?.LogDebug("Returning: {0}", filename);

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
+using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint.Trace
 {
@@ -25,6 +26,7 @@ namespace Steeltoe.Management.Endpoint.Trace
             : base()
         {
             Id = "trace";
+          //  AltIds = new List<string> { "trace" };
             Capacity = DEFAULT_CAPACITY;
         }
 
@@ -35,6 +37,11 @@ namespace Steeltoe.Management.Endpoint.Trace
             {
                 Id = "trace";
             }
+
+            //if (AltIds == null)
+            //{
+            //    AltIds = new List<string> { "trace" };
+            //}
 
             if (Capacity == -1)
             {

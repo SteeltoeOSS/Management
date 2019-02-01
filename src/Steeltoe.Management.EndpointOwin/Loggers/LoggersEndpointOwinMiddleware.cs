@@ -83,10 +83,10 @@ namespace Steeltoe.Management.EndpointOwin.Loggers
                                 }
                             }
                         }
-                    }
 
-                    context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                    return;
+                        context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                        return;
+                    }
                 }
             }
         }

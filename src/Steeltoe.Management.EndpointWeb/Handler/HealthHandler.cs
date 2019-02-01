@@ -24,18 +24,18 @@ namespace Steeltoe.Management.Endpoint.Handler
 {
     public class HealthHandler : ActuatorHandler<HealthEndpoint, HealthCheckResult>
     {
-        public HealthHandler(IEndpoint<HealthCheckResult> endpoint, ISecurityService securityService, IEnumerable<IManagementOptions> mgmtOptions, ILogger<HealthHandler> logger = null)
-           : base(endpoint, securityService, mgmtOptions, null, true, logger)
+        public HealthHandler(IEndpoint<HealthCheckResult> endpoint, IEnumerable<ISecurityService> securityServices, IEnumerable<IManagementOptions> mgmtOptions, ILogger<HealthHandler> logger = null)
+           : base(endpoint, securityServices, mgmtOptions, null, true, logger)
         {
         }
 
         [Obsolete]
-        public HealthHandler(IEndpoint<HealthCheckResult> endpoint, ISecurityService securityService, ILogger<HealthHandler> logger = null)
-            : base(endpoint, securityService, null, true, logger)
+        public HealthHandler(IEndpoint<HealthCheckResult> endpoint, IEnumerable<ISecurityService> securityServices, ILogger<HealthHandler> logger = null)
+            : base(endpoint, securityServices, null, true, logger)
         {
         }
 
-        public override void HandleRequest(HttpContext context)
+        public override void HandleRequest(HttpContextBase context)
         {
             _logger?.LogTrace("Processing {SteeltoeEndpoint} request", typeof(HealthHandler));
 

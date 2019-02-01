@@ -43,5 +43,7 @@ namespace Steeltoe.Management.Endpoint.Health
                 RequiredPermissions = Permissions.RESTRICTED;
             }
         }
+
+        protected override bool DefaultSensitive => false;
     }
 }

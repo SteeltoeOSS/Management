@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
+using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump
 {
@@ -24,6 +25,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
             : base()
         {
             Id = "dump";
+       //     AltIds = new List<string> { "dump" };
         }
 
         public ThreadDumpOptions(IConfiguration config)
@@ -33,8 +35,11 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
             {
                 Id = "dump";
             }
-        }
 
-        protected override bool DefaultSensitive => true;
+            //if (AltIds == null)
+            //{
+            //    AltIds = new List<string> { "dump" };
+            //}
+        }
     }
 }

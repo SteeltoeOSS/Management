@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Steeltoe.Management.Endpoint.Security;
+using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint.Test
 {
@@ -33,6 +34,10 @@ namespace Steeltoe.Management.Endpoint.Test
         public bool IsEnabled => Enabled.Value;
 
         public bool IsSensitive => Sensitive.Value;
+
+        //public List<string> AltIds => throw new System.NotImplementedException();
+
+        //public List<string> AltPaths => throw new System.NotImplementedException();
 
         public bool IsAccessAllowed(Permissions permissions)
         {

@@ -97,7 +97,7 @@ namespace Steeltoe.Management.EndpointOwin.Metrics
 
         protected internal string GetMetricName(IOwinRequest request)
         {
-            var epPaths = GetEndpointPath();
+            var epPaths = GetEndpointPaths();
             foreach (var path in epPaths)
             {
                 PathString epPath = new PathString(path);
@@ -113,7 +113,7 @@ namespace Steeltoe.Management.EndpointOwin.Metrics
             return null;
         }
 
-        private IEnumerable<string> GetEndpointPath()
+        private IEnumerable<string> GetEndpointPaths()
         {
             if(_mgmtOptions == null)
             {

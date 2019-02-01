@@ -22,6 +22,7 @@ namespace Steeltoe.Management.Endpoint
         [Obsolete]
         bool IsEnabled { get; }
 
+        [Obsolete]
         bool IsSensitive { get; }
 
         bool? Enabled { get; }

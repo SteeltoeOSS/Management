@@ -17,6 +17,7 @@ using Microsoft.Owin;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.CloudFoundry;
+using Steeltoe.Management.Endpoint.Security;
 using System;
 using System.Collections.Generic;
 using System.Net;

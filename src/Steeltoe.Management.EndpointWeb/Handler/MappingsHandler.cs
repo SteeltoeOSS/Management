@@ -36,8 +36,8 @@ namespace Steeltoe.Management.Endpoint.Handler
         protected IApiExplorer _apiExplorer;
         private readonly IEnumerable<IManagementOptions> _mgmtOptions;
 
-        public MappingsHandler(IMappingsOptions options, ISecurityService securityService, IApiExplorer apiExplorer, IEnumerable<IManagementOptions> mgmtOptions, ILogger<MappingsHandler> logger = null)
-           : base(securityService, mgmtOptions, null, true, logger)
+        public MappingsHandler(IMappingsOptions options, IEnumerable<ISecurityService> securityServices, IApiExplorer apiExplorer, IEnumerable<IManagementOptions> mgmtOptions, ILogger<MappingsHandler> logger = null)
+           : base(securityServices, mgmtOptions, null, true, logger)
         {
             _options = options;
             _apiExplorer = apiExplorer;
@@ -45,8 +45,8 @@ namespace Steeltoe.Management.Endpoint.Handler
         }
 
         [Obsolete]
-        public MappingsHandler(MappingsOptions options, ISecurityService securityService, IApiExplorer apiExplorer, ILogger<MappingsHandler> logger = null)
-            : base(securityService, null, true, logger)
+        public MappingsHandler(MappingsOptions options, IEnumerable<ISecurityService> securityServices, IApiExplorer apiExplorer, ILogger<MappingsHandler> logger = null)
+            : base(securityServices, null, true, logger)
         {
             _options = options;
             _apiExplorer = apiExplorer;
@@ -70,12 +70,12 @@ namespace Steeltoe.Management.Endpoint.Handler
             return _mgmtOptions.Select(opt => $"{opt.Path}/{_options.Id}").Any(p => p.Equals(requestPath));
         }
 
-        public async override Task<bool> IsAccessAllowed(HttpContext context)
+        public async override Task<bool> IsAccessAllowed(HttpContextBase context)
         {
-            return await _securityService?.IsAccessAllowed(context, _options);
+            return await _securityServices.IsAccessAllowed(context, _options);
         }
 
-        public override void HandleRequest(HttpContext context)
+        public override void HandleRequest(HttpContextBase context)
         {
             _logger?.LogTrace("Processing {SteeltoeEndpoint} request", typeof(MappingsHandler));
 

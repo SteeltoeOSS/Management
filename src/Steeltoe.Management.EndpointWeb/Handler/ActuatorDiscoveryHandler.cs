@@ -16,6 +16,7 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Discovery;
 using Steeltoe.Management.Endpoint.Security;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -24,12 +25,18 @@ namespace Steeltoe.Management.Endpoint.Handler
 {
     public class ActuatorDiscoveryHandler : ActuatorHandler<ActuatorDiscoveryEndpoint, Links, string>
     {
-        public ActuatorDiscoveryHandler(ActuatorDiscoveryEndpoint endpoint, ISecurityService securityService, IEnumerable<IManagementOptions> mgmtOptions, ILogger<ActuatorDiscoveryHandler> logger = null)
-           : base(endpoint, securityService, mgmtOptions?.OfType<ActuatorManagementOptions>(), null, true, logger)
+        public ActuatorDiscoveryHandler(ActuatorDiscoveryEndpoint endpoint, IEnumerable<ISecurityService> securityServices, IEnumerable<IManagementOptions> mgmtOptions, ILogger<ActuatorDiscoveryHandler> logger = null)
+           : base(endpoint, securityServices, mgmtOptions?.OfType<ActuatorManagementOptions>(), null, true, logger)
         {
         }
 
-        public override void HandleRequest(HttpContext context)
+        [Obsolete]
+        public ActuatorDiscoveryHandler(ActuatorDiscoveryEndpoint endpoint, IEnumerable<ISecurityService> securityServices, ILogger<ActuatorDiscoveryHandler> logger = null)
+          : base(endpoint, securityServices, null, true, logger)
+        {
+        }
+
+        public override void HandleRequest(HttpContextBase context)
         {
             _logger?.LogTrace("Processing {SteeltoeEndpoint} request", typeof(CloudFoundryEndpoint));
             if (context.Request.HttpMethod == "GET")
@@ -40,7 +47,7 @@ namespace Steeltoe.Management.Endpoint.Handler
             }
         }
 
-        protected internal string GetRequestUri(HttpRequest request)
+        protected internal string GetRequestUri(HttpRequestBase request)
         {
             string scheme = request.IsSecureConnection ? "https" : "http";
             string headerScheme = request.Headers.Get("X-Forwarded-Proto");

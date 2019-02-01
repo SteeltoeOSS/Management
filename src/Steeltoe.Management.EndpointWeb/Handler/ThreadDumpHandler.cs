@@ -22,14 +22,14 @@ namespace Steeltoe.Management.Endpoint.Handler
 {
     public class ThreadDumpHandler : ActuatorHandler<ThreadDumpEndpoint, List<ThreadInfo>>
     {
-        public ThreadDumpHandler(ThreadDumpEndpoint endpoint, ISecurityService securityService, IEnumerable<IManagementOptions> mgmtOptions, ILogger<ThreadDumpHandler> logger = null)
-          : base(endpoint, securityService, mgmtOptions, null, true, logger)
+        public ThreadDumpHandler(ThreadDumpEndpoint endpoint, IEnumerable<ISecurityService> securityServices, IEnumerable<IManagementOptions> mgmtOptions, ILogger<ThreadDumpHandler> logger = null)
+          : base(endpoint, securityServices, mgmtOptions, null, true, logger)
         {
         }
 
         [Obsolete]
-         public ThreadDumpHandler(ThreadDumpEndpoint endpoint, ISecurityService securityService, ILogger<ThreadDumpHandler> logger = null)
-            : base(endpoint, securityService, null, true, logger)
+         public ThreadDumpHandler(ThreadDumpEndpoint endpoint, IEnumerable<ISecurityService> securityServices, ILogger<ThreadDumpHandler> logger = null)
+            : base(endpoint, securityServices, null, true, logger)
         {
         }
     }

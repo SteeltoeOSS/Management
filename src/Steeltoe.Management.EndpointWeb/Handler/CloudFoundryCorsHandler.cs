@@ -29,16 +29,17 @@ namespace Steeltoe.Management.Endpoint.Handler
     {
         private IEndpointOptions _options;
         private IEnumerable<IManagementOptions> _mgmtOptions;
-        public CloudFoundryCorsHandler(IEndpointOptions options, ISecurityService securityService, IEnumerable<IManagementOptions> mgmtOptions, ILogger<CloudFoundryCorsHandler> logger = null)
-            : base(securityService, mgmtOptions, new List<HttpMethod> { HttpMethod.Options }, false, logger)
+
+        public CloudFoundryCorsHandler(IEndpointOptions options, IEnumerable<ISecurityService> securityServices, IEnumerable<IManagementOptions> mgmtOptions, ILogger<CloudFoundryCorsHandler> logger = null)
+            : base(securityServices, mgmtOptions, new List<HttpMethod> { HttpMethod.Options }, false, logger)
         {
             _options = options;
             _mgmtOptions = mgmtOptions;
         }
 
         [Obsolete]
-        public CloudFoundryCorsHandler(CloudFoundryOptions options, ISecurityService securityService, ILogger<CloudFoundryCorsHandler> logger = null)
-           : base(securityService, new List<HttpMethod> { HttpMethod.Options }, false, logger)
+        public CloudFoundryCorsHandler(CloudFoundryOptions options, IEnumerable<ISecurityService> securityServices, ILogger<CloudFoundryCorsHandler> logger = null)
+           : base(securityServices, new List<HttpMethod> { HttpMethod.Options }, false, logger)
         {
             _options = options;
         }
@@ -72,7 +73,7 @@ namespace Steeltoe.Management.Endpoint.Handler
             return false;
         }
 
-        public override void HandleRequest(HttpContext context)
+        public override void HandleRequest(HttpContextBase context)
         {
             _logger?.LogTrace("Processing {SteeltoeEndpoint} request", typeof(CloudFoundryCorsHandler));
             if (context.Request.HttpMethod == "OPTIONS")
@@ -89,7 +90,7 @@ namespace Steeltoe.Management.Endpoint.Handler
             }
         }
 
-        public override Task<bool> IsAccessAllowed(HttpContext context)
+        public override Task<bool> IsAccessAllowed(HttpContextBase context)
         {
             return Task.FromResult(true);
         }

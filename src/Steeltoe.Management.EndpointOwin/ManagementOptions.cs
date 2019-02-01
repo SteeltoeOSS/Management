@@ -13,26 +13,11 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using Owin;
-using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Discovery;
-using Steeltoe.Management.Endpoint.Health;
-using Steeltoe.Management.EndpointOwin.CloudFoundry;
-using Steeltoe.Management.EndpointOwin.Diagnostics;
-using Steeltoe.Management.EndpointOwin.Health;
-using Steeltoe.Management.EndpointOwin.HeapDump;
-using Steeltoe.Management.EndpointOwin.Info;
-using Steeltoe.Management.EndpointOwin.Loggers;
-using Steeltoe.Management.EndpointOwin.Mappings;
-using Steeltoe.Management.EndpointOwin.ThreadDump;
-using Steeltoe.Management.EndpointOwin.Trace;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web.Http.Description;
 
 namespace Steeltoe.Management.EndpointOwin
 {
@@ -63,7 +48,7 @@ namespace Steeltoe.Management.EndpointOwin
         }
 
         /// <summary>
-        /// For Testing 
+        /// For Testing
         /// </summary>
         internal static void Clear()
         {

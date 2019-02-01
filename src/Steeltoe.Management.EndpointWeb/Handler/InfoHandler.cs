@@ -22,14 +22,14 @@ namespace Steeltoe.Management.Endpoint.Handler
 {
     public class InfoHandler : ActuatorHandler<InfoEndpoint, Dictionary<string, object>>
     {
-        public InfoHandler(InfoEndpoint endpoint, ISecurityService securityService, IEnumerable<IManagementOptions> mgmtOptions, ILogger<InfoHandler> logger = null)
-            : base(endpoint, securityService, mgmtOptions, null, true, logger)
+        public InfoHandler(InfoEndpoint endpoint, IEnumerable<ISecurityService> securityServices, IEnumerable<IManagementOptions> mgmtOptions, ILogger<InfoHandler> logger = null)
+           : base(endpoint, securityServices, mgmtOptions, null, true, logger)
         {
         }
 
         [Obsolete]
-        public InfoHandler(InfoEndpoint endpoint, ISecurityService securityService, ILogger<InfoHandler> logger = null)
-            : base(endpoint, securityService, null, true, logger)
+        public InfoHandler(InfoEndpoint endpoint, IEnumerable<ISecurityService> securityServices, ILogger<InfoHandler> logger = null)
+            : base(endpoint, securityServices, null, true, logger)
         {
         }
     }
