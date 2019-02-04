@@ -54,7 +54,7 @@ namespace Steeltoe.Management.CloudFoundry
             app.UseLoggersActuator();
             app.UseTraceActuator();
             app.UseMappingsActuator();
-            
+
         }
     }
 }

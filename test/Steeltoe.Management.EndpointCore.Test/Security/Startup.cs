@@ -34,12 +34,11 @@ namespace Steeltoe.Management.Endpoint.Security.Test
         {
             services.AddDiscoveryActuator(Configuration);
             services.AddInfoActuator(Configuration, true);
-            
         }
 
         public virtual void Configure(IApplicationBuilder app)
         {
-            app.UseEndpointSecurity();
+            app.UseActuatorSecurity();
             app.UseDiscoveryActuator();
             app.UseInfoActuator();
         }

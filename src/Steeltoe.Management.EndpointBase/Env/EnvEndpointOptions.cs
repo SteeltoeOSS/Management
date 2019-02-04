@@ -41,6 +41,5 @@ namespace Steeltoe.Management.Endpoint.Env
                 RequiredPermissions = Permissions.RESTRICTED;
             }
         }
-
     }
 }

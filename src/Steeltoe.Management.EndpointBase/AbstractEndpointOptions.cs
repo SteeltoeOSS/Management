@@ -110,6 +110,6 @@ namespace Steeltoe.Management.Endpoint
 
         public virtual bool DefaultEnabled { get; } = true;
 
-        public virtual bool DefaultSensitive { get; } = false;
+        public virtual bool DefaultSensitive { get; } = true;
     }
 }

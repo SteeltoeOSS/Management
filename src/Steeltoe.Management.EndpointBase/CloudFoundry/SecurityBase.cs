@@ -59,6 +59,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
         public bool IsCloudFoundryRequest(string requestPath)
         {
             var contextPath = _mgmtOptions == null ? _options.Path : _mgmtOptions.Path;
+            _logger.LogDebug("context path: " + contextPath);
             return requestPath.StartsWith(contextPath);
         }
 

@@ -38,8 +38,9 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             _next = next;
             _logger = logger;
             _options = options;
-            _base = new SecurityBase(options, logger);
             _mgmtOptions = mgmtOptions?.OfType<CloudFoundryManagementOptions>().SingleOrDefault();
+
+            _base = new SecurityBase(options, _mgmtOptions, logger);
         }
 
         [Obsolete]
@@ -53,7 +54,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
 
         public async Task Invoke(HttpContext context)
         {
-            _logger.LogDebug("Invoke({0})", context.Request.Path.Value);
+            _logger.LogDebug("Invoke({0}) mgmt {1}", context.Request.Path.Value, _mgmtOptions.Path);
 
             bool isEndpointEnabled = _mgmtOptions == null ? _options.IsEnabled : _options.IsEnabled(_mgmtOptions);
 

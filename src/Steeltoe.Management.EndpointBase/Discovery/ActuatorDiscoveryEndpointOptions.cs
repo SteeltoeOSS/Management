@@ -7,7 +7,7 @@ namespace Steeltoe.Management.Endpoint.Discovery
 {
     public class ActuatorDiscoveryEndpointOptions : AbstractEndpointOptions, IActuatorDiscoveryOptions
     {
-        // TODO: Not sure about this! .. Look at java
+        // TODO: Document differences with Spring boot actuators.
         private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:actuator";
 
         public ActuatorDiscoveryEndpointOptions()
@@ -19,7 +19,9 @@ namespace Steeltoe.Management.Endpoint.Discovery
         public ActuatorDiscoveryEndpointOptions(IConfiguration config)
             : base(MANAGEMENT_INFO_PREFIX, config)
         {
-            
+
         }
+
+        public override bool DefaultSensitive => false;
     }
 }

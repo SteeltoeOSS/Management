@@ -40,6 +40,8 @@ namespace Steeltoe.Management.Endpoint.Info
 
         public async Task Invoke(HttpContext context)
         {
+            _logger.LogDebug("Info middleware Invoke({0})", context.Request.Path.Value);
+
             if (RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
             {
                 await HandleInfoRequestAsync(context);

@@ -10,20 +10,17 @@ namespace Steeltoe.Management.Endpoint
 {
     public static class ActuatorApplicationBuilderExtensions
     {
+        /// <summary>
+        /// Use only one of UseCloudfoundryActuators, UseActuators o r UseAllActuators
+        /// </summary>
+        /// <param name="app"></param>
         public static void UseActuators(this IApplicationBuilder app)
         {
-            app.UseCors(builder =>
-            {
-                builder.AllowAnyOrigin()
-                .WithMethods("GET", "POST")
-                .WithHeaders("Authorization", "X-Cf-App-Instance", "Content-Type");
-            });
-
-           // app.UseAcuatorSecurity();
+            app.UseActuatorSecurity();
             app.UseDiscoveryActuator();
 
-            app.UseInfoActuator();
-            app.UseHealthActuator();
+           // app.UseInfoActuator();
+            //app.UseHealthActuator();
 
         }
     }
