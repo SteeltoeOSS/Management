@@ -112,6 +112,7 @@ namespace Steeltoe.Management.EndpointOwin.Loggers
                     paths.Add(fullPath);
                 }
             }
+
             return paths;
         }
     }

@@ -62,8 +62,6 @@ namespace Steeltoe.Management.Endpoint.Discovery.Test
 
             Assert.Equal("info", opts.Id);
             Assert.Equal("infopath", opts.Path);
-            
-            //TODO: Add mgmt options test?
         }
     }
 }

@@ -62,7 +62,7 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
                     }
                 }
                 return options;
-            }).As<IMappingsOptions>();
+            }).As<IMappingsOptions>().IfNotRegistered(typeof(IMappingsOptions));
 
             container.RegisterInstance(apiExplorer);
             container.RegisterType<MappingsEndpoint>().SingleInstance();

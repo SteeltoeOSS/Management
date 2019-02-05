@@ -45,7 +45,6 @@ namespace Steeltoe.Management.Endpoint.Discovery
                     .GetServices<IManagementOptions>().Single(m => m.GetType() == typeof(ActuatorManagementOptions));
                 var opts = new ActuatorDiscoveryEndpointOptions(config);
                 mgmtOptions.EndpointOptions.Add(opts);
-                
                 return opts;
             });
 

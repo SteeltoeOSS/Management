@@ -18,7 +18,6 @@ using System.Collections.Generic;
 namespace Steeltoe.Management.Endpoint.CloudFoundry
 {
     // TODO: Move this to the Discovery namespace in 3.0
-
     [Obsolete]
     public class Links
     {

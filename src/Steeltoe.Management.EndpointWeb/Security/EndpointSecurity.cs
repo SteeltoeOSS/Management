@@ -27,9 +27,9 @@ namespace Steeltoe.Management.Endpoint.Security
 {
     public class EndpointSecurity : ISecurityService
     {
+        private const string ACCESS_DENIED = "Access denied";
         private ILogger<EndpointSecurity> _logger;
         private IActuatorDiscoveryOptions _options;
-        // private SecurityHelper _helper;
         private IManagementOptions _actuatorManagementOptions;
 
         public EndpointSecurity(IActuatorDiscoveryOptions options, IManagementOptions actuatorMgmtOptions, ILogger<EndpointSecurity> logger = null)
@@ -37,7 +37,6 @@ namespace Steeltoe.Management.Endpoint.Security
             _options = options;
             _logger = logger;
             _actuatorManagementOptions = actuatorMgmtOptions;
-            //_helper = new SecurityHelper(options, logger);
         }
 
         public async Task<bool> IsAccessAllowed(HttpContextBase context, IEndpointOptions target)
@@ -52,7 +51,7 @@ namespace Steeltoe.Management.Endpoint.Security
                 if (target.IsSensitive(_actuatorManagementOptions) && !HasSensitiveClaim(context))
                 {
                     _logger?.LogTrace("Access denied! Target was marked sensitive, but did not have claim {0}", _actuatorManagementOptions.SensitiveClaim);
-                    await ReturnError(context, new SecurityResult(HttpStatusCode.Unauthorized, "Access denied")); // TODO: add constant
+                    await ReturnError(context, new SecurityResult(HttpStatusCode.Unauthorized, ACCESS_DENIED));
                     return false;
                 }
 
@@ -61,11 +60,13 @@ namespace Steeltoe.Management.Endpoint.Security
 
             return true;
         }
+
         private bool IsActuatorRequest(string requestPath)
         {
             var contextPath = _actuatorManagementOptions.Path;
             return requestPath.StartsWith(contextPath);
         }
+
         private bool HasSensitiveClaim(HttpContextBase context)
         {
             var claim = _actuatorManagementOptions.SensitiveClaim;
@@ -74,6 +75,7 @@ namespace Steeltoe.Management.Endpoint.Security
                     user != null &&
                     user.Identity.IsAuthenticated && ((ClaimsIdentity)user.Identity).HasClaim(claim.Type, claim.Value);
         }
+
         private async Task ReturnError(HttpContextBase context, SecurityResult error)
         {
             LogError(context, error);
@@ -81,6 +83,7 @@ namespace Steeltoe.Management.Endpoint.Security
             context.Response.StatusCode = (int)error.Code;
             await context.Response.Output.WriteAsync(Serialize(error));
         }
+
         private void LogError(HttpContextBase context, SecurityResult error)
         {
             _logger?.LogError("Actuator Security Error: {ErrorCode} - {ErrorMessage}", error.Code, error.Message);
@@ -92,7 +95,8 @@ namespace Steeltoe.Management.Endpoint.Security
                 }
             }
         }
-        public string Serialize(SecurityResult error)
+
+        private string Serialize(SecurityResult error)
         {
             try
             {

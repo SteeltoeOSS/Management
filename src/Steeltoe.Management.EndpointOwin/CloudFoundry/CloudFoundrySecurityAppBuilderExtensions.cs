@@ -29,7 +29,6 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
         /// </summary>
         /// <param name="builder">Your OWIN <see cref="IAppBuilder"/></param>
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
-        /// <param name="mgmtOptions">Shared management options</param>
         /// <param name="loggerFactory"><see cref="ILoggerFactory"/> for logging within the middleware</param>
         /// <returns>Your OWIN <see cref="IAppBuilder"/> with Cloud Foundry request security and CORS configured</returns>
         public static IAppBuilder UseCloudFoundrySecurityMiddleware(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null)
@@ -44,11 +43,10 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
                 throw new System.ArgumentNullException(nameof(config));
             }
 
-            IManagementOptions cfmOptions = ManagementOptions.Get(config).OfType<CloudFoundryManagementOptions>().Single();
+            var mgmtOptions = ManagementOptions.Get(config);
             var cloudFoundryOptions = new CloudFoundryEndpointOptions(config);
             var logger = loggerFactory?.CreateLogger<CloudFoundrySecurityOwinMiddleware>();
-            return builder.Use<CloudFoundrySecurityOwinMiddleware>(cloudFoundryOptions, cfmOptions, logger);
+            return builder.Use<CloudFoundrySecurityOwinMiddleware>(cloudFoundryOptions, mgmtOptions, logger);
         }
-
     }
 }

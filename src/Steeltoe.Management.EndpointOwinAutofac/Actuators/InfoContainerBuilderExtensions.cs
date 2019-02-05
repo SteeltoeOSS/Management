@@ -83,7 +83,7 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
                     mgmt.EndpointOptions.Add(options);
                 }
                 return options;
-            }).As<IInfoOptions>().SingleInstance();
+            }).As<IInfoOptions>().IfNotRegistered(typeof(IInfoOptions)).SingleInstance();
             container.RegisterType<InfoEndpoint>().IfNotRegistered(typeof(InfoEndpoint)).As<IEndpoint<Dictionary<string, object>>>().SingleInstance();
             container.RegisterType<EndpointOwinMiddleware<Dictionary<string, object>>>().IfNotRegistered(typeof(EndpointOwinMiddleware<Dictionary<string,object>>)).SingleInstance();
         }

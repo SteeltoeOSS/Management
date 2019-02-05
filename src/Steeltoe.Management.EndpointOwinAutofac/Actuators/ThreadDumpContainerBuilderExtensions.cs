@@ -58,7 +58,7 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
                     mgmt.EndpointOptions.Add(options);
                 }
                 return options;
-            }).As<IThreadDumpOptions>();
+            }).As<IThreadDumpOptions>().IfNotRegistered(typeof(IThreadDumpOptions));
             container.RegisterType<ThreadDumpEndpoint>().As<IEndpoint<List<ThreadInfo>>>().SingleInstance();
             container.RegisterType<EndpointOwinMiddleware<List<ThreadInfo>>>().SingleInstance();
         }

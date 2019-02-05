@@ -13,10 +13,12 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump
 {
+    [Obsolete]
     public class ThreadDumpOptions : AbstractOptions, IThreadDumpOptions
     {
         private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:dump";
@@ -25,7 +27,6 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
             : base()
         {
             Id = "dump";
-       //     AltIds = new List<string> { "dump" };
         }
 
         public ThreadDumpOptions(IConfiguration config)
@@ -35,11 +36,6 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
             {
                 Id = "dump";
             }
-
-            //if (AltIds == null)
-            //{
-            //    AltIds = new List<string> { "dump" };
-            //}
         }
     }
 }

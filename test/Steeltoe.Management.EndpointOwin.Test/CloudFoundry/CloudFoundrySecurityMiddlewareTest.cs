@@ -53,16 +53,6 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry.Test
                 var response = await result.Content.ReadAsStringAsync();
                 Assert.Contains(_base.CLOUDFOUNDRY_API_MISSING_MESSAGE, response);
             }
-
-            //Environment.SetEnvironmentVariable("VCAP__APPLICATION__CF_API", "http://localhost:9999/foo");
-            //using (var server = TestServer.Create<StartupWithSecurity>())
-            //{
-            //    var client = server.HttpClient;
-            //    var result = await client.GetAsync("http://localhost/cloudfoundryapplication/barfoo");
-            //    Assert.Equal(HttpStatusCode.ServiceUnavailable, result.StatusCode);
-            //    var response = await result.Content.ReadAsStringAsync();
-            //    Assert.Contains(_base.ENDPOINT_NOT_CONFIGURED_MESSAGE, response);
-            //}
         }
 
         [Fact]

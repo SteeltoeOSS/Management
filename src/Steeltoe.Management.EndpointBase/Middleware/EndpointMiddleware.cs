@@ -59,7 +59,6 @@ namespace Steeltoe.Management.Endpoint.Middleware
 
             var mOptions = mgmtOptions.ToList();
             _mgmtOptions = mOptions.Count > 0 ? mOptions : null;
-
         }
 
         public EndpointMiddleware(IEndpoint<TResult> endpoint, IEnumerable<IManagementOptions> mgmtOptions, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)

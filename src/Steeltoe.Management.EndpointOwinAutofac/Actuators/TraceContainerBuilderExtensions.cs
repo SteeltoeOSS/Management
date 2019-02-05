@@ -59,7 +59,7 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
                     mgmt.EndpointOptions.Add(options);
                 }
                 return options;
-            }).As<ITraceOptions>().SingleInstance();
+            }).As<ITraceOptions>().IfNotRegistered(typeof(ITraceOptions)).SingleInstance();
 
             container.RegisterType<TraceDiagnosticObserver>().As<IDiagnosticObserver>().As<ITraceRepository>().SingleInstance();
             container.RegisterType<DiagnosticsManager>().As<IDiagnosticsManager>().IfNotRegistered(typeof(IDiagnosticsManager)).SingleInstance();

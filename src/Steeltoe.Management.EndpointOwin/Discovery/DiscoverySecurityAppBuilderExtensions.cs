@@ -44,7 +44,7 @@ namespace Steeltoe.Management.EndpointOwin.Discovery
                 throw new System.ArgumentNullException(nameof(config));
             }
 
-            IManagementOptions mgmtOptions = ManagementOptions.Get(config).OfType<ActuatorManagementOptions>().Single();
+            var mgmtOptions = ManagementOptions.Get(config);
             var actuatorOptions = new ActuatorDiscoveryEndpointOptions(config);
             var logger = loggerFactory?.CreateLogger<ActuatorSecurityOwinMiddleware>();
             return builder.Use<ActuatorSecurityOwinMiddleware>(actuatorOptions, mgmtOptions, logger);

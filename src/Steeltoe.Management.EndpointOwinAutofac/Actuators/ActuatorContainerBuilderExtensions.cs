@@ -42,7 +42,7 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
                 throw new ArgumentNullException(nameof(config));
             }
 
-            container.RegisterInstance(new ActuatorManagementOptions())
+            container.RegisterInstance(new ActuatorManagementOptions(config))
                 .SingleInstance()
                 .As<IManagementOptions>();
 

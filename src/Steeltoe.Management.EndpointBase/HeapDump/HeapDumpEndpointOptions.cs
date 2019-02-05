@@ -34,6 +34,5 @@ namespace Steeltoe.Management.Endpoint.HeapDump
                 Id = "heapdump";
             }
         }
-
     }
 }

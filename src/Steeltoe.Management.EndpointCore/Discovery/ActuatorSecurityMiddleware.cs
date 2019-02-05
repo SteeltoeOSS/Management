@@ -20,6 +20,7 @@ using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -27,21 +28,20 @@ namespace Steeltoe.Management.Endpoint.Discovery
 {
     public class ActuatorSecurityMiddleware
     {
+        protected readonly string ENDPOINT_NOT_CONFIGURED_MESSAGE = "Endpoint is not available";
+        protected readonly string ACCESS_DENIED_MESSAGE = "Access denied";
+
         private RequestDelegate _next;
         private ILogger<ActuatorSecurityMiddleware> _logger;
         private IActuatorDiscoveryOptions _options;
         private IManagementOptions _actuatorManagementOptions;
 
-        private readonly string ENDPOINT_NOT_CONFIGURED_MESSAGE = "Endpoint is not available";
-        private readonly string ACCESS_DENIED_MESSAGE = "Access denied";
-
-        public ActuatorSecurityMiddleware(RequestDelegate next, IActuatorDiscoveryOptions options, IManagementOptions actuatorManagementOptions, ILogger<ActuatorSecurityMiddleware> logger)
+        public ActuatorSecurityMiddleware(RequestDelegate next, IActuatorDiscoveryOptions options, IEnumerable<IManagementOptions> mgmtOptions, ILogger<ActuatorSecurityMiddleware> logger)
         {
             _next = next;
             _logger = logger;
             _options = options;
-            _actuatorManagementOptions = actuatorManagementOptions;
-            // _helper = new SecurityHelper(options, logger);
+            _actuatorManagementOptions = mgmtOptions.OfType<ActuatorManagementOptions>().SingleOrDefault();
         }
 
         public async Task Invoke(HttpContext context)
@@ -76,7 +76,40 @@ namespace Steeltoe.Management.Endpoint.Discovery
         {
             var contextPath = _actuatorManagementOptions.Path;
             return path.StartsWith(contextPath);
+        }
 
+        protected async Task ReturnError(HttpContext context, SecurityResult error)
+        {
+            LogError(context, error);
+            context.Response.Headers.Add("Content-Type", "application/json;charset=UTF-8");
+            context.Response.StatusCode = (int)error.Code;
+            await context.Response.WriteAsync(Serialize(error));
+        }
+
+        protected string Serialize(SecurityResult error)
+        {
+            try
+            {
+                return JsonConvert.SerializeObject(error);
+            }
+            catch (Exception e)
+            {
+                _logger?.LogError("Serialization Exception: {0}", e);
+            }
+
+            return string.Empty;
+        }
+
+        protected void LogError(HttpContext context, SecurityResult error)
+        {
+            _logger.LogError("Actuator Security Error: {0} - {1}", error.Code, error.Message);
+            if (_logger.IsEnabled(LogLevel.Trace))
+            {
+                foreach (var header in context.Request.Headers)
+                {
+                    _logger.LogTrace("Header: {0} - {1}", header.Key, header.Value);
+                }
+            }
         }
 
         private bool HasSensitiveClaim(HttpContext context)
@@ -106,40 +139,6 @@ namespace Steeltoe.Management.Endpoint.Discovery
             }
 
             return null;
-        }
-
-        public async Task ReturnError(HttpContext context, SecurityResult error)
-        {
-            LogError(context, error);
-            context.Response.Headers.Add("Content-Type", "application/json;charset=UTF-8");
-            context.Response.StatusCode = (int)error.Code;
-            await context.Response.WriteAsync(Serialize(error));
-        }
-
-        public string Serialize(SecurityResult error)
-        {
-            try
-            {
-                return JsonConvert.SerializeObject(error);
-            }
-            catch (Exception e)
-            {
-                _logger?.LogError("Serialization Exception: {0}", e);
-            }
-
-            return string.Empty;
-        }
-
-        public void LogError(HttpContext context, SecurityResult error)
-        {
-            _logger.LogError("Actuator Security Error: {0} - {1}", error.Code, error.Message);
-            if (_logger.IsEnabled(LogLevel.Trace))
-            {
-                foreach (var header in context.Request.Headers)
-                {
-                    _logger.LogTrace("Header: {0} - {1}", header.Key, header.Value);
-                }
-            }
         }
     }
 }

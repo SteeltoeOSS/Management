@@ -58,8 +58,7 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
                     mgmt.EndpointOptions.Add(options);
                 }
                 return options;
-            }).As<IHeapDumpOptions>();
-
+            }).As<IHeapDumpOptions>().IfNotRegistered(typeof(IHeapDumpOptions));
 
             // REVIEW: is this path override necessary? Running under IIS Express, the path comes up wrong
             container.RegisterType<HeapDumper>().As<IHeapDumper>().WithParameter("basePathOverride", GetContentRoot()).SingleInstance();

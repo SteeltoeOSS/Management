@@ -46,7 +46,7 @@ namespace Steeltoe.Management.EndpointOwin.Health
 
             var mgmtOptions = ManagementOptions.Get(config);
             var options = new HealthEndpointOptions(config);
-            foreach ( var mgmt in mgmtOptions)
+            foreach (var mgmt in mgmtOptions)
             {
                 mgmt.EndpointOptions.Add(options);
             }

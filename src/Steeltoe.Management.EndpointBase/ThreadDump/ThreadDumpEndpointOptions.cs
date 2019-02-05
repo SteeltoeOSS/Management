@@ -34,6 +34,5 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
                 Id = "dump";
             }
         }
-
     }
 }

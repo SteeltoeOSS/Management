@@ -57,7 +57,7 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
                     mgmt.EndpointOptions.Add(options);
                 }
                 return options;
-            }).As<IRefreshOptions>();
+            }).As<IRefreshOptions>().IfNotRegistered(typeof(IRefreshOptions));
 
             container.RegisterType<RefreshEndpoint>().As<IEndpoint<IList<string>>>().SingleInstance();
             container.RegisterType<EndpointOwinMiddleware<IList<string>>>().SingleInstance();

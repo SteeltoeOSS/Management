@@ -28,7 +28,18 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
         public CloudFoundryEndpoint(ICloudFoundryOptions options, IEnumerable<IManagementOptions> mgmtOptions, ILogger<CloudFoundryEndpoint> logger = null)
         : base(options)
         {
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
             _mgmtOption = mgmtOptions?.OfType<CloudFoundryManagementOptions>().SingleOrDefault();
+
+            if (_mgmtOption == null)
+            {
+                throw new ArgumentNullException(nameof(mgmtOptions));
+            }
+
             _logger = logger;
         }
 

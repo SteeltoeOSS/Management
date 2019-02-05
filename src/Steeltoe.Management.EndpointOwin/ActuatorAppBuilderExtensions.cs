@@ -31,9 +31,6 @@ namespace Steeltoe.Management.EndpointOwin
 {
     public static class ActuatorAppBuilderExtensions
     {
-
-        // TODO: Think about enabling all of them and controlling with configuration 
-
         /// <summary>
         /// Add all Actuators (Discovery, Info, Health )
         /// </summary>

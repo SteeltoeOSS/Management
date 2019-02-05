@@ -117,7 +117,6 @@ namespace Steeltoe.Management.EndpointOwin
 
             return string.Empty;
         }
-
     }
 
 #pragma warning disable SA1402 // File may only contain a single class
@@ -148,7 +147,6 @@ namespace Steeltoe.Management.EndpointOwin
         {
             return _endpoint.RequestVerbAndPathMatch(httpMethod, requestPath, _allowedMethods, _mgmtOptions, _exactRequestPathMatching);
         }
-
     }
 
 #pragma warning restore SA1402 // File may only contain a single class

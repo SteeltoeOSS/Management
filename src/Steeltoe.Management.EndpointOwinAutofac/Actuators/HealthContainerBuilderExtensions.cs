@@ -97,6 +97,7 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
             {
                 var options = new HealthEndpointOptions(config);
                 var mgmtOptions = c.Resolve<IEnumerable<IManagementOptions>>();
+
                 foreach (var mgmt in mgmtOptions)
                 {
                     if (mgmt is ActuatorManagementOptions && !addToDiscovery)
@@ -107,7 +108,7 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
                     mgmt.EndpointOptions.Add(options);
                 }
                 return options;
-            }).As<IHealthOptions>().SingleInstance();
+            }).As<IHealthOptions>().IfNotRegistered(typeof(IHealthOptions)).SingleInstance();
 
             container.RegisterInstance(aggregator).As<IHealthAggregator>().SingleInstance();
             foreach (var c in contributors)

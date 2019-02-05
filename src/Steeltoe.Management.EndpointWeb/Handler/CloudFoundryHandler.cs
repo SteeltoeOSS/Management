@@ -25,7 +25,8 @@ using System.Web;
 namespace Steeltoe.Management.Endpoint.Handler
 {
     public class CloudFoundryHandler : ActuatorHandler<CloudFoundryEndpoint, Links, string>
-    {  public CloudFoundryHandler(CloudFoundryEndpoint endpoint, IEnumerable< ISecurityService> securityServices, IEnumerable<IManagementOptions> mgmtOptions, ILogger<CloudFoundryHandler> logger = null)
+    {
+        public CloudFoundryHandler(CloudFoundryEndpoint endpoint, IEnumerable< ISecurityService> securityServices, IEnumerable<IManagementOptions> mgmtOptions, ILogger<CloudFoundryHandler> logger = null)
            : base(endpoint, securityServices, mgmtOptions?.OfType<CloudFoundryManagementOptions>(), null, true, logger)
         {
         }

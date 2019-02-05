@@ -74,7 +74,7 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
                     mgmt.EndpointOptions.Add(options);
                 }
                 return options;
-            }).As<ILoggersOptions>();
+            }).As<ILoggersOptions>().IfNotRegistered(typeof(ILoggersOptions));
             container.RegisterType<LoggersEndpoint>().SingleInstance();
             container.RegisterType<LoggersEndpointOwinMiddleware>().SingleInstance();
         }

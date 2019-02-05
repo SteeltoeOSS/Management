@@ -21,6 +21,7 @@ using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Discovery;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -28,19 +29,19 @@ namespace Steeltoe.Management.EndpointOwin.Discovery
 {
     public class ActuatorSecurityOwinMiddleware : OwinMiddleware
     {
+        protected readonly string ENDPOINT_NOT_CONFIGURED_MESSAGE = "Endpoint is not available";
+        protected readonly string ACCESS_DENIED_MESSAGE = "Access denied";
+
         private ILogger<ActuatorSecurityOwinMiddleware> _logger;
         private IActuatorDiscoveryOptions _options;
         private IManagementOptions _actuatorManagementOptions;
 
-        private readonly string ENDPOINT_NOT_CONFIGURED_MESSAGE = "Endpoint is not available";
-        private readonly string ACCESS_DENIED_MESSAGE = "Access denied";
-
-        public ActuatorSecurityOwinMiddleware(OwinMiddleware next, IActuatorDiscoveryOptions options, IManagementOptions actuatorManagementOptions, ILogger<ActuatorSecurityOwinMiddleware> logger = null)
+        public ActuatorSecurityOwinMiddleware(OwinMiddleware next, IActuatorDiscoveryOptions options, IEnumerable<IManagementOptions> mgmtOptions, ILogger<ActuatorSecurityOwinMiddleware> logger = null)
             : base(next)
         {
             _options = options;
             _logger = logger;
-            _actuatorManagementOptions = actuatorManagementOptions;
+            _actuatorManagementOptions = mgmtOptions.OfType<ActuatorManagementOptions>().Single();
         }
 
         public override async Task Invoke(IOwinContext context)
@@ -48,7 +49,6 @@ namespace Steeltoe.Management.EndpointOwin.Discovery
             _logger?.LogDebug("Invoke({0})", context.Request.Path.Value);
 
             if (IsActuatorRequest(context.Request.Path.Value))
-
             {
                 IEndpointOptions target = FindTargetEndpoint(context.Request.Path);
                 if (target == null)
@@ -133,7 +133,7 @@ namespace Steeltoe.Management.EndpointOwin.Discovery
                 }
 
                 var fullPath = contextPath + ep.Path;
-                if ( path.Value.Equals(fullPath) || (!string.IsNullOrEmpty(ep.Path) && path.StartsWithSegments(new PathString(fullPath))))
+                if (path.Value.Equals(fullPath) || (!string.IsNullOrEmpty(ep.Path) && path.StartsWithSegments(new PathString(fullPath))))
                 {
                     return ep;
                 }

@@ -64,7 +64,7 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
                     mgmt.EndpointOptions.Add(envOptions);
                 }
                 return envOptions;
-            }).As<IEnvOptions>();
+            }).As<IEnvOptions>().IfNotRegistered(typeof(IEnvOptions));
 
             container.RegisterInstance(hostingEnv ?? new GenericHostingEnvironment() { EnvironmentName = "Production" }).As<IHostingEnvironment>();
             container.RegisterType<EnvEndpoint>().As<IEndpoint<EnvironmentDescriptor>>().SingleInstance();

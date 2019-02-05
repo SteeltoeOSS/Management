@@ -28,7 +28,6 @@ namespace Steeltoe.Management.Endpoint.Handler
     public class CloudFoundryCorsHandler : ActuatorHandler
     {
         private IEndpointOptions _options;
-        private IEnumerable<IManagementOptions> _mgmtOptions;
 
         public CloudFoundryCorsHandler(IEndpointOptions options, IEnumerable<ISecurityService> securityServices, IEnumerable<IManagementOptions> mgmtOptions, ILogger<CloudFoundryCorsHandler> logger = null)
             : base(securityServices, mgmtOptions, new List<HttpMethod> { HttpMethod.Options }, false, logger)
@@ -48,29 +47,6 @@ namespace Steeltoe.Management.Endpoint.Handler
         {
             _logger?.LogTrace("RequestVerbAndPathMatch {httpMethod}/{requestPath}/{optionsPath} request", httpMethod, requestPath, _options.Path);
             return PathMatches(requestPath) && _allowedMethods.Any(m => m.Method.Equals(httpMethod));
-        }
-
-        private bool PathMatches(string requestPath)
-        {
-            if(_mgmtOptions == null)
-            {
-                return requestPath.StartsWith(_options.Path);
-            }
-            else
-            {
-                foreach (var mgmt in _mgmtOptions)
-                {
-                    var path = mgmt.Path;
-                    if(!path.EndsWith("/") && !string.IsNullOrEmpty(_options.Id))
-                    {
-                        path += "/";
-                    }
-                    var fullPath = path + _options.Id;
-                    return requestPath.StartsWith(fullPath);
-                }
-
-            }
-            return false;
         }
 
         public override void HandleRequest(HttpContextBase context)
@@ -93,6 +69,30 @@ namespace Steeltoe.Management.Endpoint.Handler
         public override Task<bool> IsAccessAllowed(HttpContextBase context)
         {
             return Task.FromResult(true);
+        }
+
+        private bool PathMatches(string requestPath)
+        {
+            if (_mgmtOptions == null)
+            {
+                return requestPath.StartsWith(_options.Path);
+            }
+            else
+            {
+                foreach (var mgmt in _mgmtOptions)
+                {
+                    var path = mgmt.Path;
+                    if (!path.EndsWith("/") && !string.IsNullOrEmpty(_options.Id))
+                    {
+                        path += "/";
+                    }
+
+                    var fullPath = path + _options.Id;
+                    return requestPath.StartsWith(fullPath);
+                }
+            }
+
+            return false;
         }
     }
 }

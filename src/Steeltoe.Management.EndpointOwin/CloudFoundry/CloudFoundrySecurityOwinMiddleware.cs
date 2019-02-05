@@ -20,6 +20,7 @@ using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Security;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -32,13 +33,13 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
         private SecurityBase _base;
         private IManagementOptions _mgmtOptions;
 
-        public CloudFoundrySecurityOwinMiddleware(OwinMiddleware next, ICloudFoundryOptions options, IManagementOptions mgmtOptions, ILogger<CloudFoundrySecurityOwinMiddleware> logger = null)
+        public CloudFoundrySecurityOwinMiddleware(OwinMiddleware next, ICloudFoundryOptions options, IEnumerable<IManagementOptions> mgmtOptions, ILogger<CloudFoundrySecurityOwinMiddleware> logger = null)
             : base(next)
         {
             _options = options;
             _logger = logger;
-            _base = new SecurityBase(options, mgmtOptions, logger);
-            _mgmtOptions = mgmtOptions;
+            _mgmtOptions = mgmtOptions.OfType<CloudFoundryManagementOptions>().Single();
+            _base = new SecurityBase(options, _mgmtOptions, logger);
         }
 
         [Obsolete]
@@ -53,6 +54,7 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
         public override async Task Invoke(IOwinContext context)
         {
             bool isEnabled = _mgmtOptions == null ? _options.IsEnabled : _options.IsEnabled(_mgmtOptions);
+
             // if running on Cloud Foundry, security is enabled, the path starts with /cloudfoundryapplication...
             if (Platform.IsCloudFoundry && isEnabled && _base.IsCloudFoundryRequest(context.Request.Path.ToString()))
             {

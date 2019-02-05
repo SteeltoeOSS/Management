@@ -81,6 +81,5 @@ namespace Steeltoe.Management.Endpoint.Handler
 
             context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
         }
-
     }
 }

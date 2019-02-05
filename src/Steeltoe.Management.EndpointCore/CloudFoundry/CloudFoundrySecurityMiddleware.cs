@@ -122,7 +122,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
         private IEndpointOptions FindTargetEndpoint(PathString path)
         {
             List<IEndpointOptions> configEndpoints;
-            
+
             // Remove in 3.0
             if (_mgmtOptions == null)
             {
