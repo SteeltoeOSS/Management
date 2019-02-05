@@ -59,7 +59,7 @@ namespace Steeltoe.Management.EndpointOwin.Security.Test
             Environment.SetEnvironmentVariable("management__endpoints__enabled", "true");
             Environment.SetEnvironmentVariable("management__endpoints__info__sensitive", "true");
 
-            using (var server = TestServer.Create<SecureStartup>())
+            using (var server = TestServer.Create<Startup>())
             {
                 var client = server.HttpClient;
                 var result = await client.GetAsync("http://localhost/info");

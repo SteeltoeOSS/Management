@@ -46,7 +46,7 @@ namespace Steeltoe.Management.EndpointOwin.Discovery.Test
             var config = builder.Build();
 
             var mgmtOptions = new List<IManagementOptions> { new ActuatorManagementOptions(config) };
-            app.UseDiscoveryActuatorSecurityMiddleware(config);
+            app.UseActuatorSecurityMiddleware(config);
             app.UseDiscoveryActuator(config);
             app.UseInfoActuator(config);
         }

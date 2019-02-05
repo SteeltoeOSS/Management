@@ -83,7 +83,7 @@ namespace Steeltoe.Management.Endpoint.Discovery
         {
             var claim = _actuatorManagementOptions.SensitiveClaim;
             var user = context.User;
-            return user.Identity.IsAuthenticated && user.HasClaim(claim.Type, claim.Value);
+            return user.Identity.IsAuthenticated && claim != null && user.HasClaim(claim.Type, claim.Value);
         }
 
         private IEndpointOptions FindTargetEndpoint(PathString path)

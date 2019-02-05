@@ -32,7 +32,7 @@ namespace Steeltoe.Management.Endpoint.Discovery
             _logger = logger;
         }
 
-        protected new ICloudFoundryOptions Options => options as ICloudFoundryOptions;
+        protected new IActuatorDiscoveryOptions Options => options as IActuatorDiscoveryOptions;
 
         public override Links Invoke(string baseUrl)
         {

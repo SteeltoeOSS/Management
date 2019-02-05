@@ -15,6 +15,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Owin;
 using Newtonsoft.Json;
+using Steeltoe.Common;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Discovery;
@@ -23,35 +24,30 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Management.EndpointOwin.Security
+namespace Steeltoe.Management.EndpointOwin.Discovery
 {
-    public class SecurityMiddleware : OwinMiddleware
+    public class ActuatorSecurityOwinMiddleware : OwinMiddleware
     {
-        private ILogger<SecurityMiddleware> _logger;
-        //  private ICloudFoundryOptions _options;
+        private ILogger<ActuatorSecurityOwinMiddleware> _logger;
         private IActuatorDiscoveryOptions _options;
         private IManagementOptions _actuatorManagementOptions;
 
-        public readonly string ENDPOINT_NOT_CONFIGURED_MESSAGE = "Endpoint is not available";
+        private readonly string ENDPOINT_NOT_CONFIGURED_MESSAGE = "Endpoint is not available";
+        private readonly string ACCESS_DENIED_MESSAGE = "Access denied";
 
-        public readonly string ACCESS_DENIED_MESSAGE = "Access denied";
-        //  private SecurityHelper _helper;
-
-        public SecurityMiddleware(OwinMiddleware next, IActuatorDiscoveryOptions options, IManagementOptions actuatorManagementOptions, ILogger<SecurityMiddleware> logger)
+        public ActuatorSecurityOwinMiddleware(OwinMiddleware next, IActuatorDiscoveryOptions options, IManagementOptions actuatorManagementOptions, ILogger<ActuatorSecurityOwinMiddleware> logger = null)
             : base(next)
         {
-            _logger = logger;
             _options = options;
+            _logger = logger;
             _actuatorManagementOptions = actuatorManagementOptions;
-         //   _helper = new SecurityHelper(options, logger);
         }
 
         public override async Task Invoke(IOwinContext context)
         {
             _logger?.LogDebug("Invoke({0})", context.Request.Path.Value);
 
-            // if (_helper.IsCloudFoundryRequest(context.Request.Path.Value) && _options.IsEnabled)
-            if (IsActuatorRequest(context.Request.Path.Value) && _options.IsEnabled(_actuatorManagementOptions))
+            if (IsActuatorRequest(context.Request.Path.Value))
 
             {
                 IEndpointOptions target = FindTargetEndpoint(context.Request.Path);
@@ -80,19 +76,29 @@ namespace Steeltoe.Management.EndpointOwin.Security
         {
             var contextPath = _actuatorManagementOptions.Path;
             return path.StartsWith(contextPath);
-
         }
 
-
-        public async Task ReturnError(IOwinContext context, SecurityResult error)
+        private async Task ReturnError(IOwinContext context, SecurityResult error)
         {
-         //   LogError(context, error);
-            //context.Response.Headers.Add("Content-Type", ["application/json;charset=UTF-8"]);
+            LogError(context, error);
+            context.Response.Headers.SetValues("Content-Type", new string[] { "application/json;charset=UTF-8" });
             context.Response.StatusCode = (int)error.Code;
             await context.Response.WriteAsync(Serialize(error));
         }
 
-        public string Serialize(SecurityResult error)
+        private void LogError(IOwinContext context, SecurityResult error)
+        {
+            _logger?.LogError("Actuator Security Error: {ErrorCode} - {ErrorMessage}", error.Code, error.Message);
+            if (_logger?.IsEnabled(LogLevel.Trace) == true)
+            {
+                foreach (var header in context.Request.Headers)
+                {
+                    _logger?.LogTrace("Header: {HeaderKey} - {HeaderValue}", header.Key, header.Value);
+                }
+            }
+        }
+
+        private string Serialize(SecurityResult error)
         {
             try
             {
@@ -110,7 +116,7 @@ namespace Steeltoe.Management.EndpointOwin.Security
         {
             var claim = _actuatorManagementOptions.SensitiveClaim;
             var user = context.Authentication.User;
-            return user != null && user.HasClaim(claim.Type, claim.Value);
+            return user != null && claim != null && user.HasClaim(claim.Type, claim.Value);
         }
 
         private IEndpointOptions FindTargetEndpoint(PathString path)
@@ -120,13 +126,14 @@ namespace Steeltoe.Management.EndpointOwin.Security
             foreach (var ep in configEndpoints)
             {
                 var contextPath = _actuatorManagementOptions.Path;
+
                 if (!contextPath.EndsWith("/") && !string.IsNullOrEmpty(ep.Path))
                 {
                     contextPath += "/";
                 }
 
                 var fullPath = contextPath + ep.Path;
-                if (path.StartsWithSegments(new PathString(fullPath)))
+                if ( path.Value.Equals(fullPath) || (!string.IsNullOrEmpty(ep.Path) && path.StartsWithSegments(new PathString(fullPath))))
                 {
                     return ep;
                 }

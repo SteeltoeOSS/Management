@@ -63,15 +63,14 @@ namespace Steeltoe.Management.EndpointOwin
         /// <param name="loggerFactory">logging factory used to create loggers for the actuators</param>
         public static void UseDiscoveryActuators(this IAppBuilder app, IConfiguration configuration, IEnumerable<IHealthContributor> healthContributors, IApiExplorer apiExplorer, ILoggerProvider loggerProvider, ILoggerFactory loggerFactory = null)
         {
-
             app.UseDiagnosticSourceMiddleware(loggerFactory);
-            //  app.UseCloudFoundrySecurityMiddleware(configuration, loggerFactory, actuatorOptions);
+
+            var mgmtOptions = ManagementOptions.Get(configuration);
+            app.UseActuatorSecurityMiddleware(configuration, loggerFactory);
             app.UseDiscoveryActuator(configuration, loggerFactory);
 
             app.UseInfoActuator(configuration, loggerFactory);
             var healthOptions = new HealthEndpointOptions(configuration);
-            var mgmtOptions = ManagementOptions.Get(configuration);
-            var actuatorOptions = mgmtOptions.OfType<ActuatorManagementOptions>().Single();
             app.UseHealthActuator(healthOptions, new DefaultHealthAggregator(), healthContributors, loggerFactory);
         }
     }

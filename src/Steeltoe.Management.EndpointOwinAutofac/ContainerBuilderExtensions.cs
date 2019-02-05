@@ -84,15 +84,6 @@ namespace Steeltoe.Management.EndpointOwinAutofac
             container.RegisterInfoActuator(config, true);
 
         }
-        //private static void RegisterEndpointOptions(this ContainerBuilder container, IEndpointOptions options, bool addToDiscovery)
-        //{
-        //    var mgmtOptions = container.Resolve<IEnumerable<IManagementOptions>>();
-        //    foreach (var mgmt in mgmtOptions)
-        //    {
-        //        mgmt.EndpointOptions.Add(envOptions);
-        //    }
-        //    return envOptions;
-        //}
 
         /// <summary>
         /// Obtains the DiagnosticsManager and if it exists, it starts it.  The manager is added to the container

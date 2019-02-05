@@ -75,8 +75,7 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
                 throw new ArgumentNullException(nameof(config));
             }
 
-            //TODO: implement security for actuator
-          //  container.RegisterType<CloudFoundrySecurityOwinMiddleware>().SingleInstance();
+             container.RegisterType<ActuatorSecurityOwinMiddleware>().SingleInstance();
         }
     }
 }

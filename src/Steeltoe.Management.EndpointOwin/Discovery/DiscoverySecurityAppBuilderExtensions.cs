@@ -19,6 +19,7 @@ using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Discovery;
 using System;
+using System.Linq;
 
 namespace Steeltoe.Management.EndpointOwin.Discovery
 {
@@ -31,27 +32,22 @@ namespace Steeltoe.Management.EndpointOwin.Discovery
         /// <param name="config">Your application's <see cref="IConfiguration"/></param>
         /// <param name="loggerFactory"><see cref="ILoggerFactory"/> for logging within the middleware</param>
         /// <returns>Your OWIN <see cref="IAppBuilder"/> with Cloud Foundry request security and CORS configured</returns>
-        public static IAppBuilder UseDiscoveryActuatorSecurityMiddleware(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null, IManagementOptions mgmtOptions = null)
+        public static IAppBuilder UseActuatorSecurityMiddleware(this IAppBuilder builder, IConfiguration config, ILoggerFactory loggerFactory = null)
         {
-            throw new Exception("Not implemented");
-            //if (builder == null)
-            //{
-            //    throw new System.ArgumentNullException(nameof(builder));
-            //}
+            if (builder == null)
+            {
+                throw new System.ArgumentNullException(nameof(builder));
+            }
 
-            //if (config == null)
-            //{
-            //    throw new System.ArgumentNullException(nameof(config));
-            //}
+            if (config == null)
+            {
+                throw new System.ArgumentNullException(nameof(config));
+            }
 
-            //if (mgmtOptions == null)
-            //{
-            //    throw new System.ArgumentNullException(nameof(mgmtOptions));
-            //}
-
-            //var actuatorOptions =  new ActuatorDiscoveryEndpointOptions(config);
-            //var logger = loggerFactory?.CreateLogger<ActuatorDiscoveryEndpointOwinMiddleware>();
-            //return builder.Use<ActuatorDiscoveryEndpointOwinMiddleware>(actuatorOptions, mgmtOptions, logger);
+            IManagementOptions mgmtOptions = ManagementOptions.Get(config).OfType<ActuatorManagementOptions>().Single();
+            var actuatorOptions = new ActuatorDiscoveryEndpointOptions(config);
+            var logger = loggerFactory?.CreateLogger<ActuatorSecurityOwinMiddleware>();
+            return builder.Use<ActuatorSecurityOwinMiddleware>(actuatorOptions, mgmtOptions, logger);
         }
     }
 }

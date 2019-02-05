@@ -172,8 +172,6 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
             return null;
         }
 
-      
-
         private async Task ReturnError(IOwinContext context, SecurityResult error)
         {
             LogError(context, error);
