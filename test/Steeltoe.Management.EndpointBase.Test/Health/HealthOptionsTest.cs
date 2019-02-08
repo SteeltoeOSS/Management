@@ -28,10 +28,11 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         [Fact]
         public void Constructor_InitializesWithDefaults()
         {
-            var opts = new HealthOptions();
-            Assert.True(opts.Enabled);
-            Assert.False(opts.Sensitive);
+            var opts = new HealthEndpointOptions();
+            Assert.Null(opts.Enabled);
+            Assert.Null(opts.Sensitive);
             Assert.Equal("health", opts.Id);
+            Assert.Equal(ShowDetails.Never, opts.ShowDetails);
             Assert.Equal(Permissions.RESTRICTED, opts.RequiredPermissions);
         }
 

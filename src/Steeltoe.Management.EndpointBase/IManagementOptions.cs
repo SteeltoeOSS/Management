@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.Management.EndpointBase.Security;
+using Steeltoe.Management.Endpoint.Security;
 using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint
@@ -23,7 +23,7 @@ namespace Steeltoe.Management.Endpoint
 
         bool? Sensitive { get; }
 
-        SensitiveClaim SensitiveClaim { get; }
+        EndpointClaim SensitiveClaim { get; }
 
         string Path { get; }
 

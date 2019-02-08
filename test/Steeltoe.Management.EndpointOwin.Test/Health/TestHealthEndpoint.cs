@@ -15,6 +15,7 @@
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Health;
+using Steeltoe.Management.Endpoint.Security;
 using System.Collections.Generic;
 
 namespace Steeltoe.Management.EndpointOwin.Health.Test
@@ -26,7 +27,7 @@ namespace Steeltoe.Management.EndpointOwin.Health.Test
         {
         }
 
-        public override HealthCheckResult Invoke()
+        public override HealthCheckResult Invoke(ISecurityContext securityContext)
         {
             return new HealthCheckResult();
         }

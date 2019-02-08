@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Management.EndpointBase.Security;
+using Steeltoe.Management.Endpoint.Security;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -81,7 +81,7 @@ namespace Steeltoe.Management.Endpoint
 
         public List<IEndpointOptions> EndpointOptions { get; set; }
 
-        public SensitiveClaim SensitiveClaim { get; set; }
+        public EndpointClaim SensitiveClaim { get; set; }
 
         public static ManagementOptions GetInstance()
         {

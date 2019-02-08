@@ -44,6 +44,10 @@ namespace Steeltoe.Management.Endpoint.Health
             }
         }
 
+        public ShowDetails ShowDetails { get; set; }
+
+        public EndpointClaim HealthClaim { get; set; }
+
         protected override bool DefaultSensitive => false;
     }
 }

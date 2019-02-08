@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Steeltoe.Management.EndpointBase.Security
+namespace Steeltoe.Management.Endpoint.Security
 {
-    public class SensitiveClaim
+    public class EndpointClaim
     {
         public string Type { get; set; }
 

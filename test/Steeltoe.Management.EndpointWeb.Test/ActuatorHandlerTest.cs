@@ -106,6 +106,24 @@ namespace Steeltoe.Management.EndpointWeb.Test
 
                 Assert.NotEmpty(response.Content);
                 Assert.Contains("status", response.Content);
+            }
+        }
+
+        [Fact]
+        public async void HealthHandler_ReturnsDetailsd()
+        {
+            var settings = DefaultTestSettingsConfig.DefaultSettings;
+            settings.Add("management:endpoints:health:showdetails", "always");
+
+            using (var server = new TestServer(settings))
+            {
+                var client = server.HttpClient;
+
+                var response = await client.GetAsync("http://localhost/management/health", "GET");
+
+                Assert.NotEmpty(response.Content);
+                Assert.Contains("status", response.Content);
+
                 Assert.Contains("diskSpace", response.Content);
             }
         }
