@@ -73,7 +73,7 @@ namespace Steeltoe.Management.Endpoint.Health
 
             if (showDetails == ShowDetails.Never
                 || (showDetails == ShowDetails.WhenAuthorized
-                      && !securityContext.HasClaim(Options.HealthClaim)))
+                      && !securityContext.HasClaim(Options.Claim)))
             {
                 result = new HealthCheckResult
                 {

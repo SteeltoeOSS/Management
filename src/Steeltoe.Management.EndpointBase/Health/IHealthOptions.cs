@@ -21,6 +21,6 @@ namespace Steeltoe.Management.Endpoint.Health
     {
         ShowDetails ShowDetails { get; set; }
 
-        EndpointClaim HealthClaim { get; set; }
+        EndpointClaim Claim { get; set; }
     }
 }

@@ -12,16 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Management.Endpoint.Middleware;
-using System.Threading.Tasks;
 using Steeltoe.Management.Endpoint.Info;
+using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Security;
 using Steeltoe.Management.EndpointCore;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.Health
 {

@@ -51,8 +51,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             var contribs = new List<IHealthContributor>() { new DiskSpaceContributor() };
             var ep = new TestHealthEndpoint(opts, new DefaultHealthAggregator(), contribs);
             var middle = new HealthEndpointMiddleware(null, ep, new List<IManagementOptions> { mgmtOptions });
-            middle.Endpoint = ep;
-
+          
             var context = CreateRequest("GET", "/health");
             await middle.HandleHealthRequestAsync(context);
             context.Response.Body.Seek(0, SeekOrigin.Begin);
@@ -74,13 +73,62 @@ namespace Steeltoe.Management.Endpoint.Health.Test
                 var result = await client.GetAsync("http://localhost/cloudfoundryapplication/health");
                 Assert.Equal(HttpStatusCode.OK, result.StatusCode);
                 var json = await result.Content.ReadAsStringAsync();
-               Assert.NotNull(json);
+                Assert.NotNull(json);
 
-                // { "status":"UP","diskSpace":{ "total":499581448192,"free":407577710592,"threshold":10485760,"status":"UP"} }
                 var health = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
                 Assert.NotNull(health);
                 Assert.True(health.ContainsKey("status"));
-               // Assert.True(health.ContainsKey("diskSpace"));
+            }
+        }
+
+        [Fact]
+        public async void HealthActuator_ReturnsOnlyStatusWhenAuthorized()
+        {
+            var settings = new Dictionary<string, string>(appSettings);
+            settings.Add("management:endpoints:health:showdetails", "whenauthorized");
+            var builder = new WebHostBuilder()
+                .UseStartup<AuthStartup>()
+                .ConfigureAppConfiguration((context, config) => config.AddInMemoryCollection(settings));
+
+            using (var server = new TestServer(builder))
+            {
+                var client = server.CreateClient();
+
+                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/health");
+                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+                var json = await result.Content.ReadAsStringAsync();
+                Assert.NotNull(json);
+
+                var health = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+                Assert.NotNull(health);
+                Assert.True(health.ContainsKey("status"));
+            }
+        }
+
+        [Fact]
+        public async void HealthActuator_ReturnsDetailsWhenAuthorized()
+        {
+            var settings = new Dictionary<string, string>(appSettings);
+            settings.Add("management:endpoints:health:showdetails", "whenauthorized");
+            settings.Add("management:endpoints:health:claim:type", "healthdetails");
+            settings.Add("management:endpoints:health:claim:value", "show");
+            var builder = new WebHostBuilder()
+                .UseStartup<AuthStartup>()
+                .ConfigureAppConfiguration((context, config) => config.AddInMemoryCollection(settings));
+
+            using (var server = new TestServer(builder))
+            {
+                var client = server.CreateClient();
+
+                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/health");
+                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+                var json = await result.Content.ReadAsStringAsync();
+                Assert.NotNull(json);
+
+                var health = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+                Assert.NotNull(health);
+                Assert.True(health.ContainsKey("status"));
+                Assert.True(health.ContainsKey("diskSpace"));
             }
         }
 
@@ -179,8 +227,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             var actMOptions = new ActuatorManagementOptions();
             actMOptions.EndpointOptions.Add(opts);
             var middle = new HealthEndpointMiddleware(null, ep, new List<IManagementOptions> { actMOptions } );
-            middle.Endpoint = ep;
-
+           
             Assert.True(middle.RequestVerbAndPathMatch("GET", "/actuator/health"));
             Assert.False(middle.RequestVerbAndPathMatch("PUT", "/actuator/health"));
             Assert.False(middle.RequestVerbAndPathMatch("GET", "/actuator/badpath"));

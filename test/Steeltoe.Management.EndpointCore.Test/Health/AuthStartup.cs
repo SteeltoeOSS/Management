@@ -12,29 +12,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Collections.Generic;
 
-namespace Steeltoe.Management.Endpoint.Loggers
+namespace Steeltoe.Management.Endpoint.Health.Test
 {
-    [Obsolete]
-    public class LoggersOptions : AbstractOptions, ILoggersOptions
+    public class AuthStartup
     {
-        private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:loggers";
-
-        public LoggersOptions()
-            : base()
+        public AuthStartup(IConfiguration configuration)
         {
-            Id = "loggers";
+            _configuration = configuration;
         }
 
-        public LoggersOptions(IConfiguration config)
-            : base(MANAGEMENT_INFO_PREFIX, config)
+        public IConfiguration _configuration;
+
+        public void ConfigureServices(IServiceCollection services)
         {
-            if (string.IsNullOrEmpty(Id))
-            {
-                Id = "loggers";
-            }
+            services.AddHealthActuator(_configuration);
+        }
+
+        public void Configure(IApplicationBuilder app)
+        {
+            app.UseMiddleware<AuthenticatedTestMiddleware>();
+            app.UseHealthActuator();
         }
     }
 }
