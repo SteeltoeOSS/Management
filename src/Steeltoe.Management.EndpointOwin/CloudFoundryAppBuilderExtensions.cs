@@ -75,7 +75,6 @@ namespace Steeltoe.Management.EndpointOwin
         /// <param name="loggerFactory">logging factory used to create loggers for the actuators</param>
         public static void UseCloudFoundryActuators(this IAppBuilder app, IConfiguration configuration, IEnumerable<IHealthContributor> healthContributors, IApiExplorer apiExplorer, ILoggerProvider loggerProvider, ILoggerFactory loggerFactory = null)
         {
-          
             app.UseDiagnosticSourceMiddleware(loggerFactory);
             app.UseCloudFoundrySecurityMiddleware(configuration, loggerFactory);
             app.UseCloudFoundryActuator(configuration, loggerFactory);
@@ -88,7 +87,7 @@ namespace Steeltoe.Management.EndpointOwin
 
             app.UseInfoActuator(configuration, loggerFactory);
             var healthOptions = new HealthEndpointOptions(configuration);
-            app.UseHealthActuator(healthOptions, new DefaultHealthAggregator(), healthContributors, loggerFactory); // put back old code
+            app.UseHealthActuator(healthOptions, new DefaultHealthAggregator(), healthContributors, loggerFactory); 
 
             app.UseLoggersActuator(configuration, loggerProvider, loggerFactory);
             app.UseTraceActuator(configuration, null, loggerFactory);
