@@ -31,44 +31,44 @@ namespace Steeltoe.Management.EndpointOwin
 {
     public static class ActuatorAppBuilderExtensions
     {
-        /// <summary>
-        /// Add all Actuators (Discovery, Info, Health )
-        /// </summary>
-        /// <param name="app">AppBuilder needing actuators added</param>
-        /// <param name="configuration">configuration to use for actuators</param>
-        /// <param name="apiExplorer">a IApiExplorer to use for mappings actuator</param>
-        /// <param name="loggerProvider">the Steeltoe logging provider to use for loggers actuator</param>
-        /// <param name="loggerFactory">logging factory used to create loggers for the actuators</param>
-        public static void UseDiscoveryActuators(this IAppBuilder app, IConfiguration configuration, IApiExplorer apiExplorer,  ILoggerProvider loggerProvider, ILoggerFactory loggerFactory = null)
-        {
-            app.UseDiagnosticSourceMiddleware(loggerFactory);
-            app.UseDiscoveryActuator(configuration, loggerFactory);
+        ///// <summary>
+        ///// Add all Actuators (Discovery, Info, Health )
+        ///// </summary>
+        ///// <param name="app">AppBuilder needing actuators added</param>
+        ///// <param name="configuration">configuration to use for actuators</param>
+        ///// <param name="apiExplorer">a IApiExplorer to use for mappings actuator</param>
+        ///// <param name="loggerProvider">the Steeltoe logging provider to use for loggers actuator</param>
+        ///// <param name="loggerFactory">logging factory used to create loggers for the actuators</param>
+        //public static void UseDiscoveryActuators(this IAppBuilder app, IConfiguration configuration, IApiExplorer apiExplorer,  ILoggerProvider loggerProvider, ILoggerFactory loggerFactory = null)
+        //{
+        //    app.UseDiagnosticSourceMiddleware(loggerFactory);
+        //    app.UseDiscoveryActuator(configuration, loggerFactory);
 
-            app.UseInfoActuator(configuration, loggerFactory);
-            app.UseHealthActuator(configuration, loggerFactory);
+        //    app.UseInfoActuator(configuration, loggerFactory);
+        //    app.UseHealthActuator(configuration, loggerFactory);
 
-        }
+        //}
+        
+        ///// <summary>
+        ///// Add all Actuators (Discovery, Info, Health )
+        ///// </summary>
+        ///// <param name="app">AppBuilder needing actuators added</param>
+        ///// <param name="configuration">configuration to use for actuators</param>
+        ///// <param name="healthContributors">custom health contributors</param>
+        ///// <param name="apiExplorer">a IApiExplorer to use for mappings actuator</param>
+        ///// <param name="loggerProvider">the Steeltoe logging provider to use for loggers actuator</param>
+        ///// <param name="loggerFactory">logging factory used to create loggers for the actuators</param>
+        //public static void UseDiscoveryActuators(this IAppBuilder app, IConfiguration configuration, IEnumerable<IHealthContributor> healthContributors, IApiExplorer apiExplorer, ILoggerProvider loggerProvider, ILoggerFactory loggerFactory = null)
+        //{
+        //    app.UseDiagnosticSourceMiddleware(loggerFactory);
 
-        /// <summary>
-        /// Add all Actuators (Discovery, Info, Health )
-        /// </summary>
-        /// <param name="app">AppBuilder needing actuators added</param>
-        /// <param name="configuration">configuration to use for actuators</param>
-        /// <param name="healthContributors">custom health contributors</param>
-        /// <param name="apiExplorer">a IApiExplorer to use for mappings actuator</param>
-        /// <param name="loggerProvider">the Steeltoe logging provider to use for loggers actuator</param>
-        /// <param name="loggerFactory">logging factory used to create loggers for the actuators</param>
-        public static void UseDiscoveryActuators(this IAppBuilder app, IConfiguration configuration, IEnumerable<IHealthContributor> healthContributors, IApiExplorer apiExplorer, ILoggerProvider loggerProvider, ILoggerFactory loggerFactory = null)
-        {
-            app.UseDiagnosticSourceMiddleware(loggerFactory);
+        //    var mgmtOptions = ManagementOptions.Get(configuration);
+        //    app.UseActuatorSecurityMiddleware(configuration, loggerFactory);
+        //    app.UseDiscoveryActuator(configuration, loggerFactory);
 
-            var mgmtOptions = ManagementOptions.Get(configuration);
-            app.UseActuatorSecurityMiddleware(configuration, loggerFactory);
-            app.UseDiscoveryActuator(configuration, loggerFactory);
-
-            app.UseInfoActuator(configuration, loggerFactory);
-            var healthOptions = new HealthEndpointOptions(configuration);
-            app.UseHealthActuator(healthOptions, new DefaultHealthAggregator(), healthContributors, loggerFactory);
-        }
+        //    app.UseInfoActuator(configuration, loggerFactory);
+        //    var healthOptions = new HealthEndpointOptions(configuration);
+        //    app.UseHealthActuator(healthOptions, new DefaultHealthAggregator(), healthContributors, loggerFactory);
+        //}
     }
 }

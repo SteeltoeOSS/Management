@@ -71,9 +71,9 @@ namespace Steeltoe.Management.Endpoint.Loggers
                 }
                 else
                 {
-                    paths.AddRange(_mgmtOptions.Select( opt => $"{opt.Path}/{_endpoint.Id}"));
+                    paths.AddRange(_mgmtOptions.Select( opt => $"{opt.Path}/{_endpoint.Path}"));
                 }
-                    
+
                 foreach (var path in paths)
                 {
                     if (ChangeLoggerLevel(request, path))

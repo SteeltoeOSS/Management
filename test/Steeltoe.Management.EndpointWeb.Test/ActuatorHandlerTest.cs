@@ -29,7 +29,7 @@ namespace Steeltoe.Management.EndpointWeb.Test
             {
                 var client = server.HttpClient;
 
-                var result = await client.GetAsync("http://localhost/cloudfoundryapplication", "OPTIONS");
+                var result = await client.GetAsync("http://localhost/management", "OPTIONS");
 
                 Assert.NotNull(result);
                 Assert.Equal(3, result.Headers.Count);
@@ -44,13 +44,13 @@ namespace Steeltoe.Management.EndpointWeb.Test
         {
             using (var server = new TestServer(_defaultSettings))
             {
-               var client = server.HttpClient;
+                var client = server.HttpClient;
 
-               var result = await client.GetAsync("http://localhost/cloudfoundryapplication", "GET");
+                var result = await client.GetAsync("http://localhost/management", "GET");
 
-               Assert.NotNull(result);
-               Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-               Assert.Contains("self", result.Content);
+                Assert.NotNull(result);
+                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+                Assert.Contains("self", result.Content);
             }
         }
 
@@ -63,7 +63,7 @@ namespace Steeltoe.Management.EndpointWeb.Test
             {
                 var client = server.HttpClient;
 
-                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/env", "GET");
+                var result = await client.GetAsync("http://localhost/management/env", "GET");
 
                 Assert.NotNull(result);
                 Assert.Contains("activeProfiles", result.Content);
@@ -106,6 +106,24 @@ namespace Steeltoe.Management.EndpointWeb.Test
 
                 Assert.NotEmpty(response.Content);
                 Assert.Contains("status", response.Content);
+            }
+        }
+
+        [Fact]
+        public async void HealthHandler_ReturnsDetails()
+        {
+            var settings = DefaultTestSettingsConfig.DefaultSettings;
+            settings.Add("management:endpoints:health:showdetails", "always");
+
+            using (var server = new TestServer(settings))
+            {
+                var client = server.HttpClient;
+
+                var response = await client.GetAsync("http://localhost/management/health", "GET");
+
+                Assert.NotEmpty(response.Content);
+                Assert.Contains("status", response.Content);
+
                 Assert.Contains("diskSpace", response.Content);
             }
         }
@@ -119,7 +137,7 @@ namespace Steeltoe.Management.EndpointWeb.Test
             {
                 var client = server.HttpClient;
 
-                var response = await client.GetAsync("http://localhost/cloudfoundryapplication/loggers", "GET");
+                var response = await client.GetAsync("http://localhost/management/loggers", "GET");
 
                 Assert.NotEmpty(response.Content);
                 Assert.Contains("loggers", response.Content);
@@ -135,7 +153,7 @@ namespace Steeltoe.Management.EndpointWeb.Test
             {
                 var client = server.HttpClient;
 
-                var response = await client.GetAsync("http://localhost/cloudfoundryapplication/metrics", "GET");
+                var response = await client.GetAsync("http://localhost/management/metrics", "GET");
 
                 Assert.NotEmpty(response.Content);
                 Assert.Contains("http.server.request.count", response.Content);
@@ -151,7 +169,7 @@ namespace Steeltoe.Management.EndpointWeb.Test
             {
                 var client = server.HttpClient;
 
-                var response = await client.GetAsync("http://localhost/cloudfoundryapplication/dump", "GET");
+                var response = await client.GetAsync("http://localhost/management/dump", "GET");
 
                 Assert.NotEmpty(response.Content);
                 Assert.Contains("stackTrace", response.Content);

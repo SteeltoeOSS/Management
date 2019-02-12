@@ -24,6 +24,7 @@ namespace Steeltoe.Management.EndpointWeb.Test
             ["management:endpoints:info:sensitive"] = "false",
             ["management:endpoints:health:sensitive"] = "false",
             ["management:endpoints:info:id"] = "infomanagement",
+            ["management:endpoints:actuator:exposure:include:0"] = "*",
             ["info:application:name"] = "foobar",
             ["info:application:version"] = "1.0.0'",
             ["info:application:date"] = "5/1/2008",

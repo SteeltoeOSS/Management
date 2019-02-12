@@ -15,6 +15,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Steeltoe.Common;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Health;
@@ -25,9 +26,6 @@ using Steeltoe.Management.Endpoint.Mappings;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
 using System;
-using Steeltoe.Management.Endpoint.Discovery;
-using Steeltoe.Management.Endpoint.Env;
-using Steeltoe.Management.Endpoint.Metrics;
 
 namespace Steeltoe.Management.CloudFoundry
 {
@@ -45,7 +43,7 @@ namespace Steeltoe.Management.CloudFoundry
                 throw new ArgumentNullException(nameof(config));
             }
 
-            var managmentOptions = new CloudFoundryManagementOptions(config);
+            var managmentOptions = new CloudFoundryManagementOptions(config, Platform.IsCloudFoundry);
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(managmentOptions));
 
             services.AddCors();

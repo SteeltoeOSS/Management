@@ -94,7 +94,11 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
         [Fact]
         public void ThreadDumpEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
         {
-            var actOptions = new ActuatorManagementOptions() { Path = "/" };
+            var actOptions = new ActuatorManagementOptions()
+            {
+                Path = "/",
+                Exposure = new Exposure { Include = new List<string> { "*" } }
+            };
 
             var opts = new ThreadDumpEndpointOptions();
             actOptions.EndpointOptions.Add(opts);

@@ -32,7 +32,7 @@ namespace Steeltoe.Management.Endpoint.Trace
         /// </summary>
         /// <param name="services">Service collection to add trace to</param>
         /// <param name="config">Application configuration (this actuator looks for settings starting with management:endpoints:trace)</param>
-        public static void AddTraceActuator(this IServiceCollection services, IConfiguration config, bool addToDiscovery = false)
+        public static void AddTraceActuator(this IServiceCollection services, IConfiguration config)
         {
             if (services == null)
             {
@@ -53,7 +53,7 @@ namespace Steeltoe.Management.Endpoint.Trace
 
             var options = new TraceEndpointOptions(config);
             services.TryAddSingleton<ITraceOptions>(options);
-            services.RegisterEndpointOptions(options, addToDiscovery);
+            services.RegisterEndpointOptions(options);
             services.TryAddSingleton<TraceEndpoint>();
         }
     }

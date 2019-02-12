@@ -51,7 +51,10 @@ namespace Steeltoe.Management.Endpoint.Security
                 if (target.IsSensitive(_actuatorManagementOptions) && !HasSensitiveClaim(context))
                 {
                     _logger?.LogTrace("Access denied! Target was marked sensitive, but did not have claim {0}", _actuatorManagementOptions.SensitiveClaim);
+
+                //    throw new Exception("path" +target.Path + " " + _actuatorManagementOptions.Path +" "+target.IsSensitive(_actuatorManagementOptions));
                     await ReturnError(context, new SecurityResult(HttpStatusCode.Unauthorized, ACCESS_DENIED));
+
                     return false;
                 }
 

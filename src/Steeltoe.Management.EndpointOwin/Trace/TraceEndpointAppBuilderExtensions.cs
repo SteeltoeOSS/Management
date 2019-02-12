@@ -33,11 +33,10 @@ namespace Steeltoe.Management.EndpointOwin.Trace
         /// </summary>
         /// <param name="builder">OWIN <see cref="IAppBuilder" /></param>
         /// <param name="config"><see cref="IConfiguration"/> of application for configuring thread dump endpoint</param>
-        /// <param name="mgmtOptions">Shared management options</param>
         /// <param name="traceRepository">repository to put traces in</param>
         /// <param name="loggerFactory">For logging within the middleware</param>
         /// <returns>OWIN <see cref="IAppBuilder" /> with Trace Endpoint added</returns>
-        public static IAppBuilder UseTraceActuator(this IAppBuilder builder, IConfiguration config, ITraceRepository traceRepository = null, ILoggerFactory loggerFactory = null, bool addToDiscovery = false)
+        public static IAppBuilder UseTraceActuator(this IAppBuilder builder, IConfiguration config, ITraceRepository traceRepository = null, ILoggerFactory loggerFactory = null)
         {
             if (builder == null)
             {
@@ -54,11 +53,6 @@ namespace Steeltoe.Management.EndpointOwin.Trace
             var mgmtOptions = ManagementOptions.Get(config);
             foreach (var mgmt in mgmtOptions)
             {
-                if (!addToDiscovery && mgmt is ActuatorManagementOptions)
-                {
-                    continue;
-                }
-
                 mgmt.EndpointOptions.Add(options);
             }
 

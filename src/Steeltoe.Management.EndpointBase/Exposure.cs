@@ -13,30 +13,37 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Management.Endpoint.Security;
 using System.Collections.Generic;
 
-namespace Steeltoe.Management.Endpoint.Discovery
+namespace Steeltoe.Management.Endpoint
 {
-    public class ActuatorManagementOptions : ManagementEndpointOptions
+    public class Exposure
     {
-        private const string DEFAULT_ACTUATOR_PATH = "/actuator";
+        private const string EXPOSURE_PREFIX = "management:endpoints:actuator:exposure";
+        private static readonly List<string> DEFAULT_INCLUDE = new List<string> { "health", "info" };
 
-        public Exposure Exposure { get; set; }
-
-        public ActuatorManagementOptions()
+        public Exposure()
         {
-            Path = DEFAULT_ACTUATOR_PATH;
-            Exposure = new Exposure();
+            Include = DEFAULT_INCLUDE;
         }
 
-        public ActuatorManagementOptions(IConfiguration config)
-            : base(config)
+        public Exposure(IConfiguration config)
         {
-            if (string.IsNullOrEmpty(Path))
+            var section = config.GetSection(EXPOSURE_PREFIX);
+            if (section != null)
             {
-                Path = DEFAULT_ACTUATOR_PATH;
+                section.Bind(this);
             }
-            Exposure = new Exposure(config);
+
+            if (Include == null && Exclude == null)
+            {
+                Include = DEFAULT_INCLUDE;
+            }
         }
+
+        public List<string> Include { get; set; }
+
+        public List<string> Exclude { get; set; }
     }
 }

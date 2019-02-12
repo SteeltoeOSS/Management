@@ -24,6 +24,11 @@ namespace Steeltoe.Management.EndpointOwin.Env.Test
 {
     public class EnvOwinMiddlewareTest : BaseTest
     {
+        public EnvOwinMiddlewareTest()
+        {
+            ManagementOptions.Clear();
+        }
+
         [Fact]
         public async void EnvInvoke_ReturnsExpected()
         {

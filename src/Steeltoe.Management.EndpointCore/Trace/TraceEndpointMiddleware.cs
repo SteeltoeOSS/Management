@@ -18,6 +18,7 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Middleware;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace Steeltoe.Management.Endpoint.Trace
 {
@@ -49,6 +50,16 @@ namespace Steeltoe.Management.Endpoint.Trace
                 await _next(context);
             }
         }
+
+        public override bool RequestVerbAndPathMatch(string httpMethod, string requestPath)
+        {
+            IManagementOptions matchingMgmtContext = null;
+            return _endpoint.RequestPathMatches(requestPath, _mgmtOptions, out matchingMgmtContext)
+                && _endpoint.IsEnabled(matchingMgmtContext)
+                && _endpoint.IsExposed(matchingMgmtContext)
+                && _allowedMethods.Any(m => m.Method.Equals(httpMethod));
+        }
+
 
         protected internal async Task HandleTraceRequestAsync(HttpContext context)
         {
