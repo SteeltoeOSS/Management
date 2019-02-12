@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint
@@ -22,6 +23,7 @@ namespace Steeltoe.Management.Endpoint
 
         bool Enabled { get; }
 
+        [Obsolete]
         bool Sensitive { get; }
 
         IEndpointOptions Options { get; }

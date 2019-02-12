@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Steeltoe.Management.EndpointBase.Security
-{
-    public class SensitiveClaim
-    {
-        public string Type { get; set; }
+using System.Collections.Generic;
 
-        public string Value { get; set; }
+namespace Steeltoe.Management.Endpoint.Trace
+{
+    public interface IHttpTraceRepository
+    {
+        HttpTraceResult GetTraces();
     }
 }

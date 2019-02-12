@@ -46,6 +46,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
 
         public string CloudFoundryApi { get; set; }
 
+        [Obsolete]
         public override bool DefaultSensitive => false;
     }
 }

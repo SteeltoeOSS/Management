@@ -63,5 +63,33 @@ namespace Steeltoe.Management.EndpointOwin.Trace
             return builder.Use<EndpointOwinMiddleware<List<TraceResult>>>(endpoint, mgmtOptions, new List<HttpMethod> { HttpMethod.Get }, true, logger);
         }
 
+        public static IAppBuilder UseHttpTraceActuator(this IAppBuilder builder, IConfiguration config, IHttpTraceRepository traceRepository = null, ILoggerFactory loggerFactory = null)
+        {
+            if (builder == null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
+            if (config == null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
+
+            ITraceOptions options = new HttpTraceEndpointOptions(config);
+
+            var mgmtOptions = ManagementOptions.Get(config);
+
+            foreach (var mgmt in mgmtOptions)
+            {
+                mgmt.EndpointOptions.Add(options);
+            }
+
+            traceRepository = traceRepository ?? new HttpTraceDiagnosticObserver(options, loggerFactory?.CreateLogger<HttpTraceDiagnosticObserver>());
+            DiagnosticsManager.Instance.Observers.Add((IDiagnosticObserver)traceRepository);
+            var endpoint = new HttpTraceEndpoint(options, traceRepository, loggerFactory?.CreateLogger<HttpTraceEndpoint>());
+            var logger = loggerFactory?.CreateLogger<EndpointOwinMiddleware<HttpTraceEndpoint, HttpTraceResult>>();
+            return builder.Use<EndpointOwinMiddleware<HttpTraceResult>>(endpoint, mgmtOptions, new List<HttpMethod> { HttpMethod.Get }, true, logger);
+        }
+
     }
 }

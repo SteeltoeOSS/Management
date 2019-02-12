@@ -57,9 +57,8 @@ namespace Steeltoe.Management.EndpointWeb.Test
         [Fact]
         public async void EnvHandler_ReturnsExpected()
         {
-            var settings = _defaultSettings.Merge(new Settings { ["management:endpoints:env:sensitive"] = "false" });
-
-            using (var server = new TestServer(settings))
+      
+            using (var server = new TestServer(_defaultSettings))
             {
                 var client = server.HttpClient;
 
@@ -131,9 +130,7 @@ namespace Steeltoe.Management.EndpointWeb.Test
         [Fact]
         public async void LoggersHandler_ReturnsExpected()
         {
-            var settings = _defaultSettings.Merge(new Settings { ["management:endpoints:loggers:sensitive"] = "false" });
-
-            using (var server = new TestServer(settings))
+            using (var server = new TestServer(_defaultSettings))
             {
                 var client = server.HttpClient;
 
@@ -147,9 +144,7 @@ namespace Steeltoe.Management.EndpointWeb.Test
         [Fact]
         public async void MetricsHandler_ReturnsExpected()
         {
-            var settings = _defaultSettings.Merge(new Settings { ["management:endpoints:metrics:sensitive"] = "false" });
-
-            using (var server = new TestServer(settings))
+            using (var server = new TestServer(_defaultSettings))
             {
                 var client = server.HttpClient;
 
@@ -163,9 +158,7 @@ namespace Steeltoe.Management.EndpointWeb.Test
         [Fact]
         public async void ThreadDumpHandler_ReturnsExpected()
         {
-            var settings = _defaultSettings.Merge(new Settings { ["management:endpoints:dump:sensitive"] = "false" });
-
-            using (var server = new TestServer(settings))
+            using (var server = new TestServer(_defaultSettings))
             {
                 var client = server.HttpClient;
 

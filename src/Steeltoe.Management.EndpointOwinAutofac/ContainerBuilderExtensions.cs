@@ -78,7 +78,6 @@ namespace Steeltoe.Management.EndpointOwinAutofac
             }
 
             container.RegisterDiagnosticSourceMiddleware();
-            container.RegisterActuatorSecurityMiddleware(config);
             container.RegisterDiscoveryActuator(config);
             container.RegisterHealthActuator(config);
             container.RegisterInfoActuator(config);

@@ -26,28 +26,27 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Management.EndpointOwin.Trace
 {
-    public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
+    public class HttpTraceDiagnosticObserver : DiagnosticObserver, IHttpTraceRepository
     {
         internal const string STOP_EVENT = "Steeltoe.Owin.Hosting.HttpRequestIn.Stop";
-        internal ConcurrentQueue<TraceResult> _queue = new ConcurrentQueue<TraceResult>();
+        internal ConcurrentQueue<HttpTrace> _queue = new ConcurrentQueue<HttpTrace>();
 
-        private const string OBSERVER_NAME = "HttpTraceDiagnosticObserver";
+        private const string OBSERVER_NAME = "TraceDiagnosticObserver";
         private const string DIAGNOSTIC_NAME = "Steeltoe.Owin";
         private static DateTime baseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        private ILogger<TraceDiagnosticObserver> _logger;
+        private ILogger<HttpTraceDiagnosticObserver> _logger;
         private ITraceOptions _options;
 
-        public TraceDiagnosticObserver(ITraceOptions options, ILogger<TraceDiagnosticObserver> logger = null)
+        public HttpTraceDiagnosticObserver(ITraceOptions options, ILogger<HttpTraceDiagnosticObserver> logger = null)
             : base(OBSERVER_NAME, DIAGNOSTIC_NAME, logger)
         {
             _options = options ?? throw new ArgumentNullException(nameof(options));
             _logger = logger;
         }
 
-        public List<TraceResult> GetTraces()
+        public HttpTraceResult GetTraces()
         {
-            TraceResult[] traces = _queue.ToArray();
-            return new List<TraceResult>(traces);
+            return new HttpTraceResult(_queue.ToList());
         }
 
         public override void ProcessEvent(string key, object value)
@@ -72,12 +71,12 @@ namespace Steeltoe.Management.EndpointOwin.Trace
 
             if (context != null)
             {
-                TraceResult trace = MakeTrace(context, current.Duration);
+                HttpTrace trace = MakeTrace(context, current.Duration);
                 _queue.Enqueue(trace);
 
                 if (_queue.Count > _options.Capacity)
                 {
-                    if (!_queue.TryDequeue(out TraceResult discard))
+                    if (!_queue.TryDequeue(out HttpTrace discard))
                     {
                         _logger?.LogDebug("Stop - Dequeue failed");
                     }
@@ -85,71 +84,21 @@ namespace Steeltoe.Management.EndpointOwin.Trace
             }
         }
 
-        protected internal TraceResult MakeTrace(IOwinContext context, TimeSpan duration)
+        protected internal HttpTrace MakeTrace(IOwinContext context, TimeSpan duration)
         {
-            var request = context.Request;
-            var response = context.Response;
+            var req = context.Request;
+            var res = context.Response;
 
-            Dictionary<string, object> details = new Dictionary<string, object>
-            {
-                { "method", request.Method },
-                { "path", GetPathInfo(request) }
-            };
+            var request = new Request(req.Method, req.QueryString.Value, GetHeaders(req.Headers), GetRemoteAddress(context));
+            var response = new Response(res.StatusCode, GetHeaders(res.Headers));
+            var principal = new Principal(GetUserPrincipal(context));
+            var session = new Session(GetSessionId(context));
+            return new HttpTrace(request, response, GetJavaTime(DateTime.Now.Ticks), principal, session, duration.Milliseconds);
+        }
 
-            Dictionary<string, object> headers = new Dictionary<string, object>();
-            details.Add("headers", headers);
-
-            if (_options.AddRequestHeaders)
-            {
-                headers.Add("request", GetRequestHeaders(request.Headers));
-            }
-
-            if (_options.AddResponseHeaders)
-            {
-                headers.Add("response", GetResponseHeaders(response.StatusCode, response.Headers));
-            }
-
-            if (_options.AddPathInfo)
-            {
-                details.Add("pathInfo", GetPathInfo(request));
-            }
-
-            if (_options.AddUserPrincipal)
-            {
-                details.Add("userPrincipal", GetUserPrincipal(context));
-            }
-
-            if (_options.AddParameters)
-            {
-                details.Add("parameters", GetRequestParametersAsync(request));
-            }
-
-            if (_options.AddQueryString)
-            {
-                details.Add("query", request.QueryString.Value);
-            }
-
-            if (_options.AddAuthType)
-            {
-                details.Add("authType", GetAuthType(request)); // TODO
-            }
-
-            if (_options.AddRemoteAddress)
-            {
-                details.Add("remoteAddress", GetRemoteAddress(context));
-            }
-
-            if (_options.AddSessionId)
-            {
-                details.Add("sessionId", GetSessionId(context));
-            }
-
-            if (_options.AddTimeTaken)
-            {
-                details.Add("timeTaken", GetTimeTaken(duration));
-            }
-
-            return new TraceResult(GetJavaTime(DateTime.Now.Ticks), details);
+        protected internal IDictionary<string, StringValues> GetHeaders(IHeaderDictionary dict)
+        {
+            return dict.Select(t => new { t.Key, t.Value }).ToDictionary(t => t.Key, t => new StringValues(t.Value));
         }
 
         protected internal string GetPathInfo(IOwinRequest request)

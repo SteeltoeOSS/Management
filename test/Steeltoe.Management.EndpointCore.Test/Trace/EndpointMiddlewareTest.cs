@@ -36,10 +36,8 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             ["Logging:LogLevel:Pivotal"] = "Information",
             ["Logging:LogLevel:Steeltoe"] = "Information",
             ["management:endpoints:enabled"] = "true",
-            ["management:endpoints:sensitive"] = "false",
             ["management:endpoints:path"] = "/cloudfoundryapplication",
             ["management:endpoints:trace:enabled"] = "true",
-            ["management:endpoints:trace:sensitive"] = "false",
         };
 
         [Fact]

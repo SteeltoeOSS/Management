@@ -99,20 +99,8 @@ namespace Steeltoe.Management.Endpoint
                 managementOptions = new CloudFoundryManagementOptions(configuration, Platform.IsCloudFoundry);
                 _mgmtOptions.Add(managementOptions);
             }
+
             SecurityServices.Add(new CloudFoundrySecurity(new CloudFoundryEndpointOptions(configuration), managementOptions, CreateLogger<CloudFoundrySecurity>(loggerFactory)));
-        }
-
-        public static void UseEndpointSecurity(IConfiguration configuration, IEnumerable<ISecurityService> securityServices = null, ILoggerFactory loggerFactory = null)
-        {
-            var managementOptions = _mgmtOptions.OfType<ActuatorManagementOptions>().SingleOrDefault();
-
-            if (managementOptions == null)
-            {
-                managementOptions = new ActuatorManagementOptions(configuration);
-                _mgmtOptions.Add(managementOptions);
-            }
-
-            SecurityServices.Add(new EndpointSecurity(new ActuatorDiscoveryEndpointOptions(configuration), managementOptions, CreateLogger<EndpointSecurity>(loggerFactory)));
         }
 
         public static void UseCloudFoundryActuator(IConfiguration configuration, ILoggerFactory loggerFactory = null)

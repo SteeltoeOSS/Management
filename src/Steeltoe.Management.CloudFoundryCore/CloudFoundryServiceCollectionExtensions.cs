@@ -58,7 +58,8 @@ namespace Steeltoe.Management.CloudFoundry
             services.AddInfoActuator(config);
             services.AddHealthActuator(config);
             services.AddLoggersActuator(config);
-            services.AddTraceActuator(config);
+            //services.AddTraceActuator(config);
+            services.AddHttpTraceActuator(config);
             services.AddMappingsActuator(config);
         }
     }

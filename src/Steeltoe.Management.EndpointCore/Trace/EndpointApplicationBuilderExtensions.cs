@@ -32,5 +32,15 @@ namespace Steeltoe.Management.Endpoint.Trace
 
             builder.UseMiddleware<TraceEndpointMiddleware>();
         }
+
+        public static void UseHttpTraceActuator(this IApplicationBuilder builder)
+        {
+            if (builder == null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
+            builder.UseMiddleware<HttpTraceEndpointMiddleware>();
+        }
     }
 }

@@ -15,26 +15,18 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Middleware;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace Steeltoe.Management.Endpoint.Trace
 {
-    public class TraceEndpointMiddleware : EndpointMiddleware<List<TraceResult>>
+    public class HttpTraceEndpointMiddleware : EndpointMiddleware<HttpTraceResult>
     {
         private RequestDelegate _next;
 
-        public TraceEndpointMiddleware(RequestDelegate next, TraceEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<TraceEndpointMiddleware> logger = null)
+        public HttpTraceEndpointMiddleware(RequestDelegate next, HttpTraceEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<HttpTraceEndpointMiddleware> logger = null)
             : base(endpoint, mgmtOptions, logger: logger)
-        {
-            _next = next;
-        }
-
-        [Obsolete]
-        public TraceEndpointMiddleware(RequestDelegate next, TraceEndpoint endpoint, ILogger<TraceEndpointMiddleware> logger = null)
-            : base(endpoint, logger: logger)
         {
             _next = next;
         }

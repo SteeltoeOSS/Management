@@ -13,30 +13,27 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint.Trace
 {
-    [Obsolete]
-    public class TraceOptions : AbstractOptions, ITraceOptions
+    public class HttpTraceEndpointOptions : AbstractEndpointOptions, ITraceOptions
     {
-        private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:trace";
+        private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:httptrace";
         private const int DEFAULT_CAPACITY = 100;
 
-        public TraceOptions()
+        public HttpTraceEndpointOptions()
             : base()
         {
-            Id = "trace";
+            Id = "httptrace";
             Capacity = DEFAULT_CAPACITY;
         }
 
-        public TraceOptions(IConfiguration config)
+        public HttpTraceEndpointOptions(IConfiguration config)
             : base(MANAGEMENT_INFO_PREFIX, config)
         {
             if (string.IsNullOrEmpty(Id))
             {
-                Id = "trace";
+                Id = "httptrace";
             }
 
             if (Capacity == -1)

@@ -37,10 +37,8 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
             ["Logging:LogLevel:Pivotal"] = "Information",
             ["Logging:LogLevel:Steeltoe"] = "Information",
             ["management:endpoints:enabled"] = "true",
-            ["management:endpoints:sensitive"] = "false",
             ["management:endpoints:path"] = "/cloudfoundryapplication",
             ["management:endpoints:dump:enabled"] = "true",
-            ["management:endpoints:dump:sensitive"] = "false",
         };
 
         [Fact]
