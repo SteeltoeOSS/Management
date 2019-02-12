@@ -26,6 +26,11 @@ namespace Steeltoe.Management.EndpointOwin.Security.Test
 {
     public class SecurityMiddlewareOwinTest : BaseTest
     {
+        public SecurityMiddlewareOwinTest()
+        {
+            ManagementOptions.Clear();
+        }
+
         [Fact]
         public async void SecurityMiddleWare_ReturnsOKWhenNotSensitive()
         {

@@ -26,6 +26,11 @@ namespace Steeltoe.Management.EndpointOwin.Refresh.Test
 {
     public class RefreshEndpointOwinMiddlewareTest : BaseTest
     {
+        public RefreshEndpointOwinMiddlewareTest()
+        {
+            ManagementOptions.Clear();
+        }
+
         [Fact]
         public async void RefreshInvoke_ReturnsExpected()
         {
