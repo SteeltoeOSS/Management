@@ -30,7 +30,6 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         {
             var opts = new HealthEndpointOptions();
             Assert.Null(opts.Enabled);
-            Assert.Null(opts.Sensitive);
             Assert.Equal("health", opts.Id);
             Assert.Equal(ShowDetails.Never, opts.ShowDetails);
             Assert.Equal(Permissions.RESTRICTED, opts.RequiredPermissions);
@@ -49,7 +48,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             var appsettings = new Dictionary<string, string>()
             {
                 ["management:endpoints:enabled"] = "false",
-                ["management:endpoints:sensitive"] = "false",
+                
                 ["management:endpoints:path"] = "/cloudfoundryapplication",
                 ["management:endpoints:health:enabled"] = "true",
                 ["management:endpoints:health:requiredPermissions"] = "NONE",
@@ -64,13 +63,11 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             CloudFoundryOptions cloudOpts = new CloudFoundryOptions(config);
 
             Assert.True(cloudOpts.Enabled);
-            Assert.False(cloudOpts.Sensitive);
             Assert.Equal(string.Empty, cloudOpts.Id);
             Assert.Equal("/cloudfoundryapplication", cloudOpts.Path);
             Assert.True(cloudOpts.ValidateCertificates);
 
             Assert.True(opts.Enabled);
-            Assert.False(opts.Sensitive);
             Assert.Equal("health", opts.Id);
             Assert.Equal("/cloudfoundryapplication/health", opts.Path);
             Assert.Equal(Permissions.NONE, opts.RequiredPermissions);
