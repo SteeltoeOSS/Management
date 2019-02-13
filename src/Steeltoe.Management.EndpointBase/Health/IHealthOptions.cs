@@ -22,5 +22,7 @@ namespace Steeltoe.Management.Endpoint.Health
         ShowDetails ShowDetails { get; set; }
 
         EndpointClaim Claim { get; set; }
+
+        string Role { get; set; }
     }
 }
