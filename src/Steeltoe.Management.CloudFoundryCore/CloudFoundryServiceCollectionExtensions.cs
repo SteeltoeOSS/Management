@@ -58,8 +58,8 @@ namespace Steeltoe.Management.CloudFoundry
             services.AddInfoActuator(config);
             services.AddHealthActuator(config);
             services.AddLoggersActuator(config);
-            //services.AddTraceActuator(config);
-            services.AddHttpTraceActuator(config);
+            services.AddTraceActuator(config);
+            //services.AddHttpTraceActuator(config); TODO: Switch to this in 3.0
             services.AddMappingsActuator(config);
         }
     }

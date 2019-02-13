@@ -46,7 +46,7 @@ namespace Steeltoe.Management.Endpoint.Trace
 
         public HttpTraceResult GetTraces()
         {
-            return new HttpTraceResult(_queue.ToList());
+            return new HttpTraceResult( _queue.ToList());
         }
 
         public override void ProcessEvent(string key, object value)
@@ -89,12 +89,17 @@ namespace Steeltoe.Management.Endpoint.Trace
             var req = context.Request;
             var res = context.Response;
 
-            var request = new Request(req.Method, GetRequestUri(req), req.Headers, GetRemoteAddress(context));
-            var response = new Response(res.StatusCode, res.Headers);
+            var request = new Request(req.Method, GetRequestUri(req), GetHeaders(req.Headers), GetRemoteAddress(context));
+            var response = new Response(res.StatusCode, GetHeaders(res.Headers));
             var principal = new Principal(GetUserPrincipal(context));
             var session = new Session(GetSessionId(context));
             return new HttpTrace(request, response, GetJavaTime(DateTime.Now.Ticks), principal, session, duration.Milliseconds);
         }
+
+        //private IDictionary<string, string[]> GetHeaders(IHeaderDictionary dictionary)
+        //{
+        //    return dictionary.Select(t => new { t.Key, t.Value }).ToDictionary(t => t.Key, t => t.Value.ToArray());
+        //}
 
         protected internal long GetJavaTime(long ticks)
         {
@@ -113,8 +118,6 @@ namespace Steeltoe.Management.Endpoint.Trace
             long timeInMilli = (long)duration.TotalMilliseconds;
             return timeInMilli.ToString();
         }
-
-      
 
         protected internal string GetRequestUri(HttpRequest request)
         {
@@ -136,46 +139,26 @@ namespace Steeltoe.Management.Endpoint.Trace
             return context?.Connection?.RemoteIpAddress?.ToString();
         }
 
-        protected internal Dictionary<string, object> GetHeaders(int status, IHeaderDictionary headers)
-        {
-            var result = GetHeaders(headers);
-            result.Add("status", status.ToString());
-            return result;
-        }
+        //protected internal Dictionary<string, object> GetHeaders(int status, IHeaderDictionary headers)
+        //{
+        //    var result = GetHeaders(headers);
+        //    result.Add("status", status.ToString());
+        //    return result;
+        //}
 
-        protected internal Dictionary<string, object> GetHeaders(IHeaderDictionary headers)
+        protected internal Dictionary<string, string[]> GetHeaders(IHeaderDictionary headers)
         {
-            Dictionary<string, object> result = new Dictionary<string, object>();
+            Dictionary<string, string[]> result = new Dictionary<string, string[]>();
             foreach (var h in headers)
             {
                 // Add filtering
-                result.Add(h.Key.ToLowerInvariant(), GetHeaderValue(h.Value));
+                result.Add(h.Key.ToLowerInvariant(), h.Value.ToArray());
             }
 
             return result;
         }
 
-        protected internal object GetHeaderValue(StringValues values)
-        {
-            List<string> result = new List<string>();
-            foreach (var v in values)
-            {
-                result.Add(v);
-            }
-
-            if (result.Count == 1)
-            {
-                return result[0];
-            }
-
-            if (result.Count == 0)
-            {
-                return string.Empty;
-            }
-
-            return result;
-        }
-
+       
         protected internal void GetProperty(object obj, out HttpContext context)
         {
             context = DiagnosticHelpers.GetProperty<HttpContext>(obj, "HttpContext");

@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Steeltoe.Management.Endpoint.Trace
 {
@@ -53,14 +53,14 @@ namespace Steeltoe.Management.Endpoint.Trace
 
         public long TimeTaken { get; }
 
-        public HttpTrace(Request request, Response response, long timestamp, Principal principal, Session session, long timeTaken)
+        public HttpTrace(Request request, Response response, long timestamp, Principal principal, Session session, double timeTaken)
         {
             Request = request;
             Response = response;
             Timestamp = timestamp;
             Principal = principal;
             Session = session;
-            TimeTaken = timeTaken;
+            TimeTaken = (long) timeTaken;
         }
     }
 
@@ -72,17 +72,18 @@ namespace Steeltoe.Management.Endpoint.Trace
 
         public string Uri { get; }
 
-        public IDictionary<string, StringValues> Headers { get; }
+        public IDictionary<string, string[]> Headers { get; }
 
         public string RemoteAddress { get; }
 
-        public Request(string method, string uri, IDictionary<string, StringValues> headers, string remoteAddress)
+        public Request(string method, string uri, IDictionary<string, string[]> headers, string remoteAddress)
         {
             Method = method;
             Uri = uri;
             Headers = headers;
             RemoteAddress = remoteAddress;
         }
+
     }
 
 #pragma warning disable SA1402 // File may only contain a single class
@@ -91,9 +92,9 @@ namespace Steeltoe.Management.Endpoint.Trace
     {
         public int Status { get; }
 
-        public IDictionary<string, StringValues> Headers { get; }
+        public IDictionary<string, string[]> Headers { get; }
 
-        public Response(int status, IDictionary<string, StringValues> headers)
+        public Response(int status, IDictionary<string, string[]> headers)
         {
             Status = status;
             Headers = headers;

@@ -14,26 +14,24 @@
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Owin;
-using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint;
-using Steeltoe.Management.Endpoint.Health;
+using Steeltoe.Management.Endpoint.Trace;
+using Steeltoe.Management.EndpointBase;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Management.EndpointOwin.Health
+namespace Steeltoe.Management.EndpointOwin.Trace
 {
-    public class HealthEndpointOwinMiddleware : EndpointOwinMiddleware<HealthCheckResult>
+    public class TraceEndpointOwinMiddleware : EndpointOwinMiddleware<List<TraceResult>>
     {
-        public HealthEndpointOwinMiddleware(OwinMiddleware next, HealthEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<HealthEndpointOwinMiddleware> logger = null)
-            : base(next, endpoint, mgmtOptions, logger: logger)
-        {
-            _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
-        }
+        protected new TraceEndpoint _endpoint;
 
-        [Obsolete]
-        public HealthEndpointOwinMiddleware(OwinMiddleware next, HealthEndpoint endpoint, ILogger<HealthEndpointOwinMiddleware> logger = null)
-            : base(next, endpoint, logger: logger)
+        public TraceEndpointOwinMiddleware(OwinMiddleware next, TraceEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<TraceEndpointOwinMiddleware> logger = null)
+            : base(next, endpoint, mgmtOptions, new List<HttpMethod> { HttpMethod.Get }, true, logger: logger)
         {
             _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
         }
@@ -46,10 +44,9 @@ namespace Steeltoe.Management.EndpointOwin.Health
             }
             else
             {
-                _logger?.LogTrace("Processing {SteeltoeEndpoint} request", typeof(HealthEndpoint));
+                _logger?.LogTrace("Processing {SteeltoeEndpoint} request", _endpoint.GetType());
                 var result = _endpoint.Invoke();
-                context.Response.Headers.SetValues("Content-Type", new string[] { "application/vnd.spring-boot.actuator.v2+json" });
-                context.Response.StatusCode = ((HealthEndpoint)_endpoint).GetStatusCode(result);
+                context.Response.Headers.SetValues("Content-Type", new string[] { "application/vnd.spring-boot.actuator.v1+json" });
                 await context.Response.WriteAsync(Serialize(result));
             }
         }

@@ -89,16 +89,11 @@ namespace Steeltoe.Management.EndpointOwin.Trace
             var req = context.Request;
             var res = context.Response;
 
-            var request = new Request(req.Method, req.QueryString.Value, GetHeaders(req.Headers), GetRemoteAddress(context));
-            var response = new Response(res.StatusCode, GetHeaders(res.Headers));
+            var request = new Request(req.Method, req.QueryString.Value, req.Headers, GetRemoteAddress(context));
+            var response = new Response(res.StatusCode, res.Headers);
             var principal = new Principal(GetUserPrincipal(context));
             var session = new Session(GetSessionId(context));
             return new HttpTrace(request, response, GetJavaTime(DateTime.Now.Ticks), principal, session, duration.Milliseconds);
-        }
-
-        protected internal IDictionary<string, StringValues> GetHeaders(IHeaderDictionary dict)
-        {
-            return dict.Select(t => new { t.Key, t.Value }).ToDictionary(t => t.Key, t => new StringValues(t.Value));
         }
 
         protected internal string GetPathInfo(IOwinRequest request)

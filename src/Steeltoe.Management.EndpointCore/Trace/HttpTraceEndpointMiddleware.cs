@@ -43,21 +43,11 @@ namespace Steeltoe.Management.Endpoint.Trace
             }
         }
 
-        //public override bool RequestVerbAndPathMatch(string httpMethod, string requestPath)
-        //{
-        //    IManagementOptions matchingMgmtContext = null;
-        //    return _endpoint.RequestPathMatches(requestPath, _mgmtOptions, out matchingMgmtContext)
-        //        && _endpoint.IsEnabled(matchingMgmtContext)
-        //        && _endpoint.IsExposed(matchingMgmtContext)
-        //        && _allowedMethods.Any(m => m.Method.Equals(httpMethod));
-        //}
-
-
         protected internal async Task HandleTraceRequestAsync(HttpContext context)
         {
             var serialInfo = HandleRequest();
             _logger?.LogDebug("Returning: {0}", serialInfo);
-            context.Response.Headers.Add("Content-Type", "application/vnd.spring-boot.actuator.v1+json");
+            context.Response.Headers.Add("Content-Type", "application/vnd.spring-boot.actuator.v2+json");
             await context.Response.WriteAsync(serialInfo);
         }
     }

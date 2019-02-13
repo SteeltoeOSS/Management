@@ -58,7 +58,6 @@ namespace Steeltoe.Management.Endpoint
         public static void UseCloudFoundryActuators(IConfiguration configuration, ILoggerProvider dynamicLogger, IEnumerable<IHealthContributor> healthContributors = null, IApiExplorer apiExplorer = null, ILoggerFactory loggerFactory = null)
         {
             UseCloudFoundrySecurity(configuration, null, loggerFactory);
-           // UseEndpointSecurity(configuration, null, loggerFactory);
             UseCloudFoundryActuator(configuration, loggerFactory);
             UseHealthActuator(configuration, null, healthContributors, loggerFactory);
             UseHeapDumpActuator(configuration, null, loggerFactory);
@@ -66,6 +65,7 @@ namespace Steeltoe.Management.Endpoint
             UseInfoActuator(configuration, null, loggerFactory);
             UseLoggerActuator(configuration, dynamicLogger, loggerFactory);
             UseTraceActuator(configuration, null, loggerFactory);
+            //UseHttpTraceActuator(configuration, null, loggerFactory); // Todo: Switch to this in 3.0
             UseMappingsActuator(configuration, apiExplorer, loggerFactory);
         }
 
@@ -212,6 +212,7 @@ namespace Steeltoe.Management.Endpoint
             ConfiguredHandlers.Add(handler);
         }
 
+        [Obsolete]
         public static void UseTraceActuator(IConfiguration configuration, ITraceRepository traceRepository = null, ILoggerFactory loggerFactory = null)
         {
             var options = new TraceEndpointOptions(configuration);
@@ -220,6 +221,17 @@ namespace Steeltoe.Management.Endpoint
             DiagnosticsManager.Instance.Observers.Add((IDiagnosticObserver)traceRepository);
             var ep = new TraceEndpoint(options, traceRepository, CreateLogger<TraceEndpoint>(loggerFactory));
             var handler = new TraceHandler(ep, SecurityServices, _mgmtOptions, CreateLogger<TraceHandler>(loggerFactory));
+            ConfiguredHandlers.Add(handler);
+        }
+
+        public static void UseHttpTraceActuator(IConfiguration configuration, IHttpTraceRepository traceRepository = null, ILoggerFactory loggerFactory = null)
+        {
+            var options = new HttpTraceEndpointOptions(configuration);
+            _mgmtOptions.RegisterEndpointOptions(configuration, options);
+            traceRepository = traceRepository ?? new HttpTraceDiagnosticObserver(options, CreateLogger<HttpTraceDiagnosticObserver>(loggerFactory));
+            DiagnosticsManager.Instance.Observers.Add((IDiagnosticObserver)traceRepository);
+            var ep = new HttpTraceEndpoint(options, traceRepository, CreateLogger<HttpTraceEndpoint>(loggerFactory));
+            var handler = new HttpTraceHandler(ep, SecurityServices, _mgmtOptions, CreateLogger<HttpTraceHandler>(loggerFactory));
             ConfiguredHandlers.Add(handler);
         }
 

@@ -21,26 +21,11 @@ using System.Web;
 
 namespace Steeltoe.Management.Endpoint.Handler
 {
-    [Obsolete]
-    public class TraceHandler : ActuatorHandler<TraceEndpoint, List<TraceResult>>
+    public class HttpTraceHandler : ActuatorHandler<HttpTraceEndpoint, HttpTraceResult>
     {
-        public TraceHandler(TraceEndpoint endpoint, IEnumerable<ISecurityService> securityServices,IEnumerable<IManagementOptions> mgmtOptions, ILogger<TraceHandler> logger = null)
+        public HttpTraceHandler(HttpTraceEndpoint endpoint, IEnumerable<ISecurityService> securityServices,IEnumerable<IManagementOptions> mgmtOptions, ILogger<HttpTraceHandler> logger = null)
           : base(endpoint, securityServices, mgmtOptions, null, true, logger)
         {
-        }
-
-        [Obsolete]
-        public TraceHandler(TraceEndpoint endpoint, IEnumerable<ISecurityService> securityServices, ILogger<TraceHandler> logger = null)
-            : base(endpoint, securityServices, null, true, logger)
-        {
-        }
-
-        public override void HandleRequest(HttpContextBase context)
-        {
-            _logger?.LogTrace("Processing {SteeltoeEndpoint} request", typeof(TraceEndpoint));
-            var result = _endpoint.Invoke();
-            context.Response.Headers.Set("Content-Type", "application/vnd.spring-boot.actuator.v1+json");
-            context.Response.Write(Serialize(result));
         }
     }
 }
