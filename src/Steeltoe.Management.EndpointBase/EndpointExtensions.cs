@@ -63,7 +63,6 @@ namespace Steeltoe.Management.Endpoint
             return true;
         }
 
-
         public static bool RequestVerbAndPathMatch(this IEndpoint endpoint, string httpMethod, string requestPath, IEnumerable<HttpMethod> allowedMethods, IEnumerable<IManagementOptions> mgmtOptions, bool exactMatch)
         {
             IManagementOptions matchingMgmtContext = null;

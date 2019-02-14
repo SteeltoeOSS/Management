@@ -84,7 +84,6 @@ namespace Steeltoe.Management.Endpoint.Env
                 if (provider.TryGet(kvp.Key, out string provValue))
                 {
                     var sanitized = _sanitizer.Sanitize(kvp);
-                    _logger?.LogTrace("Sanitizing {Key}", kvp.Key);
                     properties.Add(sanitized.Key, new PropertyValueDescriptor(sanitized.Value));
                 }
             }
