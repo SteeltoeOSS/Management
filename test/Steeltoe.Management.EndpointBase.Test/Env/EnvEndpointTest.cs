@@ -215,7 +215,7 @@ namespace Steeltoe.Management.Endpoint.Env.Test
                 ["management:endpoints:env:keystosanitize:0"] = "credentials",
                 ["password"] = "mysecret"
             };
-           
+
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();

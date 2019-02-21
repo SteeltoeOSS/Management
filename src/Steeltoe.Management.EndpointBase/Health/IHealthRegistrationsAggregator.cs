@@ -12,25 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Http;
-using Steeltoe.Management.Endpoint.Security;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Options;
+using Steeltoe.Common.HealthChecks;
+using System;
+using System.Collections.Generic;
 
-namespace Steeltoe.Management.EndpointCore
+namespace Steeltoe.Management.Endpoint.Health
 {
-    internal class CoreSecurityContext : ISecurityContext
+    public interface IHealthRegistrationsAggregator : IHealthAggregator
     {
-        private readonly HttpContext _context;
-
-        public CoreSecurityContext(HttpContext context)
-        {
-            _context = context;
-        }
-
-        public bool HasClaim(EndpointClaim claim)
-        {
-            return _context != null
-                && _context.User != null
-                && claim != null && _context.User.HasClaim(claim.Type, claim.Value);
-        }
+        Common.HealthChecks.HealthCheckResult Aggregate(IList<IHealthContributor> contributors, IOptionsMonitor<HealthCheckServiceOptions> healthServiceOptions, IServiceProvider serviceProvider);
     }
 }

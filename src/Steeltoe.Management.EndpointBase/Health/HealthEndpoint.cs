@@ -12,20 +12,46 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Security;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using HealthCheckResult = Steeltoe.Common.HealthChecks.HealthCheckResult;
+using HealthStatus = Steeltoe.Common.HealthChecks.HealthStatus;
 
 namespace Steeltoe.Management.Endpoint.Health
 {
     public class HealthEndpoint : AbstractEndpoint<HealthCheckResult, ISecurityContext>
     {
+        private readonly IOptionsMonitor<HealthCheckServiceOptions> _serviceOptions;
+        private readonly IServiceProvider _provider;
         private IHealthAggregator _aggregator;
         private IList<IHealthContributor> _contributors;
         private ILogger<HealthEndpoint> _logger;
+
+        public HealthEndpoint(IHealthOptions options, IHealthRegistrationsAggregator aggregator, IEnumerable<IHealthContributor> contributors, IOptionsMonitor<HealthCheckServiceOptions> serviceOptions, IServiceProvider provider, ILogger<HealthEndpoint> logger = null)
+            : base(options)
+        {
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            if (contributors == null)
+            {
+                throw new ArgumentNullException(nameof(contributors));
+            }
+
+            _aggregator = aggregator ?? throw new ArgumentNullException(nameof(aggregator));
+            _serviceOptions = serviceOptions ?? throw new ArgumentNullException(nameof(serviceOptions));
+            _provider = provider ?? throw new ArgumentNullException(nameof(provider));
+            _contributors = contributors.ToList();
+            _logger = logger;
+        }
 
         public HealthEndpoint(IHealthOptions options, IHealthAggregator aggregator, IEnumerable<IHealthContributor> contributors, ILogger<HealthEndpoint> logger = null)
            : base(options)
@@ -55,8 +81,7 @@ namespace Steeltoe.Management.Endpoint.Health
 
         public override HealthCheckResult Invoke(ISecurityContext securityContext)
         {
-
-            return BuildHealth(_aggregator, _contributors, securityContext);
+            return BuildHealth(_aggregator, _contributors, securityContext, _serviceOptions, _provider);
         }
 
         public int GetStatusCode(HealthCheckResult health)
@@ -66,9 +91,14 @@ namespace Steeltoe.Management.Endpoint.Health
                 : 200;
         }
 
-        protected virtual HealthCheckResult BuildHealth(IHealthAggregator aggregator, IList<IHealthContributor> contributors, ISecurityContext securityContext)
+        protected virtual HealthCheckResult BuildHealth(IHealthAggregator aggregator, IList<IHealthContributor> contributors, ISecurityContext securityContext, IOptionsMonitor<HealthCheckServiceOptions> svcOptions, IServiceProvider provider)
         {
-            var result = _aggregator.Aggregate(contributors);
+            var registrationAggregator = _aggregator as IHealthRegistrationsAggregator;
+
+            var result = registrationAggregator == null
+                ? _aggregator.Aggregate(contributors)
+                : registrationAggregator.Aggregate(contributors, svcOptions, provider);
+
             var showDetails = Options.ShowDetails;
 
             if (showDetails == ShowDetails.Never

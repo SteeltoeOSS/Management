@@ -32,7 +32,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             var opts = new HealthEndpointOptions();
             Assert.Null(opts.Enabled);
             Assert.Equal("health", opts.Id);
-            Assert.Equal(ShowDetails.Never, opts.ShowDetails);
+            Assert.Equal(ShowDetails.Always, opts.ShowDetails);
             Assert.Equal(Permissions.RESTRICTED, opts.RequiredPermissions);
         }
 
@@ -87,7 +87,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             var config = configurationBuilder.Build();
 
             var opts = new HealthEndpointOptions(config);
-            Assert.NotNull(opts.Claim); 
+            Assert.NotNull(opts.Claim);
             Assert.Equal("claimtype", opts.Claim.Type);
             Assert.Equal("claimvalue", opts.Claim.Value);
         }

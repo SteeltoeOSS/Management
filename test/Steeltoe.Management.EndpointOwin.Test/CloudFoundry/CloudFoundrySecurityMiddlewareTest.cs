@@ -75,7 +75,7 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry.Test
         public async void SkipsSecurityCheck_WhenEnabledFalse()
         {
             Environment.SetEnvironmentVariable("management__endpoints__cloudfoundry__enabled", "false");
-            
+
             using (var server = TestServer.Create<StartupWithSecurity>())
             {
                 var client = server.HttpClient;

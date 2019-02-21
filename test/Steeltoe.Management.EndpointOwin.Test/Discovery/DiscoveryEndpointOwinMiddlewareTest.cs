@@ -31,8 +31,9 @@ namespace Steeltoe.Management.EndpointOwin.Discovery.Test
         public async void DiscoveryEndpointInvoke_ReturnsExpected()
         {
             var mgmtOptions = new List<IManagementOptions> { new ActuatorManagementOptions() };
+
             // arrange
-            var middle = new ActuatorDiscoveryEndpointOwinMiddleware( null, new TestActuatorDiscoveryEndpoint(new ActuatorDiscoveryEndpointOptions(), mgmtOptions), mgmtOptions);
+            var middle = new ActuatorDiscoveryEndpointOwinMiddleware(null, new TestActuatorDiscoveryEndpoint(new ActuatorDiscoveryEndpointOptions(), mgmtOptions), mgmtOptions);
 
             var context = OwinTestHelpers.CreateRequest("GET", "/actuator");
 

@@ -12,25 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Http;
-using Steeltoe.Management.Endpoint.Security;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using System.Threading;
+using System.Threading.Tasks;
 
-namespace Steeltoe.Management.EndpointCore
+namespace Steeltoe.Management.Endpoint.Health.Test
 {
-    internal class CoreSecurityContext : ISecurityContext
+    internal class TestHealthCheck : IHealthCheck
     {
-        private readonly HttpContext _context;
-
-        public CoreSecurityContext(HttpContext context)
+        public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default(CancellationToken))
         {
-            _context = context;
-        }
-
-        public bool HasClaim(EndpointClaim claim)
-        {
-            return _context != null
-                && _context.User != null
-                && claim != null && _context.User.HasClaim(claim.Type, claim.Value);
+            throw new System.NotImplementedException();
         }
     }
 }

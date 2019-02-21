@@ -54,7 +54,7 @@ namespace Steeltoe.Management.Endpoint.Discovery
                 {
                     links._links.Add("self", new Link(baseUrl));
                 }
-                else 
+                else
                 {
                     if (!string.IsNullOrEmpty(opt.Id) && !links._links.ContainsKey(opt.Id))
                     {

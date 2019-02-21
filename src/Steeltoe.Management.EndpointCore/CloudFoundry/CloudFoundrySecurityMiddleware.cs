@@ -59,7 +59,6 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             bool isEndpointEnabled = _mgmtOptions == null ? _options.IsEnabled : _options.IsEnabled(_mgmtOptions);
             bool isEndpointExposed = _mgmtOptions == null ? true : _options.IsExposed(_mgmtOptions);
 
-
             if (Platform.IsCloudFoundry
                 && isEndpointEnabled
                 && isEndpointExposed

@@ -15,13 +15,13 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Management.Endpoint.CloudFoundry;
+using Steeltoe.Management.Endpoint.Discovery;
 using Steeltoe.Management.Endpoint.Health.Contributor;
 using System;
 using System.Collections.Generic;
-using Steeltoe.Management.Endpoint.CloudFoundry;
-using Steeltoe.Management.Endpoint.Discovery;
-using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Health
 {
@@ -34,7 +34,7 @@ namespace Steeltoe.Management.Endpoint.Health
         /// <param name="config">Application configuration (this actuator looks for a settings starting with management:endpoints:health)</param>
         public static void AddHealthActuator(this IServiceCollection services, IConfiguration config)
         {
-            services.AddHealthActuator(config, new DefaultHealthAggregator(), GetDefaultHealthContributors());
+            services.AddHealthActuator(config, new HealthRegistrationsAggregator(), GetDefaultHealthContributors());
         }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace Steeltoe.Management.Endpoint.Health
         /// <param name="contributors">Contributors to application health</param>
         public static void AddHealthActuator(this IServiceCollection services, IConfiguration config, params Type[] contributors)
         {
-            services.AddHealthActuator(config, new DefaultHealthAggregator(), contributors);
+            services.AddHealthActuator(config, new HealthRegistrationsAggregator(), contributors);
         }
 
         /// <summary>
@@ -79,9 +79,31 @@ namespace Steeltoe.Management.Endpoint.Health
             services.TryAddSingleton<IHealthOptions>(options);
             services.RegisterEndpointOptions(options);
             AddHealthContributors(services, contributors);
-            services.TryAddSingleton<IHealthAggregator>(aggregator);
+
+            var registrationsAggregator = aggregator as IHealthRegistrationsAggregator;
+            if (registrationsAggregator != null)
+            {
+                services.TryAddSingleton<IHealthRegistrationsAggregator>(registrationsAggregator);
+            }
+            else
+            {
+                services.TryAddSingleton<IHealthAggregator>(aggregator);
+            }
+
             services.TryAddScoped<HealthEndpoint>();
         }
+
+        /// <summary>
+        /// Returns <see cref="IHealthChecksBuilder"/> that allows adding community Health Checks.
+        /// </summary>
+        /// <example>
+        /// <code>
+        /// services.HealthChecksBuilder().AddSqlServer("connectionString");
+        /// </code>
+        /// </example>
+        /// <param name="services">Service collection to add health checks to</param>
+        /// <returns>IHealthChecksBuilder</returns>
+        public static IHealthChecksBuilder HealthChecksBuilder(this IServiceCollection services) => new HealthChecksBuilder(services);
 
         public static void AddHealthContributors(IServiceCollection services, params Type[] contributors)
         {

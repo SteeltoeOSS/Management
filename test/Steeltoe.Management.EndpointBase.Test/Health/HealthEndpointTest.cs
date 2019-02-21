@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.Extensions.Options;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Health.Contributor;
 using Steeltoe.Management.Endpoint.Test;
@@ -27,8 +28,14 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         public void Constructor_ThrowsOptionsNull()
         {
             Assert.Throws<ArgumentNullException>(() => new HealthEndpoint(null, null, null));
-            Assert.Throws<ArgumentNullException>(() => new HealthEndpoint(new HealthOptions(), null, null));
-            Assert.Throws<ArgumentNullException>(() => new HealthEndpoint(new HealthOptions(), new DefaultHealthAggregator(), null));
+            Assert.Throws<ArgumentNullException>(() => new HealthEndpoint(new HealthEndpointOptions(), null, null));
+            Assert.Throws<ArgumentNullException>(() => new HealthEndpoint(new HealthEndpointOptions(), new DefaultHealthAggregator(), null));
+            Assert.Throws<ArgumentNullException>(() => new HealthEndpoint(null, null, null, null, null));
+            Assert.Throws<ArgumentNullException>(() => new HealthEndpoint(new HealthEndpointOptions(), null, null, null, null));
+            Assert.Throws<ArgumentNullException>(() => new HealthEndpoint(new HealthEndpointOptions(), new HealthRegistrationsAggregator(), null, null, null));
+            Assert.Throws<ArgumentNullException>(() => new HealthEndpoint(new HealthEndpointOptions(), new HealthRegistrationsAggregator(), new List<IHealthContributor>(), null, null));
+            var svcOptions = default(IOptionsMonitor<Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckServiceOptions>);
+            Assert.Throws<ArgumentNullException>(() => new HealthEndpoint(new HealthEndpointOptions(), new HealthRegistrationsAggregator(), new List<IHealthContributor>(), svcOptions, null));
         }
 
         [Fact]

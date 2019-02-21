@@ -57,7 +57,6 @@ namespace Steeltoe.Management.EndpointWeb.Test
         [Fact]
         public async void EnvHandler_ReturnsExpected()
         {
-      
             using (var server = new TestServer(_defaultSettings))
             {
                 var client = server.HttpClient;
@@ -112,7 +111,6 @@ namespace Steeltoe.Management.EndpointWeb.Test
         public async void HealthHandler_ReturnsDetailsd()
         {
             var settings = DefaultTestSettingsConfig.DefaultSettings;
-            settings.Add("management:endpoints:health:showdetails", "always");
 
             using (var server = new TestServer(settings))
             {
