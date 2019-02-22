@@ -20,7 +20,9 @@ using System.Linq;
 
 namespace Steeltoe.Management.Endpoint.Discovery
 {
+#pragma warning disable CS0612 // Type or member is obsolete
     public class ActuatorDiscoveryEndpoint : AbstractEndpoint<Links, string>
+#pragma warning restore CS0612 // Type or member is obsolete
     {
         private ILogger<ActuatorDiscoveryEndpoint> _logger;
         private IManagementOptions _mgmtOption;
@@ -34,7 +36,9 @@ namespace Steeltoe.Management.Endpoint.Discovery
 
         protected new IActuatorDiscoveryOptions Options => options as IActuatorDiscoveryOptions;
 
+#pragma warning disable CS0612 // Type or member is obsolete
         public override Links Invoke(string baseUrl)
+#pragma warning restore CS0612 // Type or member is obsolete
         {
             DiscoveryService discoveryService = new DiscoveryService(_mgmtOption, options, _logger);
             return discoveryService.Invoke(baseUrl);

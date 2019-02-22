@@ -25,9 +25,11 @@ namespace Steeltoe.Management.Endpoint.Discovery.Test
         {
         }
 
+#pragma warning disable CS0612 // Type or member is obsolete
         public override Links Invoke(string baseUrl)
         {
             return new Links();
         }
+#pragma warning restore CS0612 // Type or member is obsolete
     }
 }

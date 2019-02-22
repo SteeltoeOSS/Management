@@ -92,7 +92,6 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
                 aggregator = new DefaultHealthAggregator();
             }
 
-            //container.RegisterInstance(new HealthOptions(config)).As<IHealthOptions>().SingleInstance();
             container.Register(c =>
             {
                 var options = new HealthEndpointOptions(config);

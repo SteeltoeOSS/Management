@@ -43,7 +43,6 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
             }
 
             container.RegisterType<ThreadDumper>().As<IThreadDumper>().SingleInstance();
-            //container.RegisterInstance(new ThreadDumpOptions(config)).As<IThreadDumpOptions>();
             container.Register(c =>
             {
                 var options = new ThreadDumpEndpointOptions(config);

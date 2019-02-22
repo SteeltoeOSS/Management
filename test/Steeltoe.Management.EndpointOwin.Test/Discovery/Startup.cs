@@ -48,7 +48,6 @@ namespace Steeltoe.Management.EndpointOwin.Discovery.Test
 
             app.UseDiscoveryActuator(config);
             app.UseInfoActuator(config);
-
         }
     }
 }

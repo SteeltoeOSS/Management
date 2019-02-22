@@ -61,8 +61,11 @@ namespace Steeltoe.Management.EndpointOwin
             app.UseInfoActuator(configuration, loggerFactory);
             app.UseHealthActuator(configuration,  loggerFactory);
             app.UseLoggersActuator(configuration, loggerProvider,  loggerFactory);
+#pragma warning disable CS0612 // Type or member is obsolete
             app.UseTraceActuator(configuration, null, loggerFactory);
-           // app.UseHttpTraceActuator(configuration, null, loggerFactory); TODO: Switch to this in 3.0
+#pragma warning restore CS0612 // Type or member is obsolete
+
+            // app.UseHttpTraceActuator(configuration, null, loggerFactory); TODO: Switch to this in 3.0
             app.UseMappingActuator(configuration, apiExplorer, loggerFactory);
         }
 
@@ -89,11 +92,14 @@ namespace Steeltoe.Management.EndpointOwin
             app.UseInfoActuator(configuration, loggerFactory);
             app.UseEnvActuator(configuration, loggerFactory);
             var healthOptions = new HealthEndpointOptions(configuration);
-            app.UseHealthActuator(healthOptions, new DefaultHealthAggregator(), healthContributors, loggerFactory); 
+            app.UseHealthActuator(healthOptions, new DefaultHealthAggregator(), healthContributors, loggerFactory);
 
             app.UseLoggersActuator(configuration, loggerProvider, loggerFactory);
+#pragma warning disable CS0612 // Type or member is obsolete
             app.UseTraceActuator(configuration, null, loggerFactory);
-           // app.UseHttpTraceActuator(configuration, null, loggerFactory); TODO: switch to this in 3.0
+#pragma warning restore CS0612 // Type or member is obsolete
+
+            // app.UseHttpTraceActuator(configuration, null, loggerFactory); TODO: switch to this in 3.0
             app.UseMappingActuator(configuration, apiExplorer, loggerFactory);
         }
     }

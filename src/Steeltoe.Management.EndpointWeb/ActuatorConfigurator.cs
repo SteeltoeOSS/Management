@@ -64,8 +64,11 @@ namespace Steeltoe.Management.Endpoint
             UseThreadDumpActuator(configuration, null, loggerFactory);
             UseInfoActuator(configuration, null, loggerFactory);
             UseLoggerActuator(configuration, dynamicLogger, loggerFactory);
+#pragma warning disable CS0612 // Type or member is obsolete
             UseTraceActuator(configuration, null, loggerFactory);
-            //UseHttpTraceActuator(configuration, null, loggerFactory); // Todo: Switch to this in 3.0
+#pragma warning restore CS0612 // Type or member is obsolete
+
+            // UseHttpTraceActuator(configuration, null, loggerFactory); // Todo: Switch to this in 3.0
             UseMappingsActuator(configuration, apiExplorer, loggerFactory);
         }
 
@@ -115,10 +118,10 @@ namespace Steeltoe.Management.Endpoint
             }
 
             managementOptions.EndpointOptions.Add(options);
-            var ep = new CloudFoundryEndpoint(options ,_mgmtOptions, CreateLogger<CloudFoundryEndpoint>(loggerFactory));
+            var ep = new CloudFoundryEndpoint(options, _mgmtOptions, CreateLogger<CloudFoundryEndpoint>(loggerFactory));
             var handler = new CloudFoundryHandler(ep, SecurityServices, _mgmtOptions, CreateLogger<CloudFoundryHandler>(loggerFactory));
             ConfiguredHandlers.Add(handler);
-            var handler2 = new CloudFoundryCorsHandler(options, SecurityServices,_mgmtOptions, CreateLogger<CloudFoundryCorsHandler>(loggerFactory));
+            var handler2 = new CloudFoundryCorsHandler(options, SecurityServices, _mgmtOptions, CreateLogger<CloudFoundryCorsHandler>(loggerFactory));
             ConfiguredHandlers.Add(handler2);
         }
 
@@ -203,7 +206,6 @@ namespace Steeltoe.Management.Endpoint
 
         public static void UseThreadDumpActuator(IConfiguration configuration, IThreadDumper threadDumper = null, ILoggerFactory loggerFactory = null)
         {
-
             var options = new ThreadDumpEndpointOptions(configuration);
             _mgmtOptions.RegisterEndpointOptions(configuration, options);
             threadDumper = threadDumper ?? new ThreadDumper(options);
@@ -220,7 +222,9 @@ namespace Steeltoe.Management.Endpoint
             traceRepository = traceRepository ?? new TraceDiagnosticObserver(options, CreateLogger<TraceDiagnosticObserver>(loggerFactory));
             DiagnosticsManager.Instance.Observers.Add((IDiagnosticObserver)traceRepository);
             var ep = new TraceEndpoint(options, traceRepository, CreateLogger<TraceEndpoint>(loggerFactory));
+#pragma warning disable CS0612 // Type or member is obsolete
             var handler = new TraceHandler(ep, SecurityServices, _mgmtOptions, CreateLogger<TraceHandler>(loggerFactory));
+#pragma warning restore CS0612 // Type or member is obsolete
             ConfiguredHandlers.Add(handler);
         }
 
@@ -306,7 +310,6 @@ namespace Steeltoe.Management.Endpoint
 
             foreach (var mgmt in mgmtOptions)
             {
-
                 if (!mgmt.EndpointOptions.Contains(options))
                 {
                     mgmt.EndpointOptions.Add(options);

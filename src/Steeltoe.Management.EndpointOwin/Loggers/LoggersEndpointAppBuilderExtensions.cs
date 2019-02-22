@@ -63,6 +63,5 @@ namespace Steeltoe.Management.EndpointOwin.Loggers
             var logger = loggerFactory?.CreateLogger<LoggersEndpointOwinMiddleware>();
             return builder.Use<LoggersEndpointOwinMiddleware>(endpoint, mgmtOptions, logger);
         }
-
     }
 }

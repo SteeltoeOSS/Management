@@ -49,7 +49,6 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
                 throw new ArgumentNullException(nameof(apiExplorer));
             }
 
-            //container.RegisterInstance(new MappingsOptions(config)).As<IMappingsOptions>();
             container.Register(c =>
             {
                 var options = new MappingsEndpointOptions(config);

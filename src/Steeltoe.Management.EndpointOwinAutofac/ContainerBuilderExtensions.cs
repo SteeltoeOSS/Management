@@ -81,7 +81,6 @@ namespace Steeltoe.Management.EndpointOwinAutofac
             container.RegisterDiscoveryActuator(config);
             container.RegisterHealthActuator(config);
             container.RegisterInfoActuator(config);
-
         }
 
         /// <summary>

@@ -57,6 +57,5 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
             container.RegisterType<ActuatorDiscoveryEndpoint>().SingleInstance();
             container.RegisterType<ActuatorDiscoveryEndpointOwinMiddleware>().SingleInstance();
         }
-
     }
 }

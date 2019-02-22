@@ -31,6 +31,7 @@ namespace Steeltoe.Management.Endpoint.Discovery
             _options = discoveryOptions ?? throw new ArgumentNullException(nameof(discoveryOptions));
         }
 
+#pragma warning disable CS0612 // Type or member is obsolete
         public Links Invoke(string baseUrl)
         {
             var endpointOptions = _mgmtOptions.EndpointOptions;
@@ -54,7 +55,7 @@ namespace Steeltoe.Management.Endpoint.Discovery
                 {
                     links._links.Add("self", new Link(baseUrl));
                 }
-                else 
+                else
                 {
                     if (!string.IsNullOrEmpty(opt.Id) && !links._links.ContainsKey(opt.Id))
                     {
@@ -70,4 +71,5 @@ namespace Steeltoe.Management.Endpoint.Discovery
             return links;
         }
     }
+#pragma warning restore CS0612 // Type or member is obsolete
 }

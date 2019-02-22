@@ -18,10 +18,9 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common.Diagnostics;
 using Steeltoe.Management.Endpoint.Diagnostics;
+using Steeltoe.Management.Endpoint.Discovery;
 using System;
 using System.Linq;
-using Steeltoe.Management.Endpoint.Discovery;
-using Steeltoe.Management.Endpoint.Metrics;
 
 namespace Steeltoe.Management.Endpoint.Trace
 {
@@ -32,6 +31,7 @@ namespace Steeltoe.Management.Endpoint.Trace
         /// </summary>
         /// <param name="services">Service collection to add trace to</param>
         /// <param name="config">Application configuration (this actuator looks for settings starting with management:endpoints:trace)</param>
+        [Obsolete]
         public static void AddTraceActuator(this IServiceCollection services, IConfiguration config)
         {
             if (services == null)
@@ -56,6 +56,7 @@ namespace Steeltoe.Management.Endpoint.Trace
             services.RegisterEndpointOptions(options);
             services.TryAddSingleton<TraceEndpoint>();
         }
+
         /// <summary>
         /// Adds components of the Trace actuator to Microsoft-DI
         /// </summary>
@@ -77,7 +78,6 @@ namespace Steeltoe.Management.Endpoint.Trace
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, DiagnosticServices>());
 
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, HttpTraceDiagnosticObserver>());
-           // services.TryAddSingleton<IHttpTraceRepository>((p) => p.GetServices<IDiagnosticObserver>().OfType<HttpTraceDiagnosticObserver>().Single());
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
 
             var options = new HttpTraceEndpointOptions(config);

@@ -49,7 +49,6 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
             container.RegisterType<DiagnosticsManager>().As<IDiagnosticsManager>().IfNotRegistered(typeof(IDiagnosticsManager)).SingleInstance();
             container.RegisterType<CLRRuntimeSource>().As<IPolledDiagnosticSource>().SingleInstance();
 
-            //container.RegisterInstance(new MetricsOptions(config)).As<IMetricsOptions>().SingleInstance();
             container.Register(c =>
             {
                 var options = new MetricsEndpointOptions(config);

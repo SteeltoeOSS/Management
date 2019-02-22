@@ -17,7 +17,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
 using System.Linq;
-using Steeltoe.Management.Endpoint.CloudFoundry;
 
 namespace Steeltoe.Management.Endpoint.Discovery
 {
@@ -34,8 +33,6 @@ namespace Steeltoe.Management.Endpoint.Discovery
             {
                 throw new ArgumentNullException(nameof(config));
             }
-
-            //services.TryAddSingleton<ICloudFoundryOptions>(new CloudFoundryOptions(config));
 
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
 

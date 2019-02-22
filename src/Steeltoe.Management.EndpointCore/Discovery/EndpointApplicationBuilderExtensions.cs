@@ -32,6 +32,5 @@ namespace Steeltoe.Management.Endpoint.Discovery
 
             builder.UseMiddleware<ActuatorDiscoveryEndpointMiddleware>();
         }
-
     }
 }

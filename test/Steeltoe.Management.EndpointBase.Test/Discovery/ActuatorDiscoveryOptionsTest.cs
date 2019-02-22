@@ -44,7 +44,7 @@ namespace Steeltoe.Management.Endpoint.Discovery.Test
             var appsettings = new Dictionary<string, string>()
             {
                 ["management:endpoints:enabled"] = "false",
-                
+
                 ["management:endpoints:path"] = "/cloudfoundryapplication",
                 ["management:endpoints:info:enabled"] = "true",
                 ["management:endpoints:info:path"] = "infopath",

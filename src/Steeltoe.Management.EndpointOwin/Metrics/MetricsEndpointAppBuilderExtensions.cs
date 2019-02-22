@@ -102,6 +102,5 @@ namespace Steeltoe.Management.EndpointOwin.Metrics
             var logger = loggerFactory?.CreateLogger<MetricsEndpointOwinMiddleware>();
             return builder.Use<MetricsEndpointOwinMiddleware>(endpoint, mgmtOptions, logger);
         }
-
     }
 }

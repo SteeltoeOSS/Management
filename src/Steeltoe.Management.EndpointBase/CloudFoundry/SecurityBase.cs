@@ -89,10 +89,12 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             request.Headers.Authorization = auth;
 
             // If certificate validation is disabled, inject a callback to handle properly
+#pragma warning disable CS0618 // Type or member is obsolete
             HttpClientHelper.ConfigureCertificateValidatation(
                 _options.ValidateCertificates,
                 out SecurityProtocolType prevProtocols,
                 out RemoteCertificateValidationCallback prevValidator);
+#pragma warning restore CS0618 // Type or member is obsolete
             try
             {
                 _logger.LogDebug("GetPermissions({0}, {1})", checkPermissionsUri, token);

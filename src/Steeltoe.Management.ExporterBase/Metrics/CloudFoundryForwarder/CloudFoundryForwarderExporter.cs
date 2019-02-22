@@ -110,10 +110,12 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
 
         protected internal async void DoPost(HttpClient client, HttpRequestMessage request)
         {
+#pragma warning disable CS0618 // Type or member is obsolete
             HttpClientHelper.ConfigureCertificateValidatation(
                 options.ValidateCertificates,
                 out SecurityProtocolType prevProtocols,
                 out RemoteCertificateValidationCallback prevValidator);
+#pragma warning restore CS0618 // Type or member is obsolete
             try
             {
                 using (HttpResponseMessage response = await client.SendAsync(request))

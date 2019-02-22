@@ -55,6 +55,5 @@ namespace Steeltoe.Management.EndpointOwin.Discovery
             var logger = loggerFactory?.CreateLogger<ActuatorDiscoveryEndpointOwinMiddleware>();
             return builder.Use<ActuatorDiscoveryEndpointOwinMiddleware>(endpoint, mgmtOptions, logger);
         }
-
     }
 }

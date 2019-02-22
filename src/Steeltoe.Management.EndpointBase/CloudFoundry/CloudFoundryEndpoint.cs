@@ -20,6 +20,7 @@ using System.Linq;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry
 {
+#pragma warning disable CS0612 // Type or member is obsolete
     public class CloudFoundryEndpoint : AbstractEndpoint<Links, string>
     {
         private ILogger<CloudFoundryEndpoint> _logger;
@@ -105,3 +106,4 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
         }
     }
 }
+#pragma warning restore CS0612 // Type or member is obsolete

@@ -230,10 +230,12 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin
 
         private async Task DoPost(HttpClient client, HttpRequestMessage request)
         {
+#pragma warning disable CS0618 // Type or member is obsolete
             HttpClientHelper.ConfigureCertificateValidatation(
                 _options.ValidateCertificates,
                 out SecurityProtocolType prevProtocols,
                 out RemoteCertificateValidationCallback prevValidator);
+#pragma warning restore CS0618 // Type or member is obsolete
             try
             {
                 using (HttpResponseMessage response = await client.SendAsync(request))

@@ -15,10 +15,8 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using System;
-using System.Linq;
 using Steeltoe.Management.Endpoint.Discovery;
-using Steeltoe.Management.Endpoint.Health;
+using System;
 
 namespace Steeltoe.Management.Endpoint.HeapDump
 {

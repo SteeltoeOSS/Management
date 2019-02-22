@@ -23,7 +23,9 @@ using System.Web;
 
 namespace Steeltoe.Management.Endpoint.Handler
 {
+#pragma warning disable CS0612 // Type or member is obsolete
     public class ActuatorDiscoveryHandler : ActuatorHandler<ActuatorDiscoveryEndpoint, Links, string>
+#pragma warning restore CS0612 // Type or member is obsolete
     {
         public ActuatorDiscoveryHandler(ActuatorDiscoveryEndpoint endpoint, IEnumerable<ISecurityService> securityServices, IEnumerable<IManagementOptions> mgmtOptions, ILogger<ActuatorDiscoveryHandler> logger = null)
            : base(endpoint, securityServices, mgmtOptions?.OfType<ActuatorManagementOptions>(), null, true, logger)

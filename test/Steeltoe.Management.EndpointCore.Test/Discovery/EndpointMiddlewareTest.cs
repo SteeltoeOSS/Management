@@ -73,7 +73,9 @@ namespace Steeltoe.Management.Endpoint.Discovery.Test
                 Assert.Equal(HttpStatusCode.OK, result.StatusCode);
                 var json = await result.Content.ReadAsStringAsync();
                 Assert.NotNull(json);
+#pragma warning disable CS0612 // Type or member is obsolete
                 var links = JsonConvert.DeserializeObject<Links>(json);
+#pragma warning restore CS0612 // Type or member is obsolete
                 Assert.NotNull(links);
                 Assert.True(links._links.ContainsKey("self"));
                 Assert.Equal("http://localhost/actuator", links._links["self"].href);
@@ -121,8 +123,10 @@ namespace Steeltoe.Management.Endpoint.Discovery.Test
 
         private HttpContext CreateRequest(string method, string path)
         {
-            HttpContext context = new DefaultHttpContext();
-            context.TraceIdentifier = Guid.NewGuid().ToString();
+            HttpContext context = new DefaultHttpContext
+            {
+                TraceIdentifier = Guid.NewGuid().ToString()
+            };
             context.Response.Body = new MemoryStream();
             context.Request.Method = method;
             context.Request.Path = new PathString(path);

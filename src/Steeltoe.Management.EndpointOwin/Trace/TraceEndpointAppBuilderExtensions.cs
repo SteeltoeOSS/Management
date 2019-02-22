@@ -99,6 +99,5 @@ namespace Steeltoe.Management.EndpointOwin.Trace
             var logger = loggerFactory?.CreateLogger<EndpointOwinMiddleware<HttpTraceEndpoint, HttpTraceResult>>();
             return builder.Use<EndpointOwinMiddleware<HttpTraceResult>>(endpoint, mgmtOptions, new List<HttpMethod> { HttpMethod.Get }, true, logger);
         }
-
     }
 }

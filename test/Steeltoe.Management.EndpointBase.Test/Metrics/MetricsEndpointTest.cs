@@ -29,13 +29,13 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         public void Constructor_ThrowsIfNulls()
         {
             Assert.Throws<ArgumentNullException>(() => new MetricsEndpoint(null, null, null));
-            Assert.Throws<ArgumentNullException>(() => new MetricsEndpoint(new MetricsOptions(), null, null));
+            Assert.Throws<ArgumentNullException>(() => new MetricsEndpoint(new MetricsEndpointOptions(), null, null));
         }
 
         [Fact]
         public void Invoke_WithNullMetricsRequest_ReturnsExpected()
         {
-            var opts = new MetricsOptions();
+            var opts = new MetricsEndpointOptions();
             var stats = new OpenCensusStats();
             SetupStats(stats);
 
@@ -49,7 +49,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             Assert.Contains("jvm.memory.used", resp.Names);
             Assert.Equal(2, resp.Names.Count);
 
-            opts = new MetricsOptions();
+            opts = new MetricsEndpointOptions();
             stats = new OpenCensusStats();
 
             ep = new MetricsEndpoint(opts, stats);
@@ -64,7 +64,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         [Fact]
         public void Invoke_WithMetricsRequest_ReturnsExpected()
         {
-            var opts = new MetricsOptions();
+            var opts = new MetricsEndpointOptions();
             var stats = new OpenCensusStats();
             var tagsComponent = new TagsComponent();
             var tagger = tagsComponent.Tagger;
@@ -129,7 +129,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
                 TagKey.Create("aaa")
             };
 
-            var opts = new MetricsOptions();
+            var opts = new MetricsEndpointOptions();
             var stats = new OpenCensusStats();
             var ep = new MetricsEndpoint(opts, stats);
             var result = ep.GetTagValuesInColumnOrder(columns, tags);
@@ -171,7 +171,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         [Fact]
         public void GetStatistic_ReturnsExpected()
         {
-            var opts = new MetricsOptions();
+            var opts = new MetricsEndpointOptions();
             var stats = new OpenCensusStats();
             var ep = new MetricsEndpoint(opts, stats);
 
@@ -203,7 +203,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         [Fact]
         public void GetMetricSamples_ReturnsExpected()
         {
-            var opts = new MetricsOptions();
+            var opts = new MetricsEndpointOptions();
             var stats = new OpenCensusStats();
             var ep = new MetricsEndpoint(opts, stats);
 
@@ -283,7 +283,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         [Fact]
         public void GetAvailableTags_ReturnsExpected()
         {
-            var opts = new MetricsOptions();
+            var opts = new MetricsEndpointOptions();
             var stats = new OpenCensusStats();
             var ep = new MetricsEndpoint(opts, stats);
 
@@ -349,7 +349,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         [Fact]
         public void GetMetricMeasurements_ReturnsExpected()
         {
-            var opts = new MetricsOptions();
+            var opts = new MetricsEndpointOptions();
             var stats = new OpenCensusStats();
             var tagsComponent = new TagsComponent();
             var tagger = tagsComponent.Tagger;
@@ -502,7 +502,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         [Fact]
         public void GetMetric_ReturnsExpected()
         {
-            var opts = new MetricsOptions();
+            var opts = new MetricsEndpointOptions();
             var stats = new OpenCensusStats();
             var tagsComponent = new TagsComponent();
             var tagger = tagsComponent.Tagger;

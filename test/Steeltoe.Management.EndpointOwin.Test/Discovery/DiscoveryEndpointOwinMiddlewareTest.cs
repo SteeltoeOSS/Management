@@ -30,9 +30,9 @@ namespace Steeltoe.Management.EndpointOwin.Discovery.Test
         [Fact]
         public async void DiscoveryEndpointInvoke_ReturnsExpected()
         {
-            var mgmtOptions = new List<IManagementOptions> { new ActuatorManagementOptions() };
             // arrange
-            var middle = new ActuatorDiscoveryEndpointOwinMiddleware( null, new TestActuatorDiscoveryEndpoint(new ActuatorDiscoveryEndpointOptions(), mgmtOptions), mgmtOptions);
+            var mgmtOptions = new List<IManagementOptions> { new ActuatorManagementOptions() };
+            var middle = new ActuatorDiscoveryEndpointOwinMiddleware(null, new TestActuatorDiscoveryEndpoint(new ActuatorDiscoveryEndpointOptions(), mgmtOptions), mgmtOptions);
 
             var context = OwinTestHelpers.CreateRequest("GET", "/actuator");
 
@@ -54,7 +54,9 @@ namespace Steeltoe.Management.EndpointOwin.Discovery.Test
                 Assert.Equal(HttpStatusCode.OK, result.StatusCode);
                 var json = await result.Content.ReadAsStringAsync();
                 Assert.NotNull(json);
+#pragma warning disable CS0612 // Type or member is obsolete
                 var links = JsonConvert.DeserializeObject<Links>(json);
+#pragma warning restore CS0612 // Type or member is obsolete
                 Assert.NotNull(links);
                 Assert.True(links._links.ContainsKey("self"), "Self is one of the available links");
                 Assert.Equal("http://localhost/cloudfoundryapplication", links._links["self"].href);

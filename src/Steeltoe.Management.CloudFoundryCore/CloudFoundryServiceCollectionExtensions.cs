@@ -58,8 +58,11 @@ namespace Steeltoe.Management.CloudFoundry
             services.AddInfoActuator(config);
             services.AddHealthActuator(config);
             services.AddLoggersActuator(config);
+#pragma warning disable CS0612 // Type or member is obsolete
             services.AddTraceActuator(config);
-            //services.AddHttpTraceActuator(config); TODO: Switch to this in 3.0
+#pragma warning restore CS0612 // Type or member is obsolete
+
+            // services.AddHttpTraceActuator(config); TODO: Switch to this in 3.0
             services.AddMappingsActuator(config);
         }
     }

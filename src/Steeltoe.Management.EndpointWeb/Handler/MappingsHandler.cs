@@ -34,14 +34,12 @@ namespace Steeltoe.Management.Endpoint.Handler
     {
         protected IMappingsOptions _options;
         protected IApiExplorer _apiExplorer;
-        private readonly IEnumerable<IManagementOptions> _mgmtOptions;
 
         public MappingsHandler(IMappingsOptions options, IEnumerable<ISecurityService> securityServices, IApiExplorer apiExplorer, IEnumerable<IManagementOptions> mgmtOptions, ILogger<MappingsHandler> logger = null)
            : base(securityServices, mgmtOptions, null, true, logger)
         {
             _options = options;
             _apiExplorer = apiExplorer;
-            _mgmtOptions = mgmtOptions;
         }
 
         [Obsolete]
@@ -57,17 +55,6 @@ namespace Steeltoe.Management.Endpoint.Handler
             _logger?.LogTrace("RequestVerbAndPathMatch {httpMethod}/{requestPath}/{optionsPath} request", httpMethod, requestPath, _options.Path);
 
             return requestPath.Equals(_options.Path) && _allowedMethods.Any(m => m.Method.Equals(httpMethod));
-        }
-
-        protected bool PathMatch(string requestPath)
-        {
-            // TODO: Remove in 3.0
-            if(_mgmtOptions == null)
-            {
-                return requestPath.Equals(_options.Path);
-            }
-
-            return _mgmtOptions.Select(opt => $"{opt.Path}/{_options.Id}").Any(p => p.Equals(requestPath));
         }
 
         public async override Task<bool> IsAccessAllowed(HttpContextBase context)
@@ -135,9 +122,10 @@ namespace Steeltoe.Management.Endpoint.Handler
 
         protected internal IRouteDetails GetRouteDetails(ApiDescription desc)
         {
-            var routeDetails = new AspNetRouteDetails();
-
-            routeDetails.HttpMethods = GetHttpMethods(desc);
+            var routeDetails = new AspNetRouteDetails
+            {
+                HttpMethods = GetHttpMethods(desc)
+            };
             if (desc.Route?.RouteTemplate != null)
             {
                 routeDetails.RouteTemplate = "/" + desc.Route?.RouteTemplate;
@@ -183,8 +171,7 @@ namespace Steeltoe.Management.Endpoint.Handler
             // Since we already processed WebAPI routes, we try to ignore those as we process each route
             foreach (var router in routes)
             {
-                var route = router as Route;
-                if (route != null)
+                if (router is Route route)
                 {
                     var details = GetRouteDetails(route);
 
@@ -252,6 +239,17 @@ namespace Steeltoe.Management.Endpoint.Handler
             }
 
             return routeDetails;
+        }
+
+        protected bool PathMatch(string requestPath)
+        {
+            // TODO: Remove in 3.0
+            if (_mgmtOptions == null)
+            {
+                return requestPath.Equals(_options.Path);
+            }
+
+            return _mgmtOptions.Select(opt => $"{opt.Path}/{_options.Id}").Any(p => p.Equals(requestPath));
         }
 
         private IList<string> GetHttpMethods(ApiDescription desc)

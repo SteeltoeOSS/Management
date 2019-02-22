@@ -23,7 +23,9 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.Discovery
 {
+#pragma warning disable CS0612 // Type or member is obsolete
     public class ActuatorDiscoveryEndpointMiddleware : EndpointMiddleware<Links, string>
+#pragma warning restore CS0612 // Type or member is obsolete
     {
         private RequestDelegate _next;
 

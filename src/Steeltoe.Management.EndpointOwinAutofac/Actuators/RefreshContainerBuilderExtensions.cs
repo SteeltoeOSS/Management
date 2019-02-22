@@ -42,7 +42,6 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
                 throw new ArgumentNullException(nameof(config));
             }
 
-            //container.RegisterInstance(new RefreshOptions(config)).As<IRefreshOptions>();
             container.Register(c =>
             {
                 var options = new RefreshEndpointOptions(config);

@@ -26,7 +26,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
         [Fact]
         public void Constructor_RegistersExpectedViews()
         {
-            var options = new MetricsOptions();
+            var options = new MetricsEndpointOptions();
             var stats = new OpenCensusStats();
             var tags = new OpenCensusTags();
             var observer = new CLRRuntimeObserver(options, stats, tags, null);
@@ -40,7 +40,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
         [Fact]
         public void ProcessEvent_IgnoresNulls()
         {
-            var options = new MetricsOptions();
+            var options = new MetricsEndpointOptions();
             var stats = new OpenCensusStats();
             var tags = new OpenCensusTags();
             var observer = new CLRRuntimeObserver(options, stats, tags, null);
@@ -53,7 +53,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
         [Fact]
         public void HandleHeapEvent_RecordsValues()
         {
-            var options = new MetricsOptions();
+            var options = new MetricsEndpointOptions();
             var stats = new OpenCensusStats();
             var tags = new OpenCensusTags();
             var observer = new CLRRuntimeObserver(options, stats, tags, null);
@@ -106,7 +106,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
         [Fact]
         public void HandleThreadsEvent_RecordsValues()
         {
-            var options = new MetricsOptions();
+            var options = new MetricsEndpointOptions();
             var stats = new OpenCensusStats();
             var tags = new OpenCensusTags();
             var observer = new CLRRuntimeObserver(options, stats, tags, null);

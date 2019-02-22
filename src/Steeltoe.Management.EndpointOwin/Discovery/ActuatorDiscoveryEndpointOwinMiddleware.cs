@@ -24,7 +24,9 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Management.EndpointOwin.Discovery
 {
+#pragma warning disable CS0612 // Type or member is obsolete
     public class ActuatorDiscoveryEndpointOwinMiddleware : EndpointOwinMiddleware<Links, string>
+#pragma warning restore CS0612 // Type or member is obsolete
     {
         public ActuatorDiscoveryEndpointOwinMiddleware(OwinMiddleware next, ActuatorDiscoveryEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions = null, ILogger<ActuatorDiscoveryEndpointOwinMiddleware> logger = null)
             : base(next, endpoint, mgmtOptions?.OfType<ActuatorManagementOptions>(), logger: logger)
@@ -73,9 +75,7 @@ namespace Steeltoe.Management.EndpointOwin.Discovery
                        }
                        var fullPath = contextPath + _endpoint.Path;
                        return fullPath;
-                   })
-               );
-
+                   }));
 
             var pathMatch = endpointPaths.Any(p => context.Request.Path.Value.Equals(p));
             return methodMatch && pathMatch;
