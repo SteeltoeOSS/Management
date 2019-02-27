@@ -25,7 +25,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
 {
 #pragma warning disable CS0612 // Type or member is obsolete
                               /// <summary>
-                              /// CloudFoundry endpoint provides hypermedia: a “discovery page” is added with links to all the endpoints that are enabled.
+                              /// CloudFoundry endpoint provides hypermedia: a page is added with links to all the endpoints that are enabled.
                               /// When deployed to CloudFoundry this endpoint is used for apps manager integration when <see cref="CloudFoundrySecurityMiddleware"/> is added.
                               /// </summary>
     public class CloudFoundryEndpointMiddleware : EndpointMiddleware<Links, string>
@@ -51,6 +51,8 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
 
         public async Task Invoke(HttpContext context)
         {
+            _logger?.LogDebug("Invoke({0} {1})", context.Request.Method, context.Request.Path.Value);
+
             if (RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
             {
                 await HandleCloudFoundryRequestAsync(context);

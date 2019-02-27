@@ -28,7 +28,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
         {
             var opts = new ThreadDumpEndpointOptions();
             Assert.Null(opts.Enabled);
-            Assert.Equal("threaddump", opts.Id);
+            Assert.Equal("dump", opts.Id);
         }
 
         [Fact]
@@ -63,9 +63,8 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
             Assert.True(cloudOpts.ValidateCertificates);
 
             Assert.True(opts.Enabled);
-            Assert.Equal("threaddump", opts.Id);
-            Assert.Equal("threaddump", opts.Path);
-            Assert.Contains("dump", ep.OtherPaths);
+            Assert.Equal("dump", opts.Id);
+            Assert.Equal("dump", opts.Path);
         }
     }
 }

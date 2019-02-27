@@ -87,18 +87,18 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             var request = new HttpRequestMessage(HttpMethod.Get, checkPermissionsUri);
             AuthenticationHeaderValue auth = new AuthenticationHeaderValue("bearer", token);
             request.Headers.Authorization = auth;
+            SecurityProtocolType prevProtocols = default(SecurityProtocolType);
+            RemoteCertificateValidationCallback prevValidator = null;
 
-            // If certificate validation is disabled, inject a callback to handle properly
-#pragma warning disable CS0618 // Type or member is obsolete
-            HttpClientHelper.ConfigureCertificateValidatation(
-                _options.ValidateCertificates,
-                out SecurityProtocolType prevProtocols,
-                out RemoteCertificateValidationCallback prevValidator);
-#pragma warning restore CS0618 // Type or member is obsolete
             try
             {
                 _logger.LogDebug("GetPermissions({0}, {1})", checkPermissionsUri, token);
 
+                // If certificate validation is disabled, inject a callback to handle properly
+                HttpClientHelper.ConfigureCertificateValidation(
+                    _options.ValidateCertificates,
+                    out prevProtocols,
+                    out prevValidator);
                 using (var client = HttpClientHelper.GetHttpClient(_options.ValidateCertificates, DEFAULT_GETPERMISSIONS_TIMEOUT))
                 {
                     using (HttpResponseMessage response = await client.SendAsync(request))

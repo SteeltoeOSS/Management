@@ -15,7 +15,6 @@
 using Autofac;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint;
-using Steeltoe.Management.Endpoint.Discovery;
 using Steeltoe.Management.Endpoint.Mappings;
 using Steeltoe.Management.EndpointOwin.Mappings;
 using System;

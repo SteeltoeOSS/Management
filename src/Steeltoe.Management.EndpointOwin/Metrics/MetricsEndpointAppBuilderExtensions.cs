@@ -18,13 +18,9 @@ using OpenCensus.Stats;
 using OpenCensus.Tags;
 using Owin;
 using Steeltoe.Common.Diagnostics;
-using Steeltoe.Management.Endpoint;
-using Steeltoe.Management.Endpoint.CloudFoundry;
-using Steeltoe.Management.Endpoint.Discovery;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Metrics.Observer;
 using System;
-using System.Collections.Generic;
 
 namespace Steeltoe.Management.EndpointOwin.Metrics
 {

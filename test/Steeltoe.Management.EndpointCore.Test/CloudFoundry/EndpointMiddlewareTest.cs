@@ -17,7 +17,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
-using Steeltoe.Management.Endpoint.Discovery;
+using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.Collections.Generic;
@@ -121,12 +121,12 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         }
 
         [Fact]
-        public void DiscoveryEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
+        public void HypermediaEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
         {
-            var opts = new ActuatorDiscoveryEndpointOptions();
+            var opts = new HypermediaEndpointOptions();
             var mgmtOptions = TestHelpers.GetManagementOptions(opts);
-            var ep = new ActuatorDiscoveryEndpoint(opts, mgmtOptions);
-            var middle = new ActuatorDiscoveryEndpointMiddleware(null, ep, mgmtOptions);
+            var ep = new ActuatorEndpoint(opts, mgmtOptions);
+            var middle = new ActuatorHypermediaEndpointMiddleware(null, ep, mgmtOptions);
 
             Assert.True(middle.RequestVerbAndPathMatch("GET", "/actuator"));
             Assert.False(middle.RequestVerbAndPathMatch("PUT", "/actuator"));

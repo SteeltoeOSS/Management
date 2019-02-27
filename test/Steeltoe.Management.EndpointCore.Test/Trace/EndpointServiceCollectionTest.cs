@@ -33,7 +33,6 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             IConfigurationRoot config = null;
 
             // Act and Assert
-#pragma warning disable CS0612 // Type or member is obsolete
             var ex = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddTraceActuator(services, config));
             Assert.Contains(nameof(services), ex.Message);
             var ex2 = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddTraceActuator(services2, config));
@@ -57,7 +56,6 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             services.AddSingleton(listener);
 
             services.AddTraceActuator(config);
-#pragma warning restore CS0612 // Type or member is obsolete
 
             var serviceProvider = services.BuildServiceProvider();
             var options = serviceProvider.GetService<ITraceOptions>();

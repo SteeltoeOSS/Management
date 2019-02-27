@@ -26,9 +26,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         {
             IApplicationBuilder builder = null;
 
-#pragma warning disable CS0612 // Type or member is obsolete
             Assert.Throws<ArgumentNullException>(testCode: () => builder.UseTraceActuator());
-#pragma warning restore CS0612 // Type or member is obsolete
         }
     }
 }

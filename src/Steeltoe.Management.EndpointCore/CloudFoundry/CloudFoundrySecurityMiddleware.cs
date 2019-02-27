@@ -54,7 +54,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
 
         public async Task Invoke(HttpContext context)
         {
-            _logger.LogDebug("Invoke({0}) mgmt {1}", context.Request.Path.Value, _mgmtOptions.Path);
+            _logger.LogDebug("Invoke({0}) contextPath: {1}", context.Request.Path.Value, _mgmtOptions.Path);
 
 #pragma warning disable CS0612 // Type or member is obsolete
             bool isEndpointEnabled = _mgmtOptions == null ? _options.IsEnabled : _options.IsEnabled(_mgmtOptions);

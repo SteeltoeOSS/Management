@@ -16,12 +16,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Owin;
 using Steeltoe.Extensions.Logging;
-using Steeltoe.Management.Endpoint;
-using Steeltoe.Management.Endpoint.CloudFoundry;
-using Steeltoe.Management.Endpoint.Discovery;
 using Steeltoe.Management.Endpoint.Loggers;
 using System;
-using System.Collections.Generic;
 
 namespace Steeltoe.Management.EndpointOwin.Loggers
 {

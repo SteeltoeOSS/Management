@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Steeltoe.Management.Endpoint.CloudFoundry;
-using Steeltoe.Management.Endpoint.Discovery;
+using Steeltoe.Management.Endpoint.Hypermedia;
 using System.Collections.Generic;
 using System.IO;
 
