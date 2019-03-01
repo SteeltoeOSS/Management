@@ -26,7 +26,6 @@ namespace Steeltoe.Management.EndpointOwinAutofac
 {
     public static class ContainerBuilderExtensions
     {
-
         /// <summary>
         /// Add all cloudfoundry actuator OWIN Middlewares, configure CORS and Cloud Foundry request security
         /// </summary>

@@ -16,6 +16,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using OpenCensus.Stats;
 using Steeltoe.Common.Http;
+using Steeltoe.Management.Census.Stats;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -110,12 +111,10 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
 
         protected internal async void DoPost(HttpClient client, HttpRequestMessage request)
         {
-#pragma warning disable CS0618 // Type or member is obsolete
-            HttpClientHelper.ConfigureCertificateValidatation(
+            HttpClientHelper.ConfigureCertificateValidation(
                 options.ValidateCertificates,
                 out SecurityProtocolType prevProtocols,
                 out RemoteCertificateValidationCallback prevValidator);
-#pragma warning restore CS0618 // Type or member is obsolete
             try
             {
                 using (HttpResponseMessage response = await client.SendAsync(request))
