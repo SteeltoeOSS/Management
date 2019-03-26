@@ -9,7 +9,7 @@
     <AssemblyName>Steeltoe.Management.TracingCore.Test</AssemblyName>
     <PackageId>Steeltoe.Management.TracingCore.Test</PackageId>
     <PackageTags>Spring Cloud;Actuator;Management;Monitoring;Tracing</PackageTags>
-    <PackageProjectUrl>http://steeltoe.io</PackageProjectUrl>
+    <PackageProjectUrl>https://steeltoe.io</PackageProjectUrl>
     <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
   </PropertyGroup>
 

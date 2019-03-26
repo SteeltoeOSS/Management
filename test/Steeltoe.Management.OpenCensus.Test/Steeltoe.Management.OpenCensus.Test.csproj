@@ -8,7 +8,7 @@
     <AssemblyName>Steeltoe.Management.OpenCensus.Test</AssemblyName>
     <PackageId>Steeltoe.Management.OpenCensus.Test</PackageId>
     <PackageTags>OpenCensus;Tracing;Management;Monitoring</PackageTags>
-    <PackageProjectUrl>http://steeltoe.io</PackageProjectUrl>
+    <PackageProjectUrl>https://steeltoe.io</PackageProjectUrl>
     <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
     <RootNamespace>Steeltoe.Management.Census</RootNamespace>
   </PropertyGroup>
