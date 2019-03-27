@@ -10,7 +10,7 @@
     <AssemblyName>Steeltoe.Management.EndpointBase.Test</AssemblyName>
     <PackageId>Steeltoe.Management.EndpointBase.Test</PackageId>
     <PackageTags>Spring Cloud;Actuator;Management;Monitoring</PackageTags>
-    <PackageProjectUrl>http://steeltoe.io</PackageProjectUrl>
+    <PackageProjectUrl>https://steeltoe.io</PackageProjectUrl>
     <PackageLicenseUrl>https://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
   </PropertyGroup>
   

@@ -20,7 +20,7 @@ Depending on their level of support, the endpoints and samples have been tested 
 
 ## Usage
 
-For more information on how to use these components see the online [Steeltoe documentation](http://steeltoe.io/).
+For more information on how to use these components see the online [Steeltoe documentation](https://steeltoe.io/).
 
 ## Nuget Feeds
 
