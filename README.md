@@ -18,7 +18,7 @@ Where supported the managment endpoints are built and unit tested on Windows, Li
 Depending on their level of support, the endpoints and samples have been tested  on .NET Core 1.1, .NET 4.6.x, and on ASP.NET Core 1.1.0.
 
 # Usage
-For more information on how to use these components see the online [Steeltoe documentation](http://steeltoe.io/).
+For more information on how to use these components see the online [Steeltoe documentation](https://steeltoe.io/).
 
 # Nuget Feeds
 All new endpoint development is done on the dev branch. More stable versions of the endpoints can be found on the master branch. The latest prebuilt packages from each branch can be found on one of two MyGet feeds. Released version can be found on nuget.org.
