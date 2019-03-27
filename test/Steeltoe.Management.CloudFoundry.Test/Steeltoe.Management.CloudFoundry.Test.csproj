@@ -10,7 +10,7 @@
     <PackageId>Steeltoe.Management.CloudFoundry.Test</PackageId>
     <PackageTags>Spring Cloud;Actuator;Management;Monitoring;CloudFoundry</PackageTags>
     <PackageProjectUrl>https://steeltoe.io</PackageProjectUrl>
-    <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
+    <PackageLicenseUrl>https://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
   </PropertyGroup>
   
   
