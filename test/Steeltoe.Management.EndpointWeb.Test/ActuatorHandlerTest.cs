@@ -20,7 +20,7 @@ namespace Steeltoe.Management.EndpointWeb.Test
 {
     public class ActuatorHandlerTest
     {
-        private Settings _defaultSettings = DefaultTestSettingsConfig.DefaultSettings;
+        private readonly Settings _defaultSettings = DefaultTestSettingsConfig.DefaultSettings;
 
         [Fact]
         public async void CloudFoundryCorsHandler_ReturnsExpected()

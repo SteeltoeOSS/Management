@@ -15,6 +15,8 @@
 using OpenCensus.Stats;
 using OpenCensus.Stats.Aggregations;
 using OpenCensus.Tags;
+using Steeltoe.Management.Census.Stats;
+using Steeltoe.Management.Census.Tags;
 using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.Diagnostics;
@@ -31,7 +33,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
         [Fact]
         public void Constructor_RegistersExpectedViews()
         {
-            var options = new MetricsOptions();
+            var options = new MetricsEndpointOptions();
             var stats = new OpenCensusStats();
             var tags = new OpenCensusTags();
             var observer = new HttpClientDesktopObserver(options, stats, tags, null);
@@ -43,7 +45,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
         [Fact]
         public void ShouldIgnore_ReturnsExpected()
         {
-            var options = new MetricsOptions();
+            var options = new MetricsEndpointOptions();
             var stats = new OpenCensusStats();
             var tags = new OpenCensusTags();
             var obs = new HttpClientDesktopObserver(options, stats, tags, null);
@@ -58,7 +60,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
         [Fact]
         public void ProcessEvent_IgnoresNulls()
         {
-            var options = new MetricsOptions();
+            var options = new MetricsEndpointOptions();
             var stats = new OpenCensusStats();
             var tags = new OpenCensusTags();
             var observer = new HttpClientDesktopObserver(options, stats, tags, null);
@@ -76,7 +78,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
         [Fact]
         public void GetTagContext_ReturnsExpected()
         {
-            var options = new MetricsOptions();
+            var options = new MetricsEndpointOptions();
             var stats = new OpenCensusStats();
             var tags = new OpenCensusTags();
             var observer = new HttpClientDesktopObserver(options, stats, tags, null);
@@ -93,7 +95,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
         [Fact]
         public void HandleStopEvent_RecordsStats()
         {
-            var options = new MetricsOptions();
+            var options = new MetricsEndpointOptions();
             var stats = new OpenCensusStats();
             var tags = new OpenCensusTags();
             var observer = new HttpClientDesktopObserver(options, stats, tags, null);
@@ -109,12 +111,12 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
             observer.HandleStopEvent(act, req, HttpStatusCode.OK);
 
             var reqData = stats.ViewManager.GetView(ViewName.Create("http.desktop.client.request.time"));
-            var aggData1 = reqData.SumWithTags() as IDistributionData;
+            var aggData1 = MetricsHelpers.SumWithTags(reqData) as IDistributionData;
             Assert.InRange(aggData1.Mean, 990.0, 1025.0);
             Assert.InRange(aggData1.Max, 990.0, 1025.0);
 
             reqData = stats.ViewManager.GetView(ViewName.Create("http.desktop.client.request.count"));
-            var aggData2 = reqData.SumWithTags() as ISumDataLong;
+            var aggData2 = MetricsHelpers.SumWithTags(reqData) as ISumDataLong;
             Assert.Equal(2, aggData2.Sum);
 
             act.Stop();

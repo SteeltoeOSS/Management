@@ -13,6 +13,9 @@
     <PackageIconUrl>https://steeltoe.io/images/transparent.png</PackageIconUrl>
     <PackageProjectUrl>https://steeltoe.io</PackageProjectUrl>
     <PackageLicenseUrl>https://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
@@ -21,8 +24,17 @@
   <PropertyGroup>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Steeltoe.Management.TracingBase.xml</DocumentationFile>
   </PropertyGroup>
+  
+  <ItemGroup Condition="'$(CI_BUILD)' == ''">
+    <ProjectReference Include="..\Steeltoe.Management.OpenCensusBase\Steeltoe.Management.OpenCensusBase.csproj" />
+  </ItemGroup>
 
+  <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
+    <PackageReference Include="Steeltoe.Management.OpenCensusBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
+  </ItemGroup>
+  
   <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="$(SourceLinkGitHubVersion)" PrivateAssets="All"/>
     <PackageReference Include="OpenCensus" Version="$(OpenCensusVersion)" />
     <PackageReference Include="Steeltoe.Extensions.Configuration.CloudFoundryBase" Version="$(SteeltoeConfigVersion)" />
     <PackageReference Include="Steeltoe.Common" Version="$(SteeltoeCommonVersion)" />

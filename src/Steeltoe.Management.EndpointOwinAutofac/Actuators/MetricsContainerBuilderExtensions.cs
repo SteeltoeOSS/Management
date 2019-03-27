@@ -17,8 +17,9 @@ using Microsoft.Extensions.Configuration;
 using OpenCensus.Stats;
 using OpenCensus.Tags;
 using Steeltoe.Common.Diagnostics;
+using Steeltoe.Management.Census.Stats;
+using Steeltoe.Management.Census.Tags;
 using Steeltoe.Management.Endpoint;
-using Steeltoe.Management.Endpoint.Discovery;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Metrics.Observer;
 using Steeltoe.Management.EndpointOwin.Metrics;
@@ -49,7 +50,6 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators
             container.RegisterType<DiagnosticsManager>().As<IDiagnosticsManager>().IfNotRegistered(typeof(IDiagnosticsManager)).SingleInstance();
             container.RegisterType<CLRRuntimeSource>().As<IPolledDiagnosticSource>().SingleInstance();
 
-            //container.RegisterInstance(new MetricsOptions(config)).As<IMetricsOptions>().SingleInstance();
             container.Register(c =>
             {
                 var options = new MetricsEndpointOptions(config);
