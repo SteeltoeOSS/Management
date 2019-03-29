@@ -17,6 +17,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Steeltoe.Management.Endpoint.Env
 {
@@ -63,7 +64,7 @@ namespace Steeltoe.Management.Endpoint.Env
             {
                 foreach (var provider in root.Providers)
                 {
-                    var psd = GetPropertySourceDescriptor(provider, root);
+                    var psd = GetPropertySourceDescriptor(provider);
                     if (psd != null)
                     {
                         results.Add(psd);
@@ -74,21 +75,42 @@ namespace Steeltoe.Management.Endpoint.Env
             return results;
         }
 
-        public virtual PropertySourceDescriptor GetPropertySourceDescriptor(IConfigurationProvider provider, IConfigurationRoot root)
+        public virtual PropertySourceDescriptor GetPropertySourceDescriptor(IConfigurationProvider provider)
         {
             Dictionary<string, PropertyValueDescriptor> properties = new Dictionary<string, PropertyValueDescriptor>();
             var sourceName = GetPropertySourceName(provider);
 
-            foreach (var kvp in root.AsEnumerable())
+            foreach (var key in GetFullKeyNames(provider, null, new HashSet<string>()))
             {
-                if (provider.TryGet(kvp.Key, out string provValue))
+                if (provider.TryGet(key, out var value))
                 {
-                    var sanitized = _sanitizer.Sanitize(kvp);
+                    var sanitized = _sanitizer.Sanitize(new KeyValuePair<string, string>(key, value));
                     properties.Add(sanitized.Key, new PropertyValueDescriptor(sanitized.Value));
                 }
             }
 
             return new PropertySourceDescriptor(sourceName, properties);
+        }
+
+        private HashSet<string> GetFullKeyNames(IConfigurationProvider provider, string rootKey, HashSet<string> initialKeys)
+        {
+            foreach (var key in provider.GetChildKeys(Enumerable.Empty<string>(), rootKey).Distinct(StringComparer.OrdinalIgnoreCase))
+            {
+                string surrogateKey = key;
+                if (rootKey != null)
+                {
+                    surrogateKey = rootKey + ":" + key;
+                }
+
+                GetFullKeyNames(provider, surrogateKey, initialKeys);
+
+                if (!initialKeys.Any(k => k.StartsWith(surrogateKey)))
+                {
+                    initialKeys.Add(surrogateKey);
+                }
+            }
+
+            return initialKeys;
         }
 
         public virtual string GetPropertySourceName(IConfigurationProvider provider)
