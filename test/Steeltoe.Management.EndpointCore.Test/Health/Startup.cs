@@ -48,6 +48,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
                     break;
                 default:
                     services.AddHealthActuator(Configuration);
+                   
                     break;
             }
         }

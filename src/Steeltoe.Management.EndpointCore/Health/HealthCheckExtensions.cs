@@ -24,7 +24,7 @@ using HealthCheckResult = Steeltoe.Common.HealthChecks.HealthCheckResult;
 using HealthStatus = Steeltoe.Common.HealthChecks.HealthStatus;
 using MicrosoftHealthStatus = Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus;
 
-namespace Steeltoe.Management.Endpoint.Health.Registation
+namespace Steeltoe.Management.Endpoint.Health
 {
     public static class HealthCheckExtensions
     {

@@ -80,17 +80,18 @@ namespace Steeltoe.Management.Endpoint.Health
             services.RegisterEndpointOptions(options);
             AddHealthContributors(services, contributors);
 
-            var registrationsAggregator = aggregator as IHealthRegistrationsAggregator;
-            if (registrationsAggregator != null)
-            {
-                services.TryAddSingleton<IHealthRegistrationsAggregator>(registrationsAggregator);
-            }
-            else
-            {
-                services.TryAddSingleton<IHealthAggregator>(aggregator);
-            }
+            //var registrationsAggregator = aggregator as IHealthRegistrationsAggregator;
+            //if (registrationsAggregator != null)
+            //{
+            //    services.TryAddSingleton<IHealthRegistrationsAggregator>(registrationsAggregator);
+            //}
+            //else
+            //{
+            //    services.TryAddSingleton<IHealthAggregator>(aggregator);
+            //}
+            services.TryAddSingleton<IHealthAggregator>(aggregator);
+            services.TryAddScoped<HealthEndpointCore>();
 
-            services.TryAddScoped<HealthEndpoint>();
         }
 
         /// <summary>
@@ -103,7 +104,7 @@ namespace Steeltoe.Management.Endpoint.Health
         /// </example>
         /// <param name="services">Service collection to add health checks to</param>
         /// <returns>IHealthChecksBuilder</returns>
-        public static IHealthChecksBuilder HealthChecksBuilder(this IServiceCollection services) => new HealthChecksBuilder(services);
+     //   public static IHealthChecksBuilder HealthChecksBuilder(this IServiceCollection services) => new HealthChecksBuilder(services);
 
         public static void AddHealthContributors(IServiceCollection services, params Type[] contributors)
         {

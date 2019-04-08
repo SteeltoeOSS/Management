@@ -15,7 +15,6 @@
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Management.Endpoint.Health.Registation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
