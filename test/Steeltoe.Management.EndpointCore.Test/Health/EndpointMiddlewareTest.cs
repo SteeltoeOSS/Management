@@ -160,6 +160,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
                 Assert.True(health.ContainsKey("diskSpace"));
             }
         }
+
         [Fact]
         public async void TestDI()
         {
@@ -174,7 +175,6 @@ namespace Steeltoe.Management.Endpoint.Health.Test
                 var foo2 = services.BuildServiceProvider().GetServices<HealthEndpointCore>();
                 var foo3 = services.BuildServiceProvider().GetServices<IEndpoint<HealthCheckResult, ISecurityContext>>();
             });
-
 
             using (var server = new TestServer(builder))
             {

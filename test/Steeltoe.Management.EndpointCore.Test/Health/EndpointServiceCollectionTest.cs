@@ -119,28 +119,6 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             Assert.Single(contribsList);
         }
 
-        [Fact]
-        public void AddHealthRegistrations_AddsExpected()
-        {
-            var appSettings = new Dictionary<string, string>()
-            {
-                ["management:endpoints:enabled"] = "false",
-                ["management:endpoints:path"] = "/cloudfoundryapplication",
-                ["management:endpoints:health:enabled"] = "true"
-            };
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.AddInMemoryCollection(appSettings);
-            var config = configurationBuilder.Build();
-            ServiceCollection services = new ServiceCollection();
-
-            var testRegistration = new HealthCheckRegistration("test", new TestHealthCheck(), null, null);
-          //  services.HealthChecksBuilder().Add(testRegistration);
-            var serviceProvider = services.BuildServiceProvider();
-            var svcOptions = serviceProvider.GetServices<IOptionsMonitor<HealthCheckServiceOptions>>().First();
-            Assert.NotNull(svcOptions);
-            Assert.Contains(testRegistration, svcOptions.CurrentValue.Registrations);
-        }
-
         private int IOptionsMonitor<T>()
         {
             throw new NotImplementedException();

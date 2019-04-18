@@ -174,7 +174,6 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin
 
         private async Task DoPost(HttpClient client, HttpRequestMessage request)
         {
-
             HttpClientHelper.ConfigureCertificateValidation(
                 _options.ValidateCertificates,
                 out SecurityProtocolType prevProtocols,

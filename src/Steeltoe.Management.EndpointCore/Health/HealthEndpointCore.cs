@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-// http://www.apache.org/licenses/LICENSE-2.0
+// https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -52,25 +52,6 @@ namespace Steeltoe.Management.Endpoint.Health
             _contributors = contributors.ToList();
             _logger = logger;
         }
-        //public HealthEndpointCore(IHealthOptions options, IHealthAggregator aggregator, IEnumerable<IHealthContributor> contributors, IOptionsMonitor<HealthCheckServiceOptions> serviceOptions, IServiceProvider provider, ILogger<HealthEndpoint> logger = null)
-        //   : base(options, new DefaultHealthAggregator(), contributors, logger)
-        //{
-        //    if (options == null)
-        //    {
-        //        throw new ArgumentNullException(nameof(options));
-        //    }
-
-        //    if (contributors == null)
-        //    {
-        //        throw new ArgumentNullException(nameof(contributors));
-        //    }
-
-        //    _aggregator = aggregator ?? throw new ArgumentNullException(nameof(aggregator));
-        //    _serviceOptions = serviceOptions ?? throw new ArgumentNullException(nameof(serviceOptions));
-        //    _provider = provider ?? throw new ArgumentNullException(nameof(provider));
-        //    _contributors = contributors.ToList();
-        //    _logger = logger;
-        //}
 
         public new IHealthOptions Options
         {

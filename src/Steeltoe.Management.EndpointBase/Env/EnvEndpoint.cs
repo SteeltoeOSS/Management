@@ -92,6 +92,13 @@ namespace Steeltoe.Management.Endpoint.Env
             return new PropertySourceDescriptor(sourceName, properties);
         }
 
+        public virtual string GetPropertySourceName(IConfigurationProvider provider)
+        {
+            return provider is FileConfigurationProvider fileProvider
+                ? provider.GetType().Name + ": [" + fileProvider.Source.Path + "]"
+                : provider.GetType().Name;
+        }
+
         private HashSet<string> GetFullKeyNames(IConfigurationProvider provider, string rootKey, HashSet<string> initialKeys)
         {
             foreach (var key in provider.GetChildKeys(Enumerable.Empty<string>(), rootKey))
@@ -111,13 +118,6 @@ namespace Steeltoe.Management.Endpoint.Env
             }
 
             return initialKeys;
-        }
-
-        public virtual string GetPropertySourceName(IConfigurationProvider provider)
-        {
-            return provider is FileConfigurationProvider fileProvider
-                ? provider.GetType().Name + ": [" + fileProvider.Source.Path + "]"
-                : provider.GetType().Name;
         }
     }
 }
