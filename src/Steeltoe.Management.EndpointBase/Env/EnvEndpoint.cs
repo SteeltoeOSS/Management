@@ -119,5 +119,26 @@ namespace Steeltoe.Management.Endpoint.Env
                 ? provider.GetType().Name + ": [" + fileProvider.Source.Path + "]"
                 : provider.GetType().Name;
         }
+
+        private HashSet<string> GetFullKeyNames(IConfigurationProvider provider, string rootKey, HashSet<string> initialKeys)
+        {
+            foreach (var key in provider.GetChildKeys(Enumerable.Empty<string>(), rootKey))
+            {
+                string surrogateKey = key;
+                if (rootKey != null)
+                {
+                    surrogateKey = rootKey + ":" + key;
+                }
+
+                GetFullKeyNames(provider, surrogateKey, initialKeys);
+
+                if (!initialKeys.Any(k => k.StartsWith(surrogateKey)))
+                {
+                    initialKeys.Add(surrogateKey);
+                }
+            }
+
+            return initialKeys;
+        }
     }
 }
