@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-// http://www.apache.org/licenses/LICENSE-2.0
+// https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -72,7 +72,7 @@ namespace Steeltoe.Management.Exporter.Tracing.Test
                 ["management:tracing:exporter:zipkin:validateCertificates"] = "false",
                 ["management:tracing:exporter:zipkin:timeoutSeconds"] = "100",
                 ["management:tracing:exporter:zipkin:useShortTraceIds"] = "true",
-                ["management:tracing:exporter:zipkin:endpoint"] = "http://foo.com/api/v2/spans"
+                ["management:tracing:exporter:zipkin:endpoint"] = "https://foo.com/api/v2/spans"
             };
 
             ConfigurationBuilder builder = new ConfigurationBuilder();
