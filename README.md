@@ -1,5 +1,7 @@
 # .NET Application Management Endpoints
 
+> NOTICE: This repository has been relocated as a sub-directory under the [Steeltoe](https://github.com/SteeltoeOSS/steeltoe) repository. All issues and future development will be done under that repository.
+
 This repository contains several management endpoints which can be used to help monitor and manage your applications.
 
 Windows Master (Stable): [![AppVeyor Master](https://ci.appveyor.com/api/projects/status/bvv4ukorhxtx7mkk/branch/master?svg=true)](https://ci.appveyor.com/project/steeltoe/management/branch/master)
